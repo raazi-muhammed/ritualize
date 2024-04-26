@@ -22,6 +22,7 @@ import { addRoutine } from "@/redux/features/routineSlice";
 const FormSchema = z.object({
     name: z.string().min(2),
     duration: z.number(),
+    cover: z.string(),
 });
 
 export function AddRoutineForm() {
@@ -78,6 +79,19 @@ export function AddRoutineForm() {
                             <FormDescription>
                                 This is your public display name.
                             </FormDescription>
+                            <FormMessage />
+                        </FormItem>
+                    )}
+                />
+                <FormField
+                    control={form.control}
+                    name="cover"
+                    render={({ field }) => (
+                        <FormItem>
+                            <FormLabel>cover</FormLabel>
+                            <FormControl>
+                                <Input placeholder="a" {...field} />
+                            </FormControl>
                             <FormMessage />
                         </FormItem>
                     )}
