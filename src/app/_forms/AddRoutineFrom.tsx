@@ -22,7 +22,7 @@ import { addRoutine } from "@/redux/features/routineSlice";
 const FormSchema = z.object({
     name: z.string().min(2),
     duration: z.number(),
-    cover: z.string(),
+    cover: z.string().url(),
 });
 
 export function AddRoutineForm() {
@@ -47,7 +47,7 @@ export function AddRoutineForm() {
 
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className=" space-y-6">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                 <FormField
                     control={form.control}
                     name="name"
@@ -55,7 +55,7 @@ export function AddRoutineForm() {
                         <FormItem>
                             <FormLabel>name</FormLabel>
                             <FormControl>
-                                <Input placeholder="shadcn" {...field} />
+                                <Input placeholder="name" {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -69,15 +69,20 @@ export function AddRoutineForm() {
                             <FormLabel>duration</FormLabel>
                             <FormControl>
                                 <Input
-                                    placeholder="shadcn"
                                     {...field}
-                                    onChange={(e) =>
-                                        field.onChange(Number(e.target.value))
-                                    }
+                                    onChange={(e) => {
+                                        const input = e.target.value;
+                                        field.onChange(
+                                            isNaN(Number(input)) || input == ""
+                                                ? input
+                                                : Number(input)
+                                        );
+                                    }}
                                 />
                             </FormControl>
                             <FormDescription>
-                                This is your public display name.
+                                This is a estimated duration it will be
+                                recalculate based on habits
                             </FormDescription>
                             <FormMessage />
                         </FormItem>
@@ -90,13 +95,13 @@ export function AddRoutineForm() {
                         <FormItem>
                             <FormLabel>cover</FormLabel>
                             <FormControl>
-                                <Input placeholder="a" {...field} />
+                                <Input {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
                     )}
                 />
-                <Button type="submit" className="w-full">
+                <Button type="submit" className="mt-auto w-full">
                     Submit
                 </Button>
             </form>

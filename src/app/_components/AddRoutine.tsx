@@ -7,23 +7,20 @@ import { Button } from "@/components/ui/button";
 import {
     Dialog,
     DialogContent,
-    DialogDescription,
     DialogHeader,
-    DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog";
 import {
     Drawer,
     DrawerClose,
     DrawerContent,
-    DrawerDescription,
     DrawerFooter,
     DrawerHeader,
-    DrawerTitle,
     DrawerTrigger,
 } from "@/components/ui/drawer";
 import { AddRoutineForm } from "../_forms/AddRoutineFrom";
 import { IoAddCircle } from "react-icons/io5";
+import Heading from "@/components/layout/Heading";
 
 export function AddRoutine() {
     const [open, setOpen] = React.useState(false);
@@ -40,11 +37,7 @@ export function AddRoutine() {
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-[425px]">
                     <DialogHeader>
-                        <DialogTitle>Edit profile</DialogTitle>
-                        <DialogDescription>
-                            Make changes to your profile here. Click save when
-                            you're done.
-                        </DialogDescription>
+                        <Heading>Add Routine</Heading>
                     </DialogHeader>
                     <AddRoutineForm />
                 </DialogContent>
@@ -60,18 +53,14 @@ export function AddRoutine() {
                     Add
                 </Button>
             </DrawerTrigger>
-            <DrawerContent>
+            <DrawerContent className="min-h-[90vh]">
                 <DrawerHeader className="text-left">
-                    <DrawerTitle>Edit profile</DrawerTitle>
-                    <DrawerDescription>
-                        Make changes to your profile here. Click save when
-                        you're done.
-                    </DrawerDescription>
+                    <Heading>Add Routine</Heading>
                 </DrawerHeader>
-                <div className="mx-4">
+                <div className="mx-4 h-full">
                     <AddRoutineForm />
                 </div>
-                <DrawerFooter className="pt-2">
+                <DrawerFooter className="mt-0 h-fit pt-2">
                     <DrawerClose asChild>
                         <Button variant="outline">Cancel</Button>
                     </DrawerClose>
