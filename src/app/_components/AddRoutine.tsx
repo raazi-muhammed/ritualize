@@ -19,7 +19,7 @@ import {
     DrawerTrigger,
 } from "@/components/ui/drawer";
 import { AddRoutineForm } from "../_forms/AddRoutineFrom";
-import { IoAddCircle } from "react-icons/io5";
+import { IoAddCircle as AddIcon } from "react-icons/io5";
 import Heading from "@/components/layout/Heading";
 
 export function AddRoutine() {
@@ -31,7 +31,7 @@ export function AddRoutine() {
             <Dialog open={open} onOpenChange={setOpen}>
                 <DialogTrigger asChild>
                     <Button size="sm">
-                        <IoAddCircle />
+                        <AddIcon />
                         Add
                     </Button>
                 </DialogTrigger>
@@ -49,7 +49,7 @@ export function AddRoutine() {
         <Drawer open={open} onOpenChange={setOpen}>
             <DrawerTrigger asChild>
                 <Button size="sm">
-                    <IoAddCircle size="1.3em" className="-ms-1 me-1" />
+                    <AddIcon size="1.3em" className="-ms-1 me-1" />
                     Add
                 </Button>
             </DrawerTrigger>
