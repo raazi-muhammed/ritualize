@@ -3,12 +3,14 @@ import Heading from "@/components/layout/Heading";
 import { Button } from "@/components/ui/button";
 import { useAppSelector } from "@/hooks/redux";
 import { Task } from "@/types/entities";
-import { useParams } from "next/navigation";
+import Link from "next/link";
+import { useParams, useRouter } from "next/navigation";
 import React, { useState } from "react";
 
 export default function Start() {
     const params = useParams<{ id: string }>();
     const routineId = params.id;
+    const router = useRouter();
 
     const routines = useAppSelector((state) => state.routineReducer.routines);
     const routine = routines.find((r) => r.name == routineId);
@@ -27,7 +29,10 @@ export default function Start() {
             />
             <header>
                 <section className="flex justify-between">
-                    <Heading className="text-lg">{routine.name}</Heading>
+                    <div onClick={() => router.back()}>
+                        <Heading className="text-lg">{routine.name}</Heading>
+                    </div>
+
                     <small className="my-auto">
                         {routine.duration} minutes
                     </small>
