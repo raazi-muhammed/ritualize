@@ -21,15 +21,15 @@ import {
 import { deleteRoutine, deleteTask } from "@/redux/features/routineSlice";
 import { useRouter } from "next/navigation";
 
-export default function page() {
+export default function Page() {
     const params = useParams<{ id: string }>();
+    const dispatch = useAppDispatch();
     const routineId = params.id;
     const router = useRouter();
     const routines = useAppSelector((state) => state.routineReducer.routines);
     const routine = routines.find((r) => r.name == routineId);
     if (!routine) return <p>no routnie foudn</p>;
 
-    const dispatch = useAppDispatch();
     function handleDeleteRoutine() {
         dispatch(deleteRoutine(routine?.name || ""));
         router.push("/");

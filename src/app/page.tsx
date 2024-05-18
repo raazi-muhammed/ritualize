@@ -24,7 +24,7 @@ export default function Home() {
             <Heading className="my-4">Routines</Heading>
             <section className="flex flex-col gap-4">
                 {routines.map((routine) => (
-                    <Link href={`/${routine.name}`}>
+                    <Link href={`/${routine.name}`} key={routine.name}>
                         <Card className="relative -z-0 overflow-hidden border-none">
                             <img
                                 className="absolute inset-0 -z-10 scale-105 opacity-50 blur-sm"

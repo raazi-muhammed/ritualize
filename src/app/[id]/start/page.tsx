@@ -2,12 +2,11 @@
 import Heading from "@/components/layout/Heading";
 import { Button } from "@/components/ui/button";
 import { useAppSelector } from "@/hooks/redux";
-import { Task } from "@/types/entities";
-import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import React, { useState } from "react";
 
 export default function Start() {
+    const [currentTaskIndex, setCurrentTaskIndex] = useState<number>(0);
     const params = useParams<{ id: string }>();
     const routineId = params.id;
     const router = useRouter();
@@ -17,8 +16,6 @@ export default function Start() {
     if (!routine) return <p>no routnie foudn</p>;
 
     const tasks = routine.tasks;
-
-    const [currentTaskIndex, setCurrentTaskIndex] = useState<number>(0);
 
     return (
         <main className="container relative flex h-screen flex-col justify-around overflow-hidden">
