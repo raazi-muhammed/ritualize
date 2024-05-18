@@ -17,7 +17,7 @@ import Link from "next/link";
 export default function Home() {
     const routines = useAppSelector((state) => state.routineReducer.routines);
     return (
-        <main className="container min-h-screen bg-gradient-to-tl from-[#0B0B0B] to-[#231705] pt-4">
+        <main className="container min-h-screen pt-4">
             <section className="flex justify-end">
                 <AddRoutine />
             </section>

@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { deleteRoutine, deleteTask } from "@/redux/features/routineSlice";
 import { useRouter } from "next/navigation";
+import { ChevronLeft } from "lucide-react";
 
 export default function Page() {
     const params = useParams<{ id: string }>();
@@ -42,14 +43,18 @@ export default function Page() {
     return (
         <main className="container py-4">
             <header className="flex justify-between gap-3">
-                <Link href="/">Back</Link>
+                <Link href="/">
+                    <ChevronLeft />
+                </Link>
                 <div className="flex gap-3">
                     <AddTask routine={routine} />
                     <DropdownMenu>
-                        <DropdownMenuTrigger>
-                            <EditIcon size="1.3em" className="-mx-1" />
+                        <DropdownMenuTrigger asChild>
+                            <Button size="sm">
+                                <EditIcon size="1.3em" className="-mx-1" />
+                            </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent>
+                        <DropdownMenuContent align="end">
                             <DropdownMenuItem onClick={handleDeleteRoutine}>
                                 Delete
                             </DropdownMenuItem>
@@ -74,7 +79,7 @@ export default function Page() {
                                         <DropdownMenuTrigger>
                                             ...
                                         </DropdownMenuTrigger>
-                                        <DropdownMenuContent>
+                                        <DropdownMenuContent align="end">
                                             <DropdownMenuItem
                                                 onClick={() =>
                                                     handleDeleteTask(index)
@@ -91,7 +96,7 @@ export default function Page() {
             )}
             <footer className="fixed bottom-0 left-0 flex w-[100vw] justify-center py-4">
                 <Link href={`${routine.name}/start`}>
-                    <Button size="sm">
+                    <Button size="lg" className="w-fit px-5">
                         <StartIcon size="1.3em" className="-ms-1 me-1" />
                         Start
                     </Button>

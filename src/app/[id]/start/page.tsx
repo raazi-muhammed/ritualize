@@ -2,6 +2,7 @@
 import Heading from "@/components/layout/Heading";
 import { Button } from "@/components/ui/button";
 import { useAppSelector } from "@/hooks/redux";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import React, { useState } from "react";
 
@@ -35,10 +36,14 @@ export default function Start() {
                     </small>
                 </section>
                 <section className="flex gap-1">
-                    <div className="h-1 w-full rounded bg-muted"></div>
-                    <div className="h-1 w-full rounded bg-muted"></div>
-                    <div className="h-1 w-full rounded bg-muted"></div>
-                    <div className="h-1 w-full rounded bg-muted"></div>
+                    {routine.tasks.map((task, index) => (
+                        <div
+                            className={`h-1 w-full rounded bg-white ${
+                                index >= currentTaskIndex
+                                    ? "opacity-50"
+                                    : "opacity-100"
+                            }`}></div>
+                    ))}
                 </section>
             </header>
             <section>
@@ -57,13 +62,24 @@ export default function Start() {
                     <Button
                         disabled={currentTaskIndex <= 0}
                         onClick={() => setCurrentTaskIndex((cti) => --cti)}>
-                        Previous
+                        <ChevronLeft className="-ms-2" />
+                        Prev
                     </Button>
-                    <Button
-                        disabled={currentTaskIndex >= tasks.length - 1}
-                        onClick={() => setCurrentTaskIndex((cti) => ++cti)}>
-                        Next
-                    </Button>
+                    {currentTaskIndex >= tasks.length - 1 ? (
+                        <Button
+                            variant="secondary"
+                            onClick={() => router.back()}>
+                            Done
+                            <ChevronRight className="-me-2" />
+                        </Button>
+                    ) : (
+                        <Button
+                            disabled={currentTaskIndex >= tasks.length - 1}
+                            onClick={() => setCurrentTaskIndex((cti) => ++cti)}>
+                            Next
+                            <ChevronRight className="-me-2" />
+                        </Button>
+                    )}
                 </section>
             </footer>
         </main>
