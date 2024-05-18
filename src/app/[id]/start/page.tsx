@@ -18,9 +18,9 @@ export default function Start() {
     const tasks = routine.tasks;
 
     return (
-        <main className="container relative flex h-screen flex-col justify-around overflow-hidden">
+        <main className="container relative flex h-[100svh] flex-col justify-around overflow-hidden">
             <img
-                className="absolute inset-0 -z-10 h-screen scale-110 opacity-50 blur-xl"
+                className="absolute inset-0 -z-10 h-[100svh] scale-110 opacity-50 blur-xl"
                 src={routine.cover}
                 alt=""
             />
@@ -43,7 +43,7 @@ export default function Start() {
             </header>
             <section>
                 <img
-                    className="aspect-square rounded-sm"
+                    className="m-auto aspect-square w-full max-w-96 rounded-sm"
                     src={routine.cover}
                     alt=""
                 />
