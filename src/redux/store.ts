@@ -1,12 +1,29 @@
-import { configureStore } from "@reduxjs/toolkit";
+import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import routineReducer from "./features/routineSlice";
 
-export const makeStore = () => {
-    return configureStore({
-        reducer: { routineReducer },
-    });
+import storage from "redux-persist/lib/storage";
+import { persistReducer, persistStore } from "redux-persist";
+
+const persistConfig = {
+    key: "ritualize",
+    version: 1,
+    storage,
 };
 
-export type AppStore = ReturnType<typeof makeStore>;
-export type RootState = ReturnType<AppStore["getState"]>;
-export type AppDispatch = AppStore["dispatch"];
+const reducer = combineReducers({
+    routineReducer,
+});
+const persistedReducer = persistReducer(persistConfig, reducer);
+
+export const store = configureStore({
+    reducer: persistedReducer,
+    middleware: (getDefaultMiddleware) =>
+        getDefaultMiddleware({
+            serializableCheck: false,
+        }),
+});
+
+export const persistor = persistStore(store);
+
+export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;
