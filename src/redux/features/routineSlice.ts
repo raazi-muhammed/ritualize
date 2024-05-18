@@ -42,6 +42,34 @@ const routineSlice = createSlice({
                 }
             });
         },
+        moveTaskUp(
+            state,
+            action: PayloadAction<{ routine: string; index: number }>
+        ) {
+            const index = action.payload.index;
+            if (index <= 0) return state;
+            state.routines.map((routine) => {
+                if (routine.name === action.payload.routine) {
+                    const temp = routine.tasks[index];
+                    routine.tasks[index] = routine.tasks[index - 1];
+                    routine.tasks[index - 1] = temp;
+                }
+            });
+        },
+        moveTaskDown(
+            state,
+            action: PayloadAction<{ routine: string; index: number }>
+        ) {
+            state.routines.map((routine) => {
+                const index = action.payload.index;
+                if (routine.name === action.payload.routine) {
+                    if (index >= routine.tasks.length - 1) return state;
+                    const temp = routine.tasks[index];
+                    routine.tasks[index] = routine.tasks[index + 1];
+                    routine.tasks[index + 1] = temp;
+                }
+            });
+        },
         deleteTask(
             state,
             action: PayloadAction<{ routine: string; index: number }>
@@ -58,7 +86,13 @@ const routineSlice = createSlice({
     },
 });
 
-export const { addRoutine, addTask, deleteTask, deleteRoutine } =
-    routineSlice.actions;
+export const {
+    addRoutine,
+    addTask,
+    deleteTask,
+    deleteRoutine,
+    moveTaskUp,
+    moveTaskDown,
+} = routineSlice.actions;
 
 export default routineSlice.reducer;

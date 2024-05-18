@@ -18,7 +18,12 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { deleteRoutine, deleteTask } from "@/redux/features/routineSlice";
+import {
+    deleteRoutine,
+    deleteTask,
+    moveTaskDown,
+    moveTaskUp,
+} from "@/redux/features/routineSlice";
 import { useRouter } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 
@@ -35,8 +40,14 @@ export default function Page() {
         dispatch(deleteRoutine(routine?.name || ""));
         router.push("/");
     }
+
+    function handleMoveTaskUp(index: number) {
+        dispatch(moveTaskUp({ routine: routine?.name || "", index }));
+    }
+    function handleMoveTaskDown(index: number) {
+        dispatch(moveTaskDown({ routine: routine?.name || "", index }));
+    }
     function handleDeleteTask(index: number) {
-        console.log("delte", index);
         dispatch(deleteTask({ routine: routine?.name || "", index }));
     }
 
@@ -80,6 +91,18 @@ export default function Page() {
                                             ...
                                         </DropdownMenuTrigger>
                                         <DropdownMenuContent align="end">
+                                            <DropdownMenuItem
+                                                onClick={() =>
+                                                    handleMoveTaskUp(index)
+                                                }>
+                                                Move up
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem
+                                                onClick={() =>
+                                                    handleMoveTaskDown(index)
+                                                }>
+                                                Move down
+                                            </DropdownMenuItem>
                                             <DropdownMenuItem
                                                 onClick={() =>
                                                     handleDeleteTask(index)
