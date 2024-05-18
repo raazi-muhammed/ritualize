@@ -12,7 +12,7 @@ export default function Heading({
     className,
     variant = "default",
 }: Props) {
-    let options = "text-primary text-4xl font-bold";
+    let options = "text-4xl font-bold";
 
     switch (variant) {
         case "default":

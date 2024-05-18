@@ -19,16 +19,19 @@ export default function Start() {
     const tasks = routine.tasks;
 
     return (
-        <main className="container relative flex h-[100svh] flex-col justify-around overflow-hidden">
+        <main className="container relative flex h-[100svh] w-full flex-col justify-around">
             <img
-                className="absolute inset-0 -z-10 h-[100svh] scale-110 opacity-50 blur-xl"
+                className="absolute inset-0 -z-10 h-[100svh] w-full scale-110 opacity-50 blur-xl"
                 src={routine.cover}
                 alt=""
             />
             <header>
                 <section className="flex justify-between">
-                    <div onClick={() => router.back()}>
-                        <Heading className="text-lg">{routine.name}</Heading>
+                    <div onClick={() => router.back()} className="flex gap-0">
+                        <ChevronLeft size="1em" className="m-0 my-auto" />
+                        <Heading className="my-auto mb-1 text-lg">
+                            {routine.name}
+                        </Heading>
                     </div>
 
                     <small className="my-auto">
@@ -60,20 +63,20 @@ export default function Start() {
                 </section>
                 <section className="flex justify-between">
                     <Button
+                        variant="secondary"
                         disabled={currentTaskIndex <= 0}
                         onClick={() => setCurrentTaskIndex((cti) => --cti)}>
                         <ChevronLeft className="-ms-2" />
                         Prev
                     </Button>
                     {currentTaskIndex >= tasks.length - 1 ? (
-                        <Button
-                            variant="secondary"
-                            onClick={() => router.back()}>
+                        <Button onClick={() => router.back()}>
                             Done
                             <ChevronRight className="-me-2" />
                         </Button>
                     ) : (
                         <Button
+                            variant="secondary"
                             disabled={currentTaskIndex >= tasks.length - 1}
                             onClick={() => setCurrentTaskIndex((cti) => ++cti)}>
                             Next

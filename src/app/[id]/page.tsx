@@ -50,7 +50,7 @@ export default function Page() {
                     <AddTask routine={routine} />
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <Button size="sm">
+                            <Button size="sm" variant="secondary">
                                 <EditIcon size="1.3em" className="-mx-1" />
                             </Button>
                         </DropdownMenuTrigger>

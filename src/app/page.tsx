@@ -27,7 +27,7 @@ export default function Home() {
                     <Link href={`/${routine.name}`} key={routine.name}>
                         <Card className="relative -z-0 overflow-hidden border-none">
                             <img
-                                className="absolute inset-0 -z-10 scale-105 opacity-50 blur-sm"
+                                className="absolute inset-0 -z-10 w-full scale-105 opacity-50 blur-sm"
                                 src={routine.cover}
                                 alt=""
                             />
@@ -38,13 +38,15 @@ export default function Home() {
                                 </CardDescription>
                             </CardHeader>
                             <CardContent className="flex justify-end p-2">
-                                <Button size="sm">
-                                    <StartIcon
-                                        size="1.3em"
-                                        className="-ms-1 me-1"
-                                    />
-                                    Start
-                                </Button>
+                                <Link href={`/${routine.name}/start`}>
+                                    <Button size="sm">
+                                        <StartIcon
+                                            size="1.3em"
+                                            className="-ms-1 me-1"
+                                        />
+                                        Start
+                                    </Button>
+                                </Link>
                             </CardContent>
                         </Card>
                     </Link>

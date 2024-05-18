@@ -21,7 +21,7 @@ export function AddTask({ routine }: { routine: Routine }) {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button size="sm">
+                <Button size="sm" variant="secondary">
                     <AddIcon />
                     Add
                 </Button>

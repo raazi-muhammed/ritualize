@@ -22,8 +22,8 @@ export function AddRoutine() {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button size="sm">
-                    <AddIcon />
+                <Button size="sm" variant="secondary">
+                    <AddIcon className="-ms-1 me-1" />
                     Add
                 </Button>
             </DialogTrigger>
