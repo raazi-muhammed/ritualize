@@ -41,6 +41,7 @@ export default function Start() {
                 <section className="flex gap-1">
                     {routine.tasks.map((task, index) => (
                         <div
+                            key={index}
                             className={`h-1 w-full rounded bg-white ${
                                 index >= currentTaskIndex
                                     ? "opacity-50"
