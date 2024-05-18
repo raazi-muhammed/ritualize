@@ -1,4 +1,4 @@
-import { Routine } from "@/types/entities";
+import { Routine, Task } from "@/types/entities";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
 const initialState: { routines: Routine[] } = {
@@ -9,11 +9,11 @@ const initialState: { routines: Routine[] } = {
             cover: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7d/Morning%2C_just_after_sunrise%2C_Namibia.jpg/1200px-Morning%2C_just_after_sunrise%2C_Namibia.jpg",
             tasks: [
                 {
-                    name: "Brush",
+                    name: "Meditate",
                     duration: 2,
                 },
                 {
-                    name: "Face wash",
+                    name: "Yoga",
                     duration: 5,
                 },
             ],
@@ -28,9 +28,16 @@ const routineSlice = createSlice({
         addRoutine(state, action: PayloadAction<Routine>) {
             state.routines.push(action.payload);
         },
+        addTask(state, action: PayloadAction<{ routine: string; task: Task }>) {
+            state.routines.map((routine) => {
+                if (routine.name === action.payload.routine) {
+                    routine.tasks.push(action.payload.task);
+                }
+            });
+        },
     },
 });
 
-export const { addRoutine } = routineSlice.actions;
+export const { addRoutine, addTask } = routineSlice.actions;
 
 export default routineSlice.reducer;

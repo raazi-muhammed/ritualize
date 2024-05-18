@@ -9,19 +9,22 @@ import React from "react";
 import {
     IoPencil as EditIcon,
     IoPlayCircle as StartIcon,
-    IoAddCircle as AddIcon,
 } from "react-icons/io5";
+import { AddTask } from "./_components/AddTask";
+import { useParams } from "next/navigation";
 
 export default function page() {
-    const routine = useAppSelector((state) => state.routineReducer.routines[0]);
+    const params = useParams<{ id: string }>();
+    const routineId = params.id;
+
+    const routines = useAppSelector((state) => state.routineReducer.routines);
+    const routine = routines.find((r) => r.name == routineId);
+    if (!routine) return <p>no routnie foudn</p>;
 
     return (
         <main className="container py-4">
             <header className="flex justify-end gap-3">
-                <Button size="sm">
-                    <AddIcon size="1.3em" className="-ms-1 me-1" />
-                    Add
-                </Button>
+                <AddTask routine={routine} />
                 <Button size="sm">
                     <EditIcon size="1.3em" className="-mx-1" />
                 </Button>
@@ -33,7 +36,7 @@ export default function page() {
                     </section>
                     <section className="space-y-2">
                         {routine.tasks.map((task) => (
-                            <Card>
+                            <Card key={task.name}>
                                 <CardContent className="p-4">
                                     <p>{task.name}</p>
                                     <small>{task.duration}</small>

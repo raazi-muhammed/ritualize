@@ -18,11 +18,12 @@ import {
     DrawerHeader,
     DrawerTrigger,
 } from "@/components/ui/drawer";
-import { AddRoutineForm } from "../_forms/AddRoutineFrom";
+import { AddTaskForm } from "../_forms/AddTaskForm";
 import { IoAddCircle as AddIcon } from "react-icons/io5";
 import Heading from "@/components/layout/Heading";
+import { Routine } from "@/types/entities";
 
-export function AddRoutine() {
+export function AddTask({ routine }: { routine: Routine }) {
     const [open, setOpen] = React.useState(false);
     const isDesktop = useMediaQuery("(min-width: 768px)");
     const closeForm = () => setOpen(false);
@@ -38,9 +39,9 @@ export function AddRoutine() {
                 </DialogTrigger>
                 <DialogContent className="sm:max-w-[425px]">
                     <DialogHeader>
-                        <Heading>Add Routine</Heading>
+                        <Heading>Add task</Heading>
                     </DialogHeader>
-                    <AddRoutineForm closeForm={closeForm} />
+                    <AddTaskForm routine={routine} closeForm={closeForm} />
                 </DialogContent>
             </Dialog>
         );
@@ -56,10 +57,10 @@ export function AddRoutine() {
             </DrawerTrigger>
             <DrawerContent className="min-h-[90vh]">
                 <DrawerHeader className="text-left">
-                    <Heading>Add Routine</Heading>
+                    <Heading>Add task</Heading>
                 </DrawerHeader>
                 <div className="mx-4 h-full">
-                    <AddRoutineForm closeForm={closeForm} />
+                    <AddTaskForm routine={routine} closeForm={closeForm} />
                 </div>
                 <DrawerFooter className="mt-0 h-fit pt-2">
                     <DrawerClose asChild>

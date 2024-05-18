@@ -22,7 +22,7 @@ export default function Home() {
                 <AddRoutine />
             </section>
             <Heading className="my-4">Routines</Heading>
-            <section className="space-y-4">
+            <section className="flex flex-col gap-4">
                 {routines.map((routine) => (
                     <Link href={`/${routine.name}`}>
                         <Card className="relative -z-0 overflow-hidden border-none">

@@ -8,24 +8,28 @@ import { Button } from "@/components/ui/button";
 import {
     Form,
     FormControl,
-    FormDescription,
     FormField,
     FormItem,
     FormLabel,
     FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { toast } from "@/components/ui/use-toast";
 import { useAppDispatch } from "@/hooks/redux";
-import { addRoutine } from "@/redux/features/routineSlice";
+import { addTask } from "@/redux/features/routineSlice";
+import { Routine } from "@/types/entities";
 
 const FormSchema = z.object({
     name: z.string().min(2),
     duration: z.number(),
-    cover: z.string().url(),
 });
 
-export function AddRoutineForm({ closeForm }: { closeForm: () => void }) {
+export function AddTaskForm({
+    routine,
+    closeForm,
+}: {
+    routine: Routine;
+    closeForm: () => void;
+}) {
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
         defaultValues: {
@@ -36,13 +40,7 @@ export function AddRoutineForm({ closeForm }: { closeForm: () => void }) {
     const dispatch = useAppDispatch();
 
     function onSubmit(data: z.infer<typeof FormSchema>) {
-        console.log(data);
-
-        dispatch(addRoutine({ ...data, tasks: [] }));
-        toast({
-            title: "You submitted the following values:",
-            description: "hi",
-        });
+        dispatch(addTask({ routine: routine.name, task: data }));
         closeForm();
     }
 
@@ -80,23 +78,6 @@ export function AddRoutineForm({ closeForm }: { closeForm: () => void }) {
                                         );
                                     }}
                                 />
-                            </FormControl>
-                            <FormDescription>
-                                This is a estimated duration it will be
-                                recalculate based on habits
-                            </FormDescription>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <FormField
-                    control={form.control}
-                    name="cover"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>cover</FormLabel>
-                            <FormControl>
-                                <Input {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>

@@ -3,17 +3,20 @@ import Heading from "@/components/layout/Heading";
 import { Button } from "@/components/ui/button";
 import { useAppSelector } from "@/hooks/redux";
 import { Task } from "@/types/entities";
-import React, { useEffect, useState } from "react";
-import { IoPlayCircle as StartIcon } from "react-icons/io5";
+import { useParams } from "next/navigation";
+import React, { useState } from "react";
 
 export default function Start() {
-    const routine = useAppSelector((state) => state.routineReducer.routines[0]);
-    const task: Task = routine.tasks[0];
-    const [progress, setProgress] = useState(0);
-    useEffect(() => {
-        const interval = setInterval(() => setProgress(80), 1000);
-        return () => clearInterval(interval);
-    }, []);
+    const params = useParams<{ id: string }>();
+    const routineId = params.id;
+
+    const routines = useAppSelector((state) => state.routineReducer.routines);
+    const routine = routines.find((r) => r.name == routineId);
+    if (!routine) return <p>no routnie foudn</p>;
+
+    const tasks = routine.tasks;
+
+    const [currentTaskIndex, setCurrentTaskIndex] = useState<number>(0);
 
     return (
         <main className="container relative flex h-screen flex-col justify-around overflow-hidden">
@@ -45,17 +48,20 @@ export default function Start() {
             </section>
             <footer>
                 <section className="my-8">
-                    <Heading>{task.name}</Heading>
-                    <small>{task.duration} minutes</small>
+                    <Heading>{tasks[currentTaskIndex].name}</Heading>
+                    <small>{tasks[currentTaskIndex].duration} minutes</small>
                 </section>
-                <section className="flex h-14 w-full justify-start rounded-full bg-[#66645A] p-1 align-middle">
-                    <section
-                        key={progress}
-                        className={`flex w-[calc(${progress}%+3rem)] justify-end rounded-full bg-[#4b4a44] p-1`}>
-                        <Button className="aspect-square h-full rounded-full bg-white">
-                            <StartIcon size="1.75em" className="absolute" />
-                        </Button>
-                    </section>
+                <section className="flex justify-between">
+                    <Button
+                        disabled={currentTaskIndex <= 0}
+                        onClick={() => setCurrentTaskIndex((cti) => --cti)}>
+                        Previous
+                    </Button>
+                    <Button
+                        disabled={currentTaskIndex >= tasks.length - 1}
+                        onClick={() => setCurrentTaskIndex((cti) => ++cti)}>
+                        Next
+                    </Button>
                 </section>
             </footer>
         </main>
