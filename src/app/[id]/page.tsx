@@ -75,10 +75,10 @@ export default function Page() {
             </header>
             {!!routine && (
                 <>
-                    <section className="my-4">
+                    <section className="my-4 bg-background py-4">
                         <Heading>{routine.name}</Heading>
                     </section>
-                    <section className="space-y-2">
+                    <section className="mb-16 space-y-2">
                         {routine.tasks.map((task, index) => (
                             <Card key={task.name}>
                                 <CardContent className="flex justify-between p-4">
