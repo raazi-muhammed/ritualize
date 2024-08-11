@@ -35,8 +35,8 @@ export default function RootLayout({
             <StoreProvider>
                 <ThemeProvider
                     attribute="class"
+                    forcedTheme="dark"
                     defaultTheme="dark"
-                    enableSystem
                     disableTransitionOnChange>
                     <body className={inter.className}>{children}</body>
                 </ThemeProvider>
