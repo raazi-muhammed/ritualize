@@ -64,6 +64,78 @@ export default async function Page({ params }: { params: { id: string } }) {
         revalidatePath(`${params.id}`);
     }
 
+    async function moveUp(formData: FormData) {
+        "use server";
+        const id = formData.get("id") as string;
+        const order = Number(formData.get("order"));
+
+        const toReplace = await prisma.task.findFirst({
+            where: {
+                routineId: params.id,
+                order: { lt: order },
+            },
+            orderBy: {
+                order: "desc",
+            },
+        });
+
+        if (toReplace) {
+            await prisma.task.update({
+                where: {
+                    id,
+                },
+                data: {
+                    order: toReplace.order,
+                },
+            });
+            await prisma.task.update({
+                where: {
+                    id: toReplace.id,
+                },
+                data: {
+                    order,
+                },
+            });
+        }
+        revalidatePath(`${params.id}`);
+    }
+
+    async function moveDown(formData: FormData) {
+        "use server";
+        const id = formData.get("id") as string;
+        const order = Number(formData.get("order"));
+
+        const toReplace = await prisma.task.findFirst({
+            where: {
+                routineId: params.id,
+                order: { gt: order },
+            },
+            orderBy: {
+                order: "asc",
+            },
+        });
+
+        if (toReplace) {
+            await prisma.task.update({
+                where: {
+                    id,
+                },
+                data: {
+                    order: toReplace.order,
+                },
+            });
+            await prisma.task.update({
+                where: {
+                    id: toReplace.id,
+                },
+                data: {
+                    order,
+                },
+            });
+        }
+        revalidatePath(`${params.id}`);
+    }
+
     return (
         <main className="container py-4">
             <header className="flex justify-between gap-3">
@@ -117,12 +189,40 @@ export default async function Page({ params }: { params: { id: string } }) {
                                             ...
                                         </DropdownMenuTrigger>
                                         <DropdownMenuContent align="end">
-                                            <DropdownMenuItem>
-                                                Move up
-                                            </DropdownMenuItem>
-                                            <DropdownMenuItem>
-                                                Move down
-                                            </DropdownMenuItem>
+                                            <form action={moveUp}>
+                                                <input
+                                                    name="id"
+                                                    className="hidden"
+                                                    value={task.id}
+                                                />
+                                                <input
+                                                    name="order"
+                                                    className="hidden"
+                                                    value={task.order}
+                                                />
+                                                <DropdownMenuItem asChild>
+                                                    <Button className="w-full">
+                                                        Move up
+                                                    </Button>
+                                                </DropdownMenuItem>
+                                            </form>
+                                            <form action={moveDown}>
+                                                <input
+                                                    name="id"
+                                                    className="hidden"
+                                                    value={task.id}
+                                                />
+                                                <input
+                                                    name="order"
+                                                    className="hidden"
+                                                    value={task.order}
+                                                />
+                                                <DropdownMenuItem asChild>
+                                                    <Button className="w-full">
+                                                        Move down
+                                                    </Button>
+                                                </DropdownMenuItem>
+                                            </form>
                                             <Link
                                                 href={`/${params.id}/${task.id}/edit`}>
                                                 <DropdownMenuItem>

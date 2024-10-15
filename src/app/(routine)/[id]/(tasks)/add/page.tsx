@@ -10,12 +10,20 @@ function AddRoutine({ params }: { params: { id: string } }) {
     const addTodo = async (formData: FormData) => {
         "use server";
 
+        const order = await prisma.task.findFirst({
+            where: {
+                routineId: params.id,
+            },
+            orderBy: {
+                order: "desc",
+            },
+        });
         await prisma.task.create({
             data: {
                 name: formData.get("name") as string,
                 routineId: params.id,
                 duration: Number(formData.get("duration")) || 1,
-                order: Number(formData.get("order")) || 1,
+                order: order?.order ? order?.order + 1 : 1,
             },
         });
         revalidatePath(`/${params.id}`);
@@ -26,8 +34,12 @@ function AddRoutine({ params }: { params: { id: string } }) {
             <Heading>Add Task</Heading>
             <form action={addTodo}>
                 <Input required name="name" placeholder="name" />
-                <Input type="number" name="duration" placeholder="duration" />
-                <Input type="number" name="order" placeholder="order" />
+                <Input
+                    defaultValue={2}
+                    type="number"
+                    name="duration"
+                    placeholder="duration"
+                />
                 <Button>Submit</Button>
             </form>
         </div>

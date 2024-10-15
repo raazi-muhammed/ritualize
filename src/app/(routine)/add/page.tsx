@@ -24,7 +24,12 @@ function AddRoutine() {
             <Heading>Add Routine</Heading>
             <form action={addTodo}>
                 <Input required name="name" placeholder="name" />
-                <Input type="number" name="duration" placeholder="duration" />
+                <Input
+                    defaultValue={10}
+                    type="number"
+                    name="duration"
+                    placeholder="duration"
+                />
                 <Button>Submit</Button>
             </form>
         </div>
