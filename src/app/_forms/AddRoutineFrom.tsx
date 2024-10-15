@@ -18,6 +18,7 @@ import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
 import { useAppDispatch } from "@/hooks/redux";
 import { addRoutine } from "@/redux/features/routineSlice";
+import axios from "axios";
 
 const FormSchema = z.object({
     name: z.string().min(2),
@@ -33,12 +34,11 @@ export function AddRoutineForm({ closeForm }: { closeForm: () => void }) {
             duration: 2,
         },
     });
-    const dispatch = useAppDispatch();
 
-    function onSubmit(data: z.infer<typeof FormSchema>) {
+    async function onSubmit(data: z.infer<typeof FormSchema>) {
         console.log(data);
-
-        dispatch(addRoutine({ ...data, tasks: [] }));
+        const res = await axios.post("/api/routines", data);
+        console.log(res);
         toast({
             title: "You submitted the following values:",
             description: "hi",

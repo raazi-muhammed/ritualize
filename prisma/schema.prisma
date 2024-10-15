@@ -8,16 +8,17 @@ datasource db {
 }
 
 model Task {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  name      String   @unique
-  duration  Int
-  routineId String   @db.ObjectId // Foreign key field for the Routine relation
-  routine   Routine  @relation(fields: [routineId], references: [id]) // Define the relation
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  name            String
+  duration        Int
+  order           Int
+  routineId       String   @db.ObjectId
+  routine         Routine  @relation(fields: [routineId], references: [id]) 
 }
 
 model Routine {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  name      String   @unique
-  duration  Int?
-  tasks     Task[]   // Correct the relation field name (plural)
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  name            String
+  duration        Int?
+  tasks           Task[]   // Relation field
 }
