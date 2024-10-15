@@ -22,7 +22,7 @@ function AddRoutine() {
     return (
         <div className="container grid gap-4 py-8">
             <Heading>Add Routine</Heading>
-            <form action={addTodo}>
+            <form action={addTodo} className="space-y-4">
                 <Input required name="name" placeholder="name" />
                 <Input
                     defaultValue={10}

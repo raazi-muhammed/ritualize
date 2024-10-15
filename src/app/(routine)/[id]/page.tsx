@@ -157,11 +157,27 @@ export default async function Page({ params }: { params: { id: string } }) {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                             <Link href={`${params.id}/edit`}>
-                                <DropdownMenuItem>Edit</DropdownMenuItem>
+                                <DropdownMenuItem className="p-0">
+                                    <Button
+                                        size="sm"
+                                        variant="ghost"
+                                        className="w-full">
+                                        <p className="w-full text-start">
+                                            Edit
+                                        </p>
+                                    </Button>
+                                </DropdownMenuItem>
                             </Link>
                             <form action={deleteRoutine}>
-                                <DropdownMenuItem asChild>
-                                    <Button>Delete</Button>
+                                <DropdownMenuItem className="p-0">
+                                    <Button
+                                        size="sm"
+                                        variant="ghost"
+                                        className="w-full">
+                                        <p className="w-full text-start">
+                                            Delete
+                                        </p>
+                                    </Button>
                                 </DropdownMenuItem>
                             </form>
                         </DropdownMenuContent>
@@ -200,9 +216,14 @@ export default async function Page({ params }: { params: { id: string } }) {
                                                     className="hidden"
                                                     value={task.order}
                                                 />
-                                                <DropdownMenuItem asChild>
-                                                    <Button className="w-full">
-                                                        Move up
+                                                <DropdownMenuItem className="p-0">
+                                                    <Button
+                                                        size="sm"
+                                                        variant="ghost"
+                                                        className="w-full">
+                                                        <p className="w-full text-start">
+                                                            Move up
+                                                        </p>
                                                     </Button>
                                                 </DropdownMenuItem>
                                             </form>
@@ -217,16 +238,28 @@ export default async function Page({ params }: { params: { id: string } }) {
                                                     className="hidden"
                                                     value={task.order}
                                                 />
-                                                <DropdownMenuItem asChild>
-                                                    <Button className="w-full">
-                                                        Move down
+                                                <DropdownMenuItem className="p-0">
+                                                    <Button
+                                                        className="w-full"
+                                                        size="sm"
+                                                        variant="ghost">
+                                                        <p className="w-full text-start">
+                                                            Move down
+                                                        </p>
                                                     </Button>
                                                 </DropdownMenuItem>
                                             </form>
                                             <Link
                                                 href={`/${params.id}/${task.id}/edit`}>
-                                                <DropdownMenuItem>
-                                                    Edit
+                                                <DropdownMenuItem className="p-0">
+                                                    <Button
+                                                        size="sm"
+                                                        variant="ghost"
+                                                        className="w-full">
+                                                        <p className="w-full text-start">
+                                                            Edit
+                                                        </p>
+                                                    </Button>
                                                 </DropdownMenuItem>
                                             </Link>
                                             <form action={deleteTask}>
@@ -235,9 +268,14 @@ export default async function Page({ params }: { params: { id: string } }) {
                                                     className="hidden"
                                                     value={task.id}
                                                 />
-                                                <DropdownMenuItem asChild>
-                                                    <Button className="w-full">
-                                                        Delete
+                                                <DropdownMenuItem className="p-0">
+                                                    <Button
+                                                        size="sm"
+                                                        variant="ghost"
+                                                        className="w-full">
+                                                        <p className="w-full text-start">
+                                                            Delete
+                                                        </p>
                                                     </Button>
                                                 </DropdownMenuItem>
                                             </form>

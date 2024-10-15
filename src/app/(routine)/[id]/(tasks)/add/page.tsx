@@ -32,7 +32,7 @@ function AddRoutine({ params }: { params: { id: string } }) {
     return (
         <div className="container grid gap-4 py-8">
             <Heading>Add Task</Heading>
-            <form action={addTodo}>
+            <form action={addTodo} className="space-y-4">
                 <Input required name="name" placeholder="name" />
                 <Input
                     defaultValue={2}

@@ -40,7 +40,7 @@ async function AddRoutine({
     return (
         <div className="container grid gap-4 py-8">
             <Heading>Edit Task</Heading>
-            <form action={addTodo}>
+            <form action={addTodo} className="space-y-4">
                 <Input
                     defaultValue={task.name}
                     required
