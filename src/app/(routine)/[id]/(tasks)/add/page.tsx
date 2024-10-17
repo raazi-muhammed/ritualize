@@ -12,7 +12,7 @@ function AddRoutine({ params }: { params: { id: string } }) {
 
         const order = await prisma.task.findFirst({
             where: {
-                routineId: params.id,
+                routine_id: params.id,
             },
             orderBy: {
                 order: "desc",
@@ -21,7 +21,7 @@ function AddRoutine({ params }: { params: { id: string } }) {
         await prisma.task.create({
             data: {
                 name: formData.get("name") as string,
-                routineId: params.id,
+                routine_id: params.id,
                 duration: Number(formData.get("duration")) || 1,
                 order: order?.order ? order?.order + 1 : 1,
             },
@@ -29,6 +29,7 @@ function AddRoutine({ params }: { params: { id: string } }) {
         revalidatePath(`/${params.id}`);
         redirect(`/${params.id}`);
     };
+
     return (
         <div className="container grid gap-4 py-8">
             <Heading>Add Task</Heading>

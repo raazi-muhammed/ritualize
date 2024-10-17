@@ -1,11 +1,10 @@
 "use client";
 import Heading from "@/components/layout/Heading";
 import { Button } from "@/components/ui/button";
-import { useAppSelector } from "@/hooks/redux";
 import { useStopwatch } from "@/hooks/stop-watch";
 import { Routine, Task } from "@prisma/client";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
 function StartComponent({

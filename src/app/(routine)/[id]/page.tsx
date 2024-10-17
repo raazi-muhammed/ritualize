@@ -42,7 +42,7 @@ export default async function Page({ params }: { params: { id: string } }) {
         "use server";
         await prisma.task.deleteMany({
             where: {
-                routineId: params.id,
+                routine_id: params.id,
             },
         });
         await prisma.routine.delete({
@@ -71,7 +71,7 @@ export default async function Page({ params }: { params: { id: string } }) {
 
         const toReplace = await prisma.task.findFirst({
             where: {
-                routineId: params.id,
+                routine_id: params.id,
                 order: { lt: order },
             },
             orderBy: {
@@ -107,7 +107,7 @@ export default async function Page({ params }: { params: { id: string } }) {
 
         const toReplace = await prisma.task.findFirst({
             where: {
-                routineId: params.id,
+                routine_id: params.id,
                 order: { gt: order },
             },
             orderBy: {

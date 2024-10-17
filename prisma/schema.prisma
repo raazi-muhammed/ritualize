@@ -7,17 +7,25 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Frequency {
+  daily
+  weekly
+  monthly
+}
+
 model Task {
-  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  id              String    @id @default(auto()) @map("_id") @db.ObjectId
   name            String
   duration        Int
   order           Int
-  routineId       String   @db.ObjectId
-  routine         Routine  @relation(fields: [routineId], references: [id]) 
+  routine_id       String   @db.ObjectId
+  routine         Routine   @relation(fields: [routine_id], references: [id]) 
+  frequency       Frequency @default(daily)
+  days_of_week    Int[]     @default([])  
 }
 
 model Routine {
-  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  id              String    @id @default(auto()) @map("_id") @db.ObjectId
   name            String
   duration        Int?
   tasks           Task[]   // Relation field
