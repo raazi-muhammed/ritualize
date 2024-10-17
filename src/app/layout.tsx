@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
-import StoreProvider from "@/redux/StoreProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -32,15 +31,13 @@ export default function RootLayout({
                     rel="stylesheet"
                 />
             </head>
-            <StoreProvider>
-                <ThemeProvider
-                    attribute="class"
-                    forcedTheme="dark"
-                    defaultTheme="dark"
-                    disableTransitionOnChange>
-                    <body className={inter.className}>{children}</body>
-                </ThemeProvider>
-            </StoreProvider>
+            <ThemeProvider
+                attribute="class"
+                forcedTheme="dark"
+                defaultTheme="dark"
+                disableTransitionOnChange>
+                <body className={inter.className}>{children}</body>
+            </ThemeProvider>
         </html>
     );
 }
