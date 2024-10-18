@@ -286,7 +286,7 @@ export default async function Page({ params }: { params: { id: string } }) {
                         ))}
                     </section>
                     <footer className="fixed bottom-0 left-0 flex w-[100vw] justify-center py-4">
-                        <Link href={`${routine.id}/start`}>
+                        <Link href={`${routine.id}/start`} prefetch={true}>
                             <Button size="lg" className="w-fit px-5">
                                 <StartIcon
                                     size="1.3em"

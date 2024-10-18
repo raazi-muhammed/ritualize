@@ -1,37 +1,38 @@
+"use client";
+
 import Heading from "@/components/layout/Heading";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { prisma } from "@/lib/prisma";
-import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
+import { useMutation } from "@tanstack/react-query";
 import React from "react";
+import { z } from "zod";
+import { createRoutine } from "../actions";
+import { toast } from "@/hooks/use-toast";
+import RoutineForm, { routineSchema } from "../_forms/RoutineForm";
+import { useRouter } from "next/navigation";
 
 function AddRoutine() {
-    const addTodo = async (formData: FormData) => {
-        "use server";
+    const router = useRouter();
+    const { mutateAsync } = useMutation({
+        mutationFn: createRoutine,
+        onSuccess: (routine) => {
+            toast({
+                description: `${routine?.name ?? "Task"} created`,
+            });
+        },
+    });
 
-        await prisma.routine.create({
-            data: {
-                name: formData.get("name") as string,
-                duration: Number(formData.get("duration")) || 1,
-            },
+    async function onSubmit(values: z.infer<typeof routineSchema>) {
+        await mutateAsync({
+            name: values.name,
+            duration: values.duration,
         });
-        revalidatePath("/");
-        redirect("/");
-    };
+        router.push(`/`);
+        router.refresh();
+    }
+
     return (
         <div className="container grid gap-4 py-8">
             <Heading>Add Routine</Heading>
-            <form action={addTodo} className="space-y-4">
-                <Input required name="name" placeholder="name" />
-                <Input
-                    defaultValue={10}
-                    type="number"
-                    name="duration"
-                    placeholder="duration"
-                />
-                <Button>Submit</Button>
-            </form>
+            <RoutineForm onSubmit={onSubmit} />
         </div>
     );
 }

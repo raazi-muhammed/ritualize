@@ -22,21 +22,22 @@ const formSchema = z.object({
 });
 
 function AddRoutine({ params }: { params: { id: string } }) {
-    const { isPending, mutate } = useMutation({
-        mutationFn: createTask,
-        onSuccess: (task) => {
-            toast({
-                description: `${task?.name ?? "Task"} created`,
-            });
-        },
-    });
-
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
             name: "",
             duration: 2,
             frequency: Frequency.daily,
+        },
+        mode: "onTouched",
+    });
+
+    const { isPending, mutate } = useMutation({
+        mutationFn: createTask,
+        onSuccess: (task) => {
+            toast({
+                description: `${task?.name ?? "Task"} created`,
+            });
         },
     });
 
