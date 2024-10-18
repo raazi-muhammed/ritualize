@@ -25,3 +25,23 @@ export const createTask = async ({
         },
     });
 };
+
+export const updateTask = async ({
+    id,
+    routine_id,
+    name,
+    duration,
+    frequency,
+}: Partial<Task> & { id: string; routine_id: string }) => {
+    return await prisma.task.update({
+        where: {
+            id,
+            routine_id,
+        },
+        data: {
+            name,
+            duration,
+            frequency,
+        },
+    });
+};

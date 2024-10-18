@@ -5,7 +5,7 @@ import { useMutation } from "@tanstack/react-query";
 import React from "react";
 import { z } from "zod";
 import { createRoutine } from "../actions";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "@/components/ui/use-toast";
 import RoutineForm, { routineSchema } from "../_forms/RoutineForm";
 import { useRouter } from "next/navigation";
 

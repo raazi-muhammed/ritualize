@@ -2,7 +2,7 @@
 
 import RoutineForm, { routineSchema } from "@/app/(routine)/_forms/RoutineForm";
 import { updateRoutine } from "@/app/(routine)/actions";
-import { toast } from "@/hooks/use-toast";
+import { toast } from "@/components/ui/use-toast";
 import { Routine } from "@prisma/client";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
