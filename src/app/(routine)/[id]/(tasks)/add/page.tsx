@@ -1,48 +1,104 @@
+"use client";
+
 import Heading from "@/components/layout/Heading";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { prisma } from "@/lib/prisma";
-import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
-import React from "react";
+import React, { useMemo } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { createTask } from "../actions";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { Form, FormField } from "@/components/ui/form";
+import { toast } from "@/components/ui/use-toast";
+import FormInput from "@/components/form/FormInput";
+import FormButton from "@/components/form/FormButton";
+import FormSelect from "@/components/form/FormSelect";
+import { Frequency } from "@prisma/client";
+
+const formSchema = z.object({
+    name: z.string().min(1),
+    duration: z.number().min(1),
+    frequency: z.string().min(1),
+});
 
 function AddRoutine({ params }: { params: { id: string } }) {
-    const addTodo = async (formData: FormData) => {
-        "use server";
+    const { isPending, mutate } = useMutation({
+        mutationFn: createTask,
+        onSuccess: (task) => {
+            toast({
+                description: `${task?.name ?? "Task"} created`,
+            });
+        },
+    });
 
-        const order = await prisma.task.findFirst({
-            where: {
-                routine_id: params.id,
-            },
-            orderBy: {
-                order: "desc",
-            },
+    const form = useForm<z.infer<typeof formSchema>>({
+        resolver: zodResolver(formSchema),
+        defaultValues: {
+            name: "",
+            duration: 2,
+            frequency: Frequency.daily,
+        },
+    });
+
+    function onSubmit(values: z.infer<typeof formSchema>) {
+        mutate({
+            routine_id: params.id,
+            days_of_week: [],
+            duration: values.duration,
+            frequency: values.frequency as Frequency,
+            name: values.name,
         });
-        await prisma.task.create({
-            data: {
-                name: formData.get("name") as string,
-                routine_id: params.id,
-                duration: Number(formData.get("duration")) || 1,
-                order: order?.order ? order?.order + 1 : 1,
-            },
-        });
-        revalidatePath(`/${params.id}`);
-        redirect(`/${params.id}`);
-    };
+    }
+
+    const frequencyItems = useMemo(() => {
+        return Object.values(Frequency).map((v) => ({
+            label: v,
+            value: v,
+        }));
+    }, [Frequency]);
 
     return (
         <div className="container grid gap-4 py-8">
             <Heading>Add Task</Heading>
-            <form action={addTodo} className="space-y-4">
-                <Input required name="name" placeholder="name" />
-                <Input
-                    defaultValue={2}
-                    type="number"
-                    name="duration"
-                    placeholder="duration"
-                />
-                <Button>Submit</Button>
-            </form>
+            <Form {...form}>
+                <form
+                    onSubmit={form.handleSubmit(onSubmit)}
+                    className="space-y-4">
+                    <FormField
+                        control={form.control}
+                        name="name"
+                        render={({ field }) => (
+                            <FormInput label="Name">
+                                <Input {...field} />
+                            </FormInput>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="duration"
+                        render={({ field }) => (
+                            <FormInput label="Duration">
+                                <Input {...field} />
+                            </FormInput>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="frequency"
+                        render={({ field }) => (
+                            <FormInput label="Frequency">
+                                <FormSelect
+                                    onValueChange={field.onChange}
+                                    defaultValue={field.value}
+                                    items={frequencyItems}
+                                    {...field}
+                                />
+                            </FormInput>
+                        )}
+                    />
+                    <FormButton isLoading={isPending}>Submit</FormButton>
+                </form>
+            </Form>
         </div>
     );
 }
