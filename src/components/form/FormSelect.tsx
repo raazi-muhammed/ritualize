@@ -22,7 +22,9 @@ function FormSelect({
             </SelectTrigger>
             <SelectContent>
                 {items.map((itm) => (
-                    <SelectItem value={itm.value}>{itm.label}</SelectItem>
+                    <SelectItem key={itm.value} value={itm.value}>
+                        {itm.label}
+                    </SelectItem>
                 ))}
             </SelectContent>
         </Select>
