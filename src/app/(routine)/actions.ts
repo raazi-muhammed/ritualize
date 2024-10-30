@@ -29,3 +29,16 @@ export const updateRoutine = async ({
         },
     });
 };
+
+export const deleteRoutine = async ({ id }: { id: string }) => {
+    await prisma.task.deleteMany({
+        where: {
+            routine_id: id,
+        },
+    });
+    return await prisma.routine.delete({
+        where: {
+            id,
+        },
+    });
+};

@@ -38,7 +38,7 @@ function TaskForm({
             label: v,
             value: v,
         }));
-    }, [Frequency]);
+    }, []);
 
     return (
         <Form {...form}>
