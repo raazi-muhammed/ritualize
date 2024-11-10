@@ -20,11 +20,10 @@ import { ChevronLeft } from "lucide-react";
 import { IoAddCircle as AddIcon } from "react-icons/io5";
 import { Routine, Task } from "@prisma/client";
 import { useMutation } from "@tanstack/react-query";
-import { deleteTask, moveAfter } from "../(tasks)/actions";
+import { deleteTask, moveTo } from "../(tasks)/actions";
 import { toast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 import { deleteRoutine } from "../../actions";
-import DropIndicator from "./DropIndicator";
 
 function RoutinePage({
     routine,
@@ -56,8 +55,8 @@ function RoutinePage({
         },
     });
 
-    const { mutateAsync: handleMoveAfter } = useMutation({
-        mutationFn: moveAfter,
+    const { mutateAsync: handleMoveTo } = useMutation({
+        mutationFn: moveTo,
         onSuccess: () => {
             router.refresh();
         },
@@ -119,10 +118,26 @@ function RoutinePage({
                     <section className="mb-16">
                         {routine?.tasks.length < 1 && <p>No tasks yet</p>}
                         {routine?.tasks?.map((task, index) => (
-                            <>
-                            <Card key={task.name} draggable onDragStart={(e)=>{
-                                e.dataTransfer.setData("taskId", task.id)
-                            }}>
+                            <Card
+                                key={task.name}
+                                draggable
+                                onDragStart={(e) => {
+                                    e.dataTransfer.setData("taskId", task.id);
+                                }}
+                                onDragOver={(e) => {
+                                    e.preventDefault();
+                                }}
+                                onDrop={async (e) => {
+                                    const taskId =
+                                        e.dataTransfer.getData("taskId");
+                                    await handleMoveTo({
+                                        routine_id: routine.id,
+                                        move_to: task,
+                                        task_to_move_id: taskId,
+                                    });
+                                    router.refresh();
+                                }}
+                                className="my-2">
                                 <CardContent className="flex justify-between p-4">
                                     <section>
                                         <p>{task.name}</p>
@@ -168,8 +183,6 @@ function RoutinePage({
                                     </DropdownMenu>
                                 </CardContent>
                             </Card>
-                            <DropIndicator routineId={routine.id} moveAfter={task} />
-                            </>
                         ))}
                     </section>
                     <footer className="fixed bottom-0 left-0 flex w-[100vw] justify-center py-4">

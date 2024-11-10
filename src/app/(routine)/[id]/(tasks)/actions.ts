@@ -54,33 +54,20 @@ export const deleteTask = async ({ id }: { id: string }) => {
     });
 };
 
-export const moveAfter = async ({
+export const moveTo = async ({
     routine_id,
-    move_after,
+    move_to,
     task_to_move_id,
 }: {
     routine_id: string;
-    move_after: Task;
+    move_to: Task;
     task_to_move_id: string;
 }) => {
-    const tasks = await prisma.routine.findFirst({
-        where: {
-            id: routine_id,
-        },
-        include: {
-            tasks: {
-                orderBy: {
-                    order: "asc",
-                },
-            },
-        },
-    });
-
     await prisma.task.updateMany({
         where: {
             routine_id: routine_id,
             order: {
-                gt: move_after.order,
+                gte: move_to.order,
             },
         },
         data: {
@@ -95,7 +82,7 @@ export const moveAfter = async ({
             id: task_to_move_id,
         },
         data: {
-            order: move_after.order + 1,
+            order: move_to.order,
         },
     });
 };
