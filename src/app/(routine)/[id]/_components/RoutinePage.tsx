@@ -24,6 +24,7 @@ import { deleteTask, moveAfter } from "../(tasks)/actions";
 import { toast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 import { deleteRoutine } from "../../actions";
+import DropIndicator from "./DropIndicator";
 
 function RoutinePage({
     routine,
@@ -115,10 +116,13 @@ function RoutinePage({
                     <section className="my-4 bg-background py-4">
                         <Heading>{routine.name}</Heading>
                     </section>
-                    <section className="mb-16 space-y-2">
+                    <section className="mb-16">
                         {routine?.tasks.length < 1 && <p>No tasks yet</p>}
                         {routine?.tasks?.map((task, index) => (
-                            <Card key={task.name}>
+                            <>
+                            <Card key={task.name} draggable onDragStart={(e)=>{
+                                e.dataTransfer.setData("taskId", task.id)
+                            }}>
                                 <CardContent className="flex justify-between p-4">
                                     <section>
                                         <p>{task.name}</p>
@@ -131,33 +135,6 @@ function RoutinePage({
                                             ...
                                         </DropdownMenuTrigger>
                                         <DropdownMenuContent align="end">
-                                            {routine?.tasks?.map(
-                                                (menu_task, index) => (
-                                                    <DropdownMenuItem
-                                                        key={index}
-                                                        className="p-0"
-                                                        onClick={() => {
-                                                            handleMoveAfter({
-                                                                routine_id:
-                                                                    routine.id,
-                                                                move_after:
-                                                                    menu_task,
-                                                                task_to_move:
-                                                                    task,
-                                                            });
-                                                        }}>
-                                                        <Button
-                                                            size="sm"
-                                                            variant="ghost"
-                                                            className="w-full">
-                                                            <p className="w-full text-start">
-                                                                Move after{" "}
-                                                                {menu_task.name}
-                                                            </p>
-                                                        </Button>
-                                                    </DropdownMenuItem>
-                                                )
-                                            )}
                                             <Link
                                                 href={`/${routine.id}/${task.id}/edit`}>
                                                 <DropdownMenuItem className="p-0">
@@ -171,7 +148,6 @@ function RoutinePage({
                                                     </Button>
                                                 </DropdownMenuItem>
                                             </Link>
-
                                             <DropdownMenuItem
                                                 onClick={() =>
                                                     handleDeleteTask({
@@ -192,6 +168,8 @@ function RoutinePage({
                                     </DropdownMenu>
                                 </CardContent>
                             </Card>
+                            <DropIndicator routineId={routine.id} moveAfter={task} />
+                            </>
                         ))}
                     </section>
                     <footer className="fixed bottom-0 left-0 flex w-[100vw] justify-center py-4">

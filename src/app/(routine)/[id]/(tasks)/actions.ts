@@ -57,11 +57,11 @@ export const deleteTask = async ({ id }: { id: string }) => {
 export const moveAfter = async ({
     routine_id,
     move_after,
-    task_to_move,
+    task_to_move_id,
 }: {
     routine_id: string;
     move_after: Task;
-    task_to_move: Task;
+    task_to_move_id: string;
 }) => {
     const tasks = await prisma.routine.findFirst({
         where: {
@@ -92,7 +92,7 @@ export const moveAfter = async ({
     await prisma.task.update({
         where: {
             routine_id: routine_id,
-            id: task_to_move.id,
+            id: task_to_move_id,
         },
         data: {
             order: move_after.order + 1,
