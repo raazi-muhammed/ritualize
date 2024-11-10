@@ -12,6 +12,8 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { IoAddCircle as AddIcon } from "react-icons/io5";
 
+export const dynamic = 'auto'
+
 async function getRoutines() {
     return await prisma.routine.findMany();
 }
