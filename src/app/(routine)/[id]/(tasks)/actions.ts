@@ -2,6 +2,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { Task } from "@prisma/client";
+import { revalidatePath, revalidateTag } from "next/cache";
 
 export const createTask = async ({
     routine_id,
@@ -47,11 +48,13 @@ export const updateTask = async ({
 };
 
 export const deleteTask = async ({ id }: { id: string }) => {
-    return await prisma.task.delete({
+    const deleted =  await prisma.task.delete({
         where: {
             id,
         },
     });
+    revalidatePath(`/${deleted.routine_id}`)
+    return deleted
 };
 
 export const moveTo = async ({
@@ -85,4 +88,5 @@ export const moveTo = async ({
             order: move_to.order,
         },
     });
+    revalidatePath(`/${routine_id}`)
 };

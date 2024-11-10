@@ -4,7 +4,7 @@ import Heading from "@/components/layout/Heading";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
-import React from "react";
+import React, { useOptimistic } from "react";
 import {
     IoPencil as EditIcon,
     IoPlayCircle as StartIcon,
@@ -33,6 +33,7 @@ function RoutinePage({
     };
 }) {
     const router = useRouter();
+    const [tasks, updateTasks] = useOptimistic(routine.tasks);
 
     const { mutateAsync: handleDeleteTask } = useMutation({
         mutationFn: deleteTask,
@@ -40,7 +41,6 @@ function RoutinePage({
             toast({
                 description: `${task?.name ?? "Task"} deleted`,
             });
-            router.refresh();
         },
     });
 
@@ -57,9 +57,6 @@ function RoutinePage({
 
     const { mutateAsync: handleMoveTo } = useMutation({
         mutationFn: moveTo,
-        onSuccess: () => {
-            router.refresh();
-        },
     });
 
     return (
@@ -116,8 +113,8 @@ function RoutinePage({
                         <Heading>{routine.name}</Heading>
                     </section>
                     <section className="mb-16">
-                        {routine?.tasks.length < 1 && <p>No tasks yet</p>}
-                        {routine?.tasks?.map((task, index) => (
+                        {tasks.length < 1 && <p>No tasks yet</p>}
+                        {tasks?.map((task, index) => (
                             <Card
                                 key={task.name}
                                 draggable
@@ -130,6 +127,27 @@ function RoutinePage({
                                 onDrop={async (e) => {
                                     const taskId =
                                         e.dataTransfer.getData("taskId");
+
+                                    updateTasks((state) => {
+                                        const updated = state.map((t) => {
+                                            if (t.id == taskId) {
+                                                return {
+                                                    ...t,
+                                                    order: task.order,
+                                                };
+                                            }
+                                            if (t.order >= task.order) {
+                                                return {
+                                                    ...t,
+                                                    order: t.order + 1,
+                                                };
+                                            }
+                                            return t;
+                                        });
+                                        return updated.toSorted(
+                                            (a, b) => a.order - b.order
+                                        );
+                                    });
                                     await handleMoveTo({
                                         routine_id: routine.id,
                                         move_to: task,
@@ -164,11 +182,17 @@ function RoutinePage({
                                                 </DropdownMenuItem>
                                             </Link>
                                             <DropdownMenuItem
-                                                onClick={() =>
-                                                    handleDeleteTask({
+                                                onClick={async () => {
+                                                    updateTasks((state) => {
+                                                        return state.filter(
+                                                            (t) =>
+                                                                t.id != task.id
+                                                        );
+                                                    });
+                                                    await handleDeleteTask({
                                                         id: task.id,
-                                                    })
-                                                }
+                                                    });
+                                                }}
                                                 className="p-0">
                                                 <Button
                                                     size="sm"
