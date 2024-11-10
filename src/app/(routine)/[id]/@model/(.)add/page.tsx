@@ -1,18 +1,28 @@
 "use client";
 
-import React from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useRouter } from "next/navigation";
 import AddTask from "../../(tasks)/add/_components/AddTask";
+import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 
-const page = ({ params }: { params: { id: string } }) => {
+const Page = ({ params }: { params: { id: string } }) => {
     const router = useRouter();
+    const pathname = usePathname();
+    const [open, setOpen] = useState(true);
+
+    useEffect(() => {
+        if (pathname.includes("add")) {
+            setOpen(true);
+        } else setOpen(false);
+    }, [pathname]);
+
     return (
         <Dialog
-            open={true}
-            onOpenChange={(open) => {
-                if (!open) router.back();
-                return open;
+            defaultOpen={true}
+            open={open}
+            onOpenChange={() => {
+                router.push(`/${[params.id]}`);
             }}>
             <DialogContent className="p-0 m-0">
                 <AddTask routineId={params.id} />
@@ -21,4 +31,4 @@ const page = ({ params }: { params: { id: string } }) => {
     );
 };
 
-export default page;
+export default Page;

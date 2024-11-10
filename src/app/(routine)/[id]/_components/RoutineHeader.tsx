@@ -38,7 +38,7 @@ const RoutineHeader = ({ routine }: { routine: Routine }) => {
                 <ChevronLeft />
             </Link>
             <div className="flex gap-3">
-                <Link href={`${routine.id}/add`}>
+                <Link href={`/${routine.id}/add`}>
                     <Button size="sm" variant="secondary">
                         <AddIcon />
                         Add

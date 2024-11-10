@@ -17,7 +17,7 @@ export const createTask = async ({
             order: "desc",
         },
     });
-    return await prisma.task.create({
+    const created = await prisma.task.create({
         data: {
             name,
             routine_id,
@@ -25,6 +25,8 @@ export const createTask = async ({
             order: lastTask?.order ? lastTask?.order + 1 : 1,
         },
     });
+    revalidatePath(`/${routine_id}`)
+    return created
 };
 
 export const updateTask = async ({

@@ -8,7 +8,7 @@ const Tasks = () => {
         <section className="mb-16">
             {tasks.length < 1 && <p>No tasks yet</p>}
             {tasks?.map((task) => (
-                <TaskCard task={task} routineId={routine.id} />
+                <TaskCard key={task.id} task={task} routineId={routine.id} />
             ))}
         </section>
     );

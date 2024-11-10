@@ -19,6 +19,7 @@ function AddTask({ routineId }: { routineId: string }) {
             toast({
                 description: `${task?.name ?? "Task"} created`,
             });
+            router.push(`/${routineId}`);
         },
     });
 
@@ -30,8 +31,6 @@ function AddTask({ routineId }: { routineId: string }) {
             frequency: values.frequency as Frequency,
             name: values.name,
         });
-        router.push(`/${routineId}`);
-        router.refresh();
     }
 
     return (
