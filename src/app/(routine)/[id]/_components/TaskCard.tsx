@@ -31,7 +31,7 @@ const TaskCard = ({ routineId, task }: { routineId: string; task: Task }) => {
     return (
         <Card
             key={task.name}
-            className="my-2"
+            className={`my-2 ${task.id == "" ? "opacity-50" : ""}`}
             draggable
             onDragStart={handleDragStart}
             onDragOver={(e) => e.preventDefault()}

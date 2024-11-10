@@ -1,4 +1,7 @@
+"use client";
+
 import { ReactNode } from "react";
+import RoutineProvider from "./_provider/RoutineProvider";
 
 const Layout = ({
     children,
@@ -8,10 +11,10 @@ const Layout = ({
     model: ReactNode;
 }) => {
     return (
-        <div>
+        <RoutineProvider>
             {model}
             {children}
-        </div>
+        </RoutineProvider>
     );
 };
 

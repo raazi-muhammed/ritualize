@@ -1,29 +1,34 @@
-import { Routine, Task } from "@prisma/client";
+"use client";
+
+import { Task } from "@prisma/client";
 import { useMutation } from "@tanstack/react-query";
-import { ReactNode, useContext, useOptimistic } from "react";
+import { ReactNode, useContext, useOptimistic, useState } from "react";
 import { createContext } from "react";
-import { deleteTask, moveTo } from "../(tasks)/actions";
+import { createTask, deleteTask, moveTo } from "../(tasks)/actions";
 import { toast } from "@/components/ui/use-toast";
+import { useRouter } from "next/navigation";
 
 export const RoutineContext = createContext<{
     tasks: Task[];
     updateTasks?: (action: (state: Task[]) => Task[]) => void;
     routine?: any;
+    setRoutine?: any;
+    isPending?: any;
+    setIsPending?: any;
 }>({ tasks: [] });
 
-const RoutineProvider = ({
-    children,
-    routine,
-}: {
-    children: ReactNode;
-    routine: Routine & {
-        tasks: Task[];
-    };
-}) => {
+const RoutineProvider = ({ children }: { children: ReactNode }) => {
+    const [routine, setRoutine] = useState({ tasks: [] });
     const [tasks, updateTasks] = useOptimistic<Task[]>(routine.tasks);
 
     return (
-        <RoutineContext.Provider value={{ tasks, updateTasks, routine }}>
+        <RoutineContext.Provider
+            value={{
+                tasks,
+                updateTasks,
+                routine,
+                setRoutine,
+            }}>
             {children}
         </RoutineContext.Provider>
     );
@@ -32,7 +37,9 @@ const RoutineProvider = ({
 export default RoutineProvider;
 
 export const useRoutine = () => {
-    const { tasks, routine, updateTasks } = useContext(RoutineContext);
+    const router = useRouter();
+    const { tasks, routine, updateTasks, setRoutine } =
+        useContext(RoutineContext);
 
     const { mutateAsync: handleDelete } = useMutation({
         mutationFn: deleteTask,
@@ -47,6 +54,16 @@ export const useRoutine = () => {
         mutationFn: moveTo,
     });
 
+    const { mutateAsync: addTask } = useMutation({
+        mutationFn: createTask,
+        onSuccess: (task) => {
+            toast({
+                description: `${task?.name ?? "Task"} created`,
+            });
+            router.push(`/${task.routine_id}`);
+        },
+    });
+
     const handleMoveTask = async ({
         moveToTask,
         taskToMoveId,
@@ -54,7 +71,7 @@ export const useRoutine = () => {
         moveToTask: Task;
         taskToMoveId: string;
     }) => {
-        if (!updateTasks) return;
+        if (!updateTasks) return alert("No updated function");
 
         updateTasks((state) => {
             const updated = state.map((t) => {
@@ -82,7 +99,7 @@ export const useRoutine = () => {
     };
 
     const handleDeleteTask = async ({ taskId }: { taskId: string }) => {
-        if (!updateTasks) return;
+        if (!updateTasks) return alert("No updated function");
         updateTasks((state) => {
             return state.filter((t) => t.id != taskId);
         });
@@ -91,5 +108,26 @@ export const useRoutine = () => {
         });
     };
 
-    return { tasks, routine, handleMoveTask, handleDeleteTask };
+    const handleAddTask = async (task: Omit<Task, "id" | "order">) => {
+        if (!updateTasks) return alert("No updated function");
+        updateTasks((state) => [
+            ...state,
+            {
+                order: (tasks?.[tasks?.length - 1]?.order || 1000) + 1,
+                id: "",
+                ...task,
+            },
+        ]);
+        await addTask(task);
+    };
+
+    return {
+        tasks,
+        routine,
+        handleMoveTask,
+        handleDeleteTask,
+        setRoutine,
+        updateTasks,
+        handleAddTask,
+    };
 };
