@@ -1,3 +1,5 @@
+"use client";
+
 import React, { ReactNode } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useRouter } from "next/navigation";
@@ -10,10 +12,12 @@ const ResponsiveModel = ({
     children,
     openUrl,
     closeUrl,
+    openKey = "add",
 }: {
     children: ReactNode;
     openUrl: string;
     closeUrl: string;
+    openKey?: string;
 }) => {
     const router = useRouter();
     const pathname = usePathname();
@@ -21,7 +25,7 @@ const ResponsiveModel = ({
     const isDesktop = useMediaQuery("(min-width: 768px)");
 
     useEffect(() => {
-        if (pathname.includes("add")) {
+        if (pathname.includes(openKey)) {
             setOpen(true);
         } else setOpen(false);
     }, [pathname]);

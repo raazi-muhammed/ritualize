@@ -11,7 +11,7 @@ async function getTask(id: string) {
     });
 }
 
-async function AddRoutine({
+async function EditTaskPage({
     params,
 }: {
     params: { id: string; taskId: string };
@@ -26,4 +26,4 @@ async function AddRoutine({
     );
 }
 
-export default AddRoutine;
+export default EditTaskPage;

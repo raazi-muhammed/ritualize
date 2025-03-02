@@ -1,6 +1,6 @@
 "use client";
 
-import AddTask from "@/app/(routine)/[id]/(tasks)/add/_components/AddTask";
+import AddTaskPage from "@/app/(routine)/[id]/(tasks)/add/page";
 import ResponsiveModel from "@/components/layout/ResponsiveModel";
 
 const Page = ({ params }: { params: { id: string } }) => {
@@ -8,7 +8,7 @@ const Page = ({ params }: { params: { id: string } }) => {
         <ResponsiveModel
             openUrl={`/${params.id}/add`}
             closeUrl={`/${params.id}`}>
-            <AddTask routineId={params.id} />
+            <AddTaskPage params={params} />
         </ResponsiveModel>
     );
 };
