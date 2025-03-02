@@ -3,19 +3,8 @@
 import { ReactNode } from "react";
 import RoutineProvider from "./_provider/RoutineProvider";
 
-const Layout = ({
-    children,
-    model,
-}: {
-    children: ReactNode;
-    model: ReactNode;
-}) => {
-    return (
-        <RoutineProvider>
-            {model}
-            {children}
-        </RoutineProvider>
-    );
+const Layout = ({ children }: { children: ReactNode }) => {
+    return <RoutineProvider>{children}</RoutineProvider>;
 };
 
 export default Layout;

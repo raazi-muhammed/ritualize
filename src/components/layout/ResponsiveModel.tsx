@@ -29,9 +29,9 @@ const ResponsiveModel = ({
     useEffect(() => {
         setOpen((open) => {
             if (open) {
-                router.push(openUrl);
+                router.replace(openUrl);
             } else {
-                router.push(closeUrl);
+                router.replace(closeUrl);
             }
             return open;
         });

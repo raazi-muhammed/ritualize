@@ -1,6 +1,6 @@
 "use client";
 
-import AddTask from "../../(tasks)/add/_components/AddTask";
+import AddTask from "@/app/(routine)/[id]/(tasks)/add/_components/AddTask";
 import ResponsiveModel from "@/components/layout/ResponsiveModel";
 
 const Page = ({ params }: { params: { id: string } }) => {
