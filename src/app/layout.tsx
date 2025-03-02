@@ -18,8 +18,10 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
     children,
+    model,
 }: Readonly<{
     children: React.ReactNode;
+    model: React.ReactNode;
 }>) {
     return (
         <html lang="en">
@@ -52,6 +54,7 @@ export default function RootLayout({
                                 </div>
                             </SignedOut>
                             <SignedIn>{children}</SignedIn>
+                            {model}
                         </body>
                         <Toaster />
                     </ThemeProvider>
