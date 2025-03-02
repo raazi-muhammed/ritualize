@@ -12,10 +12,13 @@ import {
 
 import { Task } from "@prisma/client";
 import { useRoutine } from "../_provider/RoutineProvider";
-import { DragEvent } from "react";
+import { DragEvent, useState } from "react";
+import Alert from "@/components/ui-wrapper/Alert";
+import { AlertDialog } from "@/components/ui/alert-dialog";
 
 const TaskCard = ({ routineId, task }: { routineId: string; task: Task }) => {
     const { handleMoveTask, handleDeleteTask } = useRoutine();
+    const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
     const handleDragStart = (e: DragEvent<HTMLDivElement>) => {
         e.dataTransfer.setData("taskId", task.id);
@@ -57,11 +60,7 @@ const TaskCard = ({ routineId, task }: { routineId: string; task: Task }) => {
                             </DropdownMenuItem>
                         </Link>
                         <DropdownMenuItem
-                            onClick={async () => {
-                                handleDeleteTask({
-                                    taskId: task.id,
-                                });
-                            }}
+                            onClick={() => setIsDeleteOpen(true)}
                             className="p-0">
                             <Button
                                 size="sm"
@@ -73,6 +72,15 @@ const TaskCard = ({ routineId, task }: { routineId: string; task: Task }) => {
                     </DropdownMenuContent>
                 </DropdownMenu>
             </CardContent>
+            <Alert
+                open={isDeleteOpen}
+                onOpenChange={setIsDeleteOpen}
+                onSubmit={async () => {
+                    handleDeleteTask({
+                        taskId: task.id,
+                    });
+                }}
+            />
         </Card>
     );
 };
