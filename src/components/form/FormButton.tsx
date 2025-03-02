@@ -9,7 +9,7 @@ function FormButton({
     children: ReactNode | string;
 }) {
     return (
-        <Button disabled={isLoading} type="submit">
+        <Button className="w-full" disabled={isLoading} type="submit">
             {isLoading ? "Loading..." : children}
         </Button>
     );
