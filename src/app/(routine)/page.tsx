@@ -31,12 +31,12 @@ export default async function Home() {
     return (
         <main className="container min-h-screen pt-4">
             <section className="flex justify-end gap-4">
-                <Link href={"/add"}>
-                    <Button size="sm" variant="secondary">
+                <Button size="sm" variant="secondary" asChild>
+                    <Link href={"/add"}>
                         <AddIcon className="-ms-1 me-1" />
                         Add
-                    </Button>
-                </Link>
+                    </Link>
+                </Button>
                 <UserButton />
             </section>
             <Heading className="my-4">Routines</Heading>
@@ -64,6 +64,7 @@ export default async function Home() {
                         </Card>
                     </Link>
                 ))}
+                {routines.length === 0 && <p>No routines yet</p>}
             </section>
         </main>
     );

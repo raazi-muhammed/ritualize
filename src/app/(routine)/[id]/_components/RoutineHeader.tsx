@@ -38,12 +38,12 @@ const RoutineHeader = ({ routine }: { routine: Routine }) => {
                 <ChevronLeft />
             </Link>
             <div className="flex gap-3">
-                <Link href={`/${routine.id}/add`}>
-                    <Button size="sm" variant="secondary">
+                <Button size="sm" variant="secondary" asChild>
+                    <Link href={`/${routine.id}/add`}>
                         <AddIcon />
                         Add
-                    </Button>
-                </Link>
+                    </Link>
+                </Button>
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button size="sm" variant="secondary">
