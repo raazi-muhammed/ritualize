@@ -4,6 +4,8 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import ReactQueryProvider from "@/providers/ReactQueryProvider";
 import { Toaster } from "@/components/ui/toaster";
+import { ClerkProvider, SignIn, SignedIn, SignedOut } from "@clerk/nextjs";
+import { dark } from "@clerk/themes";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -33,16 +35,28 @@ export default function RootLayout({
                     rel="stylesheet"
                 />
             </head>
-            <ReactQueryProvider>
-                <ThemeProvider
-                    attribute="class"
-                    forcedTheme="dark"
-                    defaultTheme="dark"
-                    disableTransitionOnChange>
-                    <body className={inter.className}>{children}</body>
-                    <Toaster />
-                </ThemeProvider>
-            </ReactQueryProvider>
+            <ClerkProvider
+                appearance={{
+                    baseTheme: [dark],
+                }}>
+                <ReactQueryProvider>
+                    <ThemeProvider
+                        attribute="class"
+                        forcedTheme="dark"
+                        defaultTheme="dark"
+                        disableTransitionOnChange>
+                        <body className={inter.className}>
+                            <SignedOut>
+                                <div className="grid place-items-center h-[100svh]">
+                                    <SignIn />
+                                </div>
+                            </SignedOut>
+                            <SignedIn>{children}</SignedIn>
+                        </body>
+                        <Toaster />
+                    </ThemeProvider>
+                </ReactQueryProvider>
+            </ClerkProvider>
         </html>
     );
 }
