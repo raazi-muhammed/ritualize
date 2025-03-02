@@ -1,16 +1,20 @@
 "use server";
 
+import { getCurrentUser } from "@/lib/clerk";
 import { prisma } from "@/lib/prisma";
 import { Routine } from "@prisma/client";
 
 export const createRoutine = async ({
     name,
     duration,
-}: Omit<Routine, "id">) => {
+}: Omit<Routine, "id" | "user_id">) => {
+    const user = await getCurrentUser();
+
     return await prisma.routine.create({
         data: {
             name,
             duration,
+            user_id: user.id,
         },
     });
 };
@@ -19,9 +23,12 @@ export const updateRoutine = async ({
     name,
     duration,
 }: Partial<Routine> & { id: string }) => {
+    const user = await getCurrentUser();
+
     return await prisma.routine.update({
         where: {
             id,
+            user_id: user.id,
         },
         data: {
             name,
@@ -31,14 +38,19 @@ export const updateRoutine = async ({
 };
 
 export const deleteRoutine = async ({ id }: { id: string }) => {
-    await prisma.task.deleteMany({
-        where: {
-            routine_id: id,
-        },
-    });
-    return await prisma.routine.delete({
-        where: {
-            id,
-        },
-    });
+    const user = await getCurrentUser();
+    await Promise.all([
+        await prisma.task.deleteMany({
+            where: {
+                routine_id: id,
+            },
+        }),
+        await prisma.routine.delete({
+            where: {
+                id,
+                user_id: user.id,
+            },
+        }),
+    ]);
+    return true;
 };
