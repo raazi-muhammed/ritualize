@@ -39,7 +39,7 @@ export const updateRoutine = async ({
 
 export const deleteRoutine = async ({ id }: { id: string }) => {
     const user = await getCurrentUser();
-    await Promise.all([
+    const [_, routine] = await Promise.all([
         await prisma.task.deleteMany({
             where: {
                 routine_id: id,
@@ -52,5 +52,5 @@ export const deleteRoutine = async ({ id }: { id: string }) => {
             },
         }),
     ]);
-    return true;
+    return routine;
 };

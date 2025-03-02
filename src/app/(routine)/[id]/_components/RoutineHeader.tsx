@@ -23,9 +23,9 @@ const RoutineHeader = ({ routine }: { routine: Routine }) => {
 
     const { mutateAsync: handleDeleteRoutine } = useMutation({
         mutationFn: deleteRoutine,
-        onSuccess: (task) => {
+        onSuccess: (routine) => {
             toast({
-                description: `${task?.name ?? "Routine"} deleted`,
+                description: `${routine?.name ?? "Routine"} deleted`,
             });
             router.push("/");
             router.refresh();
