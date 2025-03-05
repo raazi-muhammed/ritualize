@@ -62,7 +62,13 @@ function TaskForm({
                     name="duration"
                     render={({ field }) => (
                         <FormInput label="Duration">
-                            <Input {...field} />
+                            <Input
+                                type="number"
+                                {...field}
+                                onChange={(e) =>
+                                    field.onChange(Number(e.target.value))
+                                }
+                            />
                         </FormInput>
                     )}
                 />

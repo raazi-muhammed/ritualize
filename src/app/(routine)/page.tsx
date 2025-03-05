@@ -13,6 +13,7 @@ import { prisma } from "@/lib/prisma";
 import { IoAddCircle as AddIcon } from "react-icons/io5";
 import { UserButton } from "@clerk/nextjs";
 import { getCurrentUser } from "@/lib/clerk";
+import { formatDuration } from "@/lib/format";
 
 export const dynamic = "auto";
 
@@ -47,7 +48,7 @@ export default async function Home() {
                             <CardHeader className="z-10 p-4">
                                 <CardTitle>{routine.name}</CardTitle>
                                 <CardDescription>
-                                    {routine.duration} min
+                                    {formatDuration(routine.duration)}
                                 </CardDescription>
                             </CardHeader>
                             <CardContent className="flex justify-end p-2">

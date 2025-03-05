@@ -15,6 +15,7 @@ import { useRoutine } from "../_provider/RoutineProvider";
 import { DragEvent, useState } from "react";
 import Alert from "@/components/ui-wrapper/Alert";
 import { CircleEllipsis } from "lucide-react";
+import { formatDuration } from "@/lib/format";
 
 const TaskCard = ({ routineId, task }: { routineId: string; task: Task }) => {
     const { handleMoveTask, handleDeleteTask } = useRoutine();
@@ -44,10 +45,8 @@ const TaskCard = ({ routineId, task }: { routineId: string; task: Task }) => {
                 <CardContent className="flex justify-between p-4">
                     <section>
                         <p>{task.name}</p>
-                        <small>d: {task.duration}</small>
-                        <span className="mx-2 text-xs">|</span>
-                        <small onClick={() => setIsDeleteOpen(true)}>
-                            o: {task?.order}
+                        <small className="text-muted-foreground">
+                            {formatDuration(task.duration)}
                         </small>
                     </section>
                     <DropdownMenu key={task.id}>
