@@ -36,10 +36,11 @@ const ResponsiveModel = ({
                 router.replace(openUrl);
             } else {
                 router.replace(closeUrl);
+                window.location.reload();
             }
             return open;
         });
-    }, [open]);
+    }, [open, pathname]);
 
     if (isDesktop)
         return (

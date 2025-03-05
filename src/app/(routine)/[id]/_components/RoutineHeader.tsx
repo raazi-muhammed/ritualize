@@ -50,16 +50,17 @@ const RoutineHeader = ({ routine }: { routine: Routine }) => {
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                        <Link href={`${routine.id}/edit`}>
-                            <DropdownMenuItem className="p-0">
-                                <Button
-                                    size="sm"
-                                    variant="ghost"
-                                    className="w-full">
+                        <DropdownMenuItem className="p-0">
+                            <Button
+                                size="sm"
+                                variant="ghost"
+                                className="w-full"
+                                asChild>
+                                <Link href={`/${routine.id}/edit`}>
                                     <p className="w-full text-start">Edit</p>
-                                </Button>
-                            </DropdownMenuItem>
-                        </Link>
+                                </Link>
+                            </Button>
+                        </DropdownMenuItem>
                         <DropdownMenuItem
                             className="p-0"
                             onClick={() => {

@@ -11,7 +11,7 @@ async function getRoutine(id: string) {
     });
 }
 
-async function AddRoutine({ params }: { params: { id: string } }) {
+async function EditRoutinePage({ params }: { params: { id: string } }) {
     const routine = await getRoutine(params.id);
 
     return (
@@ -22,4 +22,4 @@ async function AddRoutine({ params }: { params: { id: string } }) {
     );
 }
 
-export default AddRoutine;
+export default EditRoutinePage;

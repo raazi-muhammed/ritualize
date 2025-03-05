@@ -55,8 +55,10 @@ export default function RootLayout({
                                         <SignIn />
                                     </div>
                                 </SignedOut>
-                                <SignedIn>{children}</SignedIn>
-                                {model}
+                                <SignedIn>
+                                    {children}
+                                    {model}
+                                </SignedIn>
                                 <Toaster />
                             </body>
                         </RoutineProvider>
