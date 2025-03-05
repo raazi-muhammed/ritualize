@@ -3,6 +3,7 @@
 import { getCurrentUser } from "@/lib/clerk";
 import { prisma } from "@/lib/prisma";
 import { Routine } from "@prisma/client";
+import { revalidatePath } from "next/cache";
 
 export const createRoutine = async ({
     name,
@@ -10,13 +11,15 @@ export const createRoutine = async ({
 }: Omit<Routine, "id" | "user_id">) => {
     const user = await getCurrentUser();
 
-    return await prisma.routine.create({
+    const created = await prisma.routine.create({
         data: {
             name,
             duration,
             user_id: user.id,
         },
     });
+    revalidatePath("/");
+    return created;
 };
 export const updateRoutine = async ({
     id,
@@ -25,7 +28,7 @@ export const updateRoutine = async ({
 }: Partial<Routine> & { id: string }) => {
     const user = await getCurrentUser();
 
-    return await prisma.routine.update({
+    const updated = await prisma.routine.update({
         where: {
             id,
             user_id: user.id,
@@ -35,6 +38,8 @@ export const updateRoutine = async ({
             duration,
         },
     });
+    revalidatePath("/");
+    return updated;
 };
 
 export const deleteRoutine = async ({ id }: { id: string }) => {
@@ -52,5 +57,6 @@ export const deleteRoutine = async ({ id }: { id: string }) => {
             },
         }),
     ]);
+    revalidatePath("/");
     return routine;
 };

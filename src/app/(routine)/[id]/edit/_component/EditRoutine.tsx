@@ -27,7 +27,6 @@ function EditRoutine({ routine }: { routine: Routine }) {
             duration: values.duration,
         });
         router.push(`/${routine.id}`);
-        router.refresh();
     }
 
     return (

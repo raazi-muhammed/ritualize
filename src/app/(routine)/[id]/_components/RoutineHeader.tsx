@@ -28,7 +28,6 @@ const RoutineHeader = ({ routine }: { routine: Routine }) => {
                 description: `${routine?.name ?? "Routine"} deleted`,
             });
             router.push("/");
-            router.refresh();
         },
     });
 

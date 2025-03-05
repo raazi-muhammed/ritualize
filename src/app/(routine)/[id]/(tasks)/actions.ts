@@ -2,7 +2,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { Task } from "@prisma/client";
-import { revalidatePath, revalidateTag } from "next/cache";
+import { revalidatePath } from "next/cache";
 
 export const createTask = async ({
     routine_id,
@@ -36,7 +36,7 @@ export const updateTask = async ({
     duration,
     frequency,
 }: Partial<Task> & { id: string; routine_id: string }) => {
-    return await prisma.task.update({
+    const updated = await prisma.task.update({
         where: {
             id,
             routine_id,
@@ -47,6 +47,8 @@ export const updateTask = async ({
             frequency,
         },
     });
+    revalidatePath(`/${routine_id}`);
+    return updated;
 };
 
 export const deleteTask = async ({ id }: { id: string }) => {

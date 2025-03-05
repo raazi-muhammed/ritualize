@@ -30,7 +30,6 @@ function EditTask({ task }: { task: Task }) {
             name: values.name,
         });
         router.push(`/${task.routine_id}`);
-        router.refresh();
     }
 
     return (

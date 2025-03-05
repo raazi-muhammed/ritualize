@@ -26,7 +26,6 @@ function AddRoutine() {
             duration: values.duration,
         });
         router.push(`/`);
-        router.refresh();
     }
 
     return (

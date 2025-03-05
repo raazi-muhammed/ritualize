@@ -46,10 +46,12 @@ const TaskCard = ({ routineId, task }: { routineId: string; task: Task }) => {
                     <p>{task.name}</p>
                     <small>d: {task.duration}</small>
                     <span className="mx-2 text-xs">|</span>
-                    <small>o: {task?.order}</small>
+                    <small onClick={() => setIsDeleteOpen(true)}>
+                        o: {task?.order}
+                    </small>
                 </section>
-                <DropdownMenu>
-                    <DropdownMenuTrigger>
+                <DropdownMenu key={task.id}>
+                    <DropdownMenuTrigger key={task.id}>
                         <CircleEllipsis />
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
@@ -79,8 +81,8 @@ const TaskCard = ({ routineId, task }: { routineId: string; task: Task }) => {
             <Alert
                 open={isDeleteOpen}
                 onOpenChange={setIsDeleteOpen}
-                onSubmit={async () => {
-                    await handleDeleteTask({
+                onSubmit={() => {
+                    handleDeleteTask({
                         taskId: task.id,
                     });
                 }}
