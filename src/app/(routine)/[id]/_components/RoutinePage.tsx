@@ -6,7 +6,7 @@ import Link from "next/link";
 import { IoPlayCircle as StartIcon } from "react-icons/io5";
 import { Routine, Task } from "@prisma/client";
 import RoutineHeader from "./RoutineHeader";
-import RoutineProvider, { useRoutine } from "../_provider/RoutineProvider";
+import { useRoutine } from "../_provider/RoutineProvider";
 import Tasks from "./Tasks";
 import { useEffect } from "react";
 
