@@ -15,12 +15,10 @@ import { useRoutine } from "../_provider/RoutineProvider";
 import { DragEvent, useState } from "react";
 import Alert from "@/components/ui-wrapper/Alert";
 import { CircleEllipsis } from "lucide-react";
-import { useRouter } from "next/navigation";
 
 const TaskCard = ({ routineId, task }: { routineId: string; task: Task }) => {
     const { handleMoveTask, handleDeleteTask } = useRoutine();
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
-    const router = useRouter();
 
     const handleDragStart = (e: DragEvent<HTMLDivElement>) => {
         e.dataTransfer.setData("taskId", task.id);
@@ -33,61 +31,61 @@ const TaskCard = ({ routineId, task }: { routineId: string; task: Task }) => {
             taskToMoveId: taskId,
         });
     };
+
     return (
-        <Card
-            key={task.id}
-            className={`my-2 ${task.id == "" ? "opacity-50" : ""}`}
-            draggable
-            onDragStart={handleDragStart}
-            onDragOver={(e) => e.preventDefault()}
-            onDrop={handleDrop}>
-            <CardContent className="flex justify-between p-4">
-                <section>
-                    <p>{task.name}</p>
-                    <small>d: {task.duration}</small>
-                    <span className="mx-2 text-xs">|</span>
-                    <small onClick={() => setIsDeleteOpen(true)}>
-                        o: {task?.order}
-                    </small>
-                </section>
-                <DropdownMenu key={task.id}>
-                    <DropdownMenuTrigger key={task.id}>
-                        <CircleEllipsis />
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        <Link href={`/${routineId}/${task.id}/edit`}>
-                            <DropdownMenuItem className="p-0">
+        <>
+            <Card
+                key={task.id}
+                className={`my-2 ${task.id == "" ? "opacity-50" : ""}`}
+                draggable
+                onDragStart={handleDragStart}
+                onDragOver={(e) => e.preventDefault()}
+                onDrop={handleDrop}>
+                <CardContent className="flex justify-between p-4">
+                    <section>
+                        <p>{task.name}</p>
+                        <small>d: {task.duration}</small>
+                        <span className="mx-2 text-xs">|</span>
+                        <small onClick={() => setIsDeleteOpen(true)}>
+                            o: {task?.order}
+                        </small>
+                    </section>
+                    <DropdownMenu key={task.id}>
+                        <DropdownMenuTrigger key={task.id}>
+                            <CircleEllipsis />
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            <Link href={`/${routineId}/${task.id}/edit`}>
+                                <DropdownMenuItem className="p-0">
+                                    <Button
+                                        size="sm"
+                                        variant="ghost"
+                                        className="w-full">
+                                        <p className="w-full text-start">
+                                            Edit
+                                        </p>
+                                    </Button>
+                                </DropdownMenuItem>
+                            </Link>
+                            <DropdownMenuItem
+                                onClick={() =>
+                                    handleDeleteTask({
+                                        taskId: task.id,
+                                    })
+                                }
+                                className="p-0">
                                 <Button
                                     size="sm"
                                     variant="ghost"
                                     className="w-full">
-                                    <p className="w-full text-start">Edit</p>
+                                    <p className="w-full text-start">Delete</p>
                                 </Button>
                             </DropdownMenuItem>
-                        </Link>
-                        <DropdownMenuItem
-                            onClick={() => setIsDeleteOpen(true)}
-                            className="p-0">
-                            <Button
-                                size="sm"
-                                variant="ghost"
-                                className="w-full">
-                                <p className="w-full text-start">Delete</p>
-                            </Button>
-                        </DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
-            </CardContent>
-            <Alert
-                open={isDeleteOpen}
-                onOpenChange={setIsDeleteOpen}
-                onSubmit={() => {
-                    handleDeleteTask({
-                        taskId: task.id,
-                    });
-                }}
-            />
-        </Card>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </CardContent>
+            </Card>
+        </>
     );
 };
 
