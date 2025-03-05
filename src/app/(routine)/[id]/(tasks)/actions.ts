@@ -25,8 +25,8 @@ export const createTask = async ({
             order: lastTask?.order ? lastTask?.order + 1 : 1,
         },
     });
-    revalidatePath(`/${routine_id}`)
-    return created
+    revalidatePath(`/${routine_id}`);
+    return created;
 };
 
 export const updateTask = async ({
@@ -50,13 +50,13 @@ export const updateTask = async ({
 };
 
 export const deleteTask = async ({ id }: { id: string }) => {
-    const deleted =  await prisma.task.delete({
+    const deleted = await prisma.task.delete({
         where: {
             id,
         },
     });
-    revalidatePath(`/${deleted.routine_id}`)
-    return deleted
+    revalidatePath(`/${deleted.routine_id}`);
+    return deleted;
 };
 
 export const moveTo = async ({
@@ -90,5 +90,5 @@ export const moveTo = async ({
             order: move_to.order,
         },
     });
-    revalidatePath(`/${routine_id}`)
+    revalidatePath(`/${routine_id}`);
 };

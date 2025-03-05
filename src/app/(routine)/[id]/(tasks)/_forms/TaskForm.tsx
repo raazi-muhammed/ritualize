@@ -9,11 +9,13 @@ import FormButton from "@/components/form/FormButton";
 import FormSelect from "@/components/form/FormSelect";
 import { Form, FormField } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export const taskSchema = z.object({
     name: z.string().min(1),
     duration: z.number().min(1),
     frequency: z.string().min(1),
+    createNew: z.boolean().optional().default(false),
 });
 
 function TaskForm({
@@ -22,10 +24,13 @@ function TaskForm({
         name: "",
         duration: 2,
         frequency: Frequency.daily,
+        createNew: false,
     },
+    hideCreateNew = false,
 }: {
     onSubmit: any;
     defaultValues?: DefaultValues<z.infer<typeof taskSchema>>;
+    hideCreateNew?: boolean;
 }) {
     const form = useForm<z.infer<typeof taskSchema>>({
         resolver: zodResolver(taskSchema),
@@ -75,8 +80,23 @@ function TaskForm({
                         </FormInput>
                     )}
                 />
+                {!hideCreateNew && (
+                    <FormField
+                        control={form.control}
+                        name="createNew"
+                        render={({ field }) => (
+                            <FormInput label="Add and create new" checkBox>
+                                <Checkbox
+                                    className="mt-4"
+                                    checked={field.value}
+                                    onCheckedChange={field.onChange}
+                                />
+                            </FormInput>
+                        )}
+                    />
+                )}
                 <FormButton isLoading={form.formState.isSubmitting}>
-                    Submit
+                    Add
                 </FormButton>
             </form>
         </Form>

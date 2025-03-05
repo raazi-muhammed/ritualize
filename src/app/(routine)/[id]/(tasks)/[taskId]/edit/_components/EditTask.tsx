@@ -35,6 +35,7 @@ function EditTask({ task }: { task: Task }) {
 
     return (
         <TaskForm
+            hideCreateNew
             onSubmit={onSubmit}
             defaultValues={{
                 duration: task.duration,

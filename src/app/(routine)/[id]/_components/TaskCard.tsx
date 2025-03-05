@@ -14,11 +14,13 @@ import { Task } from "@prisma/client";
 import { useRoutine } from "../_provider/RoutineProvider";
 import { DragEvent, useState } from "react";
 import Alert from "@/components/ui-wrapper/Alert";
-import { AlertDialog } from "@/components/ui/alert-dialog";
+import { CircleEllipsis } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 const TaskCard = ({ routineId, task }: { routineId: string; task: Task }) => {
     const { handleMoveTask, handleDeleteTask } = useRoutine();
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+    const router = useRouter();
 
     const handleDragStart = (e: DragEvent<HTMLDivElement>) => {
         e.dataTransfer.setData("taskId", task.id);
@@ -33,7 +35,7 @@ const TaskCard = ({ routineId, task }: { routineId: string; task: Task }) => {
     };
     return (
         <Card
-            key={task.name}
+            key={task.id}
             className={`my-2 ${task.id == "" ? "opacity-50" : ""}`}
             draggable
             onDragStart={handleDragStart}
@@ -47,7 +49,9 @@ const TaskCard = ({ routineId, task }: { routineId: string; task: Task }) => {
                     <small>o: {task?.order}</small>
                 </section>
                 <DropdownMenu>
-                    <DropdownMenuTrigger>...</DropdownMenuTrigger>
+                    <DropdownMenuTrigger>
+                        <CircleEllipsis />
+                    </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                         <Link href={`/${routineId}/${task.id}/edit`}>
                             <DropdownMenuItem className="p-0">
@@ -76,7 +80,7 @@ const TaskCard = ({ routineId, task }: { routineId: string; task: Task }) => {
                 open={isDeleteOpen}
                 onOpenChange={setIsDeleteOpen}
                 onSubmit={async () => {
-                    handleDeleteTask({
+                    await handleDeleteTask({
                         taskId: task.id,
                     });
                 }}

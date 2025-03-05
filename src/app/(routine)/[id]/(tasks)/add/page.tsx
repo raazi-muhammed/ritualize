@@ -13,14 +13,22 @@ const AddTaskPage = ({ params }: { params: { id: string } }) => {
     const { handleAddTask } = useRoutine();
 
     async function onSubmit(values: z.infer<typeof taskSchema>) {
-        router.push(`/${params.id}`);
-        handleAddTask({
+        await handleAddTask({
             routine_id: params.id,
             days_of_week: [],
             duration: values.duration,
             frequency: values.frequency as Frequency,
             name: values.name,
         });
+        if (values.createNew) {
+            router.push(`/${params.id}/add`, {
+                scroll: true,
+            });
+        } else {
+            router.push(`/${params.id}`, {
+                scroll: true,
+            });
+        }
     }
 
     return (
