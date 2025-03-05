@@ -32,7 +32,7 @@ export default async function Home() {
         <main className="container min-h-screen pt-4">
             <section className="flex justify-end gap-4">
                 <Button size="sm" variant="secondary" asChild>
-                    <Link href={"/add"}>
+                    <Link href={"/add"} prefetch={true}>
                         <AddIcon className="-ms-1 me-1" />
                         Add
                     </Link>
@@ -51,15 +51,15 @@ export default async function Home() {
                                 </CardDescription>
                             </CardHeader>
                             <CardContent className="flex justify-end p-2">
-                                <Link href={`${routine.id}/start`}>
-                                    <Button size="sm">
+                                <Button size="sm" asChild>
+                                    <Link href={`${routine.id}/start`}>
                                         <StartIcon
                                             size="1.3em"
                                             className="-ms-1 me-1"
                                         />
                                         Start
-                                    </Button>
-                                </Link>
+                                    </Link>
+                                </Button>
                             </CardContent>
                         </Card>
                     </Link>

@@ -33,15 +33,15 @@ function RoutinePage({
                     </section>
                     <Tasks />
                     <footer className="fixed bottom-0 left-0 flex w-[100vw] justify-center py-4">
-                        <Link href={`${routine.id}/start`} prefetch={true}>
-                            <Button size="lg" className="w-fit px-5">
+                        <Button size="lg" className="w-fit px-5" asChild>
+                            <Link href={`${routine.id}/start`} prefetch={true}>
                                 <StartIcon
                                     size="1.3em"
                                     className="-ms-1 me-1"
                                 />
                                 Start
-                            </Button>
-                        </Link>
+                            </Link>
+                        </Button>
                     </footer>
                 </>
             )}

@@ -39,7 +39,7 @@ const RoutineHeader = ({ routine }: { routine: Routine }) => {
             </Link>
             <div className="flex gap-3">
                 <Button size="sm" variant="secondary" asChild>
-                    <Link href={`/${routine.id}/add`}>
+                    <Link href={`/${routine.id}/add`} prefetch={true}>
                         <AddIcon />
                         Add
                     </Link>
