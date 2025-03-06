@@ -6,10 +6,10 @@ import { z } from "zod";
 import { Frequency } from "@prisma/client";
 import TaskForm, { taskSchema } from "../_forms/TaskForm";
 import { useRoutine } from "../../_provider/RoutineProvider";
-import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 
 const AddTaskPage = ({ params }: { params: { id: string } }) => {
-    const router = useRouter();
+    const queryClient = useQueryClient();
     const { handleAddTask } = useRoutine();
 
     async function onSubmit(values: z.infer<typeof taskSchema>) {
@@ -20,15 +20,9 @@ const AddTaskPage = ({ params }: { params: { id: string } }) => {
             frequency: values.frequency as Frequency,
             name: values.name,
         });
-        if (values.createNew) {
-            router.push(`/${params.id}/add`, {
-                scroll: true,
-            });
-        } else {
-            router.push(`/${params.id}`, {
-                scroll: true,
-            });
-        }
+        queryClient.invalidateQueries({
+            queryKey: ["routine"],
+        });
     }
 
     return (

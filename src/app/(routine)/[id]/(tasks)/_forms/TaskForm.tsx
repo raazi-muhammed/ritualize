@@ -10,6 +10,7 @@ import FormSelect from "@/components/form/FormSelect";
 import { Form, FormField } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
+import { cn } from "@/lib/utils";
 
 export const taskSchema = z.object({
     name: z.string().min(1),
@@ -27,10 +28,12 @@ function TaskForm({
         createNew: false,
     },
     hideCreateNew = false,
+    className,
 }: {
     onSubmit: any;
     defaultValues?: DefaultValues<z.infer<typeof taskSchema>>;
     hideCreateNew?: boolean;
+    className?: string;
 }) {
     const form = useForm<z.infer<typeof taskSchema>>({
         resolver: zodResolver(taskSchema),
@@ -47,7 +50,9 @@ function TaskForm({
 
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className={cn("space-y-4", className)}>
                 <FormField
                     control={form.control}
                     name="name"

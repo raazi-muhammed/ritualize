@@ -4,7 +4,7 @@ import { Task } from "@prisma/client";
 import { useMutation } from "@tanstack/react-query";
 import { ReactNode, useContext, useOptimistic, useState } from "react";
 import { createContext } from "react";
-import { createTask, deleteTask, moveTo } from "../(tasks)/actions";
+import { createTask, deleteTask, moveTo, updateTask } from "../(tasks)/actions";
 import { toast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 
@@ -120,12 +120,29 @@ export const useRoutine = () => {
         ]);
         await addTask(task);
     };
+    const handleEditTask = async (task: Task) => {
+        if (!updateTasks) return alert("No updated function");
+        updateTasks((state) => {
+            return state.map((t) => {
+                if (t.id == task.id) {
+                    return {
+                        ...t,
+                        ...task,
+                    };
+                }
+                return t;
+            });
+        });
+
+        await updateTask(task);
+    };
 
     return {
         tasks,
         routine,
         handleMoveTask,
         handleDeleteTask,
+        handleEditTask,
         setRoutine,
         updateTasks,
         handleAddTask,

@@ -2,7 +2,6 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import Link from "next/link";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -13,13 +12,30 @@ import {
 import { Task } from "@prisma/client";
 import { useRoutine } from "../_provider/RoutineProvider";
 import { DragEvent, useState } from "react";
-import Alert from "@/components/ui-wrapper/Alert";
 import { CircleEllipsis } from "lucide-react";
 import { formatDuration } from "@/lib/format";
+import ResponsiveModel, {
+    ResponsiveModelTrigger,
+} from "@/components/layout/ResponsiveModel";
+import { useQueryClient } from "@tanstack/react-query";
+import TaskForm, { taskSchema } from "../(tasks)/_forms/TaskForm";
+import { z } from "zod";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
-const TaskCard = ({ routineId, task }: { routineId: string; task: Task }) => {
-    const { handleMoveTask, handleDeleteTask } = useRoutine();
-    const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+const TaskCard = ({ task }: { routineId: string; task: Task }) => {
+    const queryClient = useQueryClient();
+    const { handleMoveTask, handleDeleteTask, handleEditTask } = useRoutine();
+    const [open, setOpen] = useState(false);
 
     const handleDragStart = (e: DragEvent<HTMLDivElement>) => {
         e.dataTransfer.setData("taskId", task.id);
@@ -32,6 +48,23 @@ const TaskCard = ({ routineId, task }: { routineId: string; task: Task }) => {
             taskToMoveId: taskId,
         });
     };
+
+    async function onSubmit(values: z.infer<typeof taskSchema>) {
+        setOpen(false);
+        await handleEditTask({ ...task, ...values } as any);
+        queryClient.invalidateQueries({
+            queryKey: ["routine"],
+        });
+    }
+
+    async function handleDelete() {
+        await handleDeleteTask({
+            taskId: task.id,
+        });
+        queryClient.invalidateQueries({
+            queryKey: ["routine"],
+        });
+    }
 
     return (
         <>
@@ -49,39 +82,69 @@ const TaskCard = ({ routineId, task }: { routineId: string; task: Task }) => {
                             {formatDuration(task.duration)}
                         </small>
                     </section>
-                    <DropdownMenu key={task.id}>
-                        <DropdownMenuTrigger key={task.id}>
-                            <CircleEllipsis />
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                            <Link href={`/${routineId}/${task.id}/edit`}>
-                                <DropdownMenuItem className="p-0">
+                    <ResponsiveModel
+                        open={open}
+                        setOpen={setOpen}
+                        title="Edit Task"
+                        content={
+                            <TaskForm
+                                hideCreateNew
+                                onSubmit={onSubmit}
+                                defaultValues={{
+                                    duration: task.duration,
+                                    frequency: task.frequency,
+                                    name: task.name,
+                                }}
+                            />
+                        }>
+                        <AlertDialog>
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
                                     <Button
-                                        size="sm"
-                                        variant="ghost"
-                                        className="w-full">
-                                        <p className="w-full text-start">
-                                            Edit
-                                        </p>
+                                        variant={"ghost"}
+                                        size="icon"
+                                        className="my-auto">
+                                        <CircleEllipsis />
                                     </Button>
-                                </DropdownMenuItem>
-                            </Link>
-                            <DropdownMenuItem
-                                onClick={() =>
-                                    handleDeleteTask({
-                                        taskId: task.id,
-                                    })
-                                }
-                                className="p-0">
-                                <Button
-                                    size="sm"
-                                    variant="ghost"
-                                    className="w-full">
-                                    <p className="w-full text-start">Delete</p>
-                                </Button>
-                            </DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                    <ResponsiveModelTrigger className="w-full">
+                                        <DropdownMenuItem>
+                                            Edit
+                                        </DropdownMenuItem>
+                                    </ResponsiveModelTrigger>
+
+                                    <AlertDialogTrigger className="w-full">
+                                        <DropdownMenuItem>
+                                            Delete
+                                        </DropdownMenuItem>
+                                    </AlertDialogTrigger>
+                                </DropdownMenuContent>
+                                <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                        <AlertDialogTitle>
+                                            Are you absolutely sure?
+                                        </AlertDialogTitle>
+                                        <AlertDialogDescription>
+                                            This action cannot be undone. This
+                                            will permanently delete your account
+                                            and remove your data from our
+                                            servers.
+                                        </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                        <AlertDialogCancel>
+                                            Cancel
+                                        </AlertDialogCancel>
+                                        <AlertDialogAction
+                                            onClick={handleDelete}>
+                                            Continue
+                                        </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                </AlertDialogContent>
+                            </DropdownMenu>
+                        </AlertDialog>
+                    </ResponsiveModel>
                 </CardContent>
             </Card>
         </>

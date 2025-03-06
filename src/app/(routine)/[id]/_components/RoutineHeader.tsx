@@ -9,17 +9,47 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+    Drawer,
+    DrawerContent,
+    DrawerDescription,
+    DrawerHeader,
+    DrawerTitle,
+    DrawerTrigger,
+} from "@/components/ui/drawer";
 
 import { ChevronLeft } from "lucide-react";
 import { IoAddCircle as AddIcon } from "react-icons/io5";
-import { Routine } from "@prisma/client";
-import { useMutation } from "@tanstack/react-query";
+import { Frequency, Routine } from "@prisma/client";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "@/components/ui/use-toast";
-import { useRouter } from "next/navigation";
 import { deleteRoutine } from "../../actions";
+import TaskForm, { taskSchema } from "../(tasks)/_forms/TaskForm";
+import { z } from "zod";
+import { useRoutine } from "../_provider/RoutineProvider";
+import { useState } from "react";
+import ResponsiveModel, {
+    ResponsiveModelTrigger,
+} from "@/components/layout/ResponsiveModel";
 
 const RoutineHeader = ({ routine }: { routine: Routine }) => {
-    const router = useRouter();
+    const queryClient = useQueryClient();
+    const { handleAddTask } = useRoutine();
+    const [isAddTaskOpen, setIsAddTaskOpen] = useState(false);
+
+    async function onSubmit(values: z.infer<typeof taskSchema>) {
+        if (!values.createNew) setIsAddTaskOpen(false);
+        await handleAddTask({
+            routine_id: routine.id,
+            days_of_week: [],
+            duration: values.duration,
+            frequency: values.frequency as Frequency,
+            name: values.name,
+        });
+        queryClient.invalidateQueries({
+            queryKey: ["routine"],
+        });
+    }
 
     const { mutateAsync: handleDeleteRoutine } = useMutation({
         mutationFn: deleteRoutine,
@@ -27,7 +57,6 @@ const RoutineHeader = ({ routine }: { routine: Routine }) => {
             toast({
                 description: `${routine?.name ?? "Routine"} deleted`,
             });
-            router.push("/");
         },
     });
 
@@ -37,12 +66,18 @@ const RoutineHeader = ({ routine }: { routine: Routine }) => {
                 <ChevronLeft />
             </Link>
             <div className="flex gap-3">
-                <Button size="sm" variant="secondary" asChild>
-                    <Link href={`/${routine.id}/add`} prefetch={true}>
-                        <AddIcon />
-                        Add
-                    </Link>
-                </Button>
+                <ResponsiveModel
+                    open={isAddTaskOpen}
+                    setOpen={setIsAddTaskOpen}
+                    title="Add Task"
+                    content={<TaskForm onSubmit={onSubmit} />}>
+                    <ResponsiveModelTrigger asChild>
+                        <Button size="sm" variant="secondary">
+                            <AddIcon />
+                            Add
+                        </Button>
+                    </ResponsiveModelTrigger>
+                </ResponsiveModel>
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button size="sm" variant="secondary">
