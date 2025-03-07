@@ -44,7 +44,7 @@ function TaskForm({
         createNew: false,
         startDate: formatDateForInput(new Date()),
         everyFrequency: 1,
-        daysInFrequency: [0],
+        daysInFrequency: [new Date().getDay()],
     },
     hideCreateNew = false,
     className,

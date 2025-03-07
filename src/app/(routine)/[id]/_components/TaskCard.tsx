@@ -31,7 +31,7 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import moment from "moment";
+import { generateCardDescription } from "@/lib/utils";
 
 const TaskCard = ({ task }: { routineId: string; task: Task }) => {
     const queryClient = useQueryClient();
@@ -47,6 +47,9 @@ const TaskCard = ({ task }: { routineId: string; task: Task }) => {
         await handleMoveTask({
             moveToTask: task,
             taskToMoveId: taskId,
+        });
+        queryClient.invalidateQueries({
+            queryKey: ["routine"],
         });
     };
 
@@ -88,16 +91,11 @@ const TaskCard = ({ task }: { routineId: string; task: Task }) => {
                     <section>
                         <p>{task.name}</p>
                         <small className="text-muted-foreground">
-                            {formatDuration(task.duration)}
+                            {`${task.duration} min`}
                         </small>
+                        <br />
                         <small className="text-muted-foreground">
-                            {`, every ${task.every_frequency} ${
-                                task.frequency
-                            } (${task.days_in_frequency.join(
-                                ", "
-                            )}),  from ${moment(task.start_date).format(
-                                "DD, MMM, YYYY"
-                            )}`}
+                            {generateCardDescription(task)}
                         </small>
                     </section>
                     <ResponsiveModel

@@ -1,4 +1,4 @@
-import { Task } from "@prisma/client";
+import { Frequency, Task } from "@prisma/client";
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -58,6 +58,25 @@ function shouldShowTaskToday(
     return false;
 }
 
+const getWeekday = (day: number) => {
+    switch (day) {
+        case 0:
+            return "Su";
+        case 1:
+            return "Mo";
+        case 2:
+            return "Tu";
+        case 3:
+            return "We";
+        case 4:
+            return "Th";
+        case 5:
+            return "Fr";
+        case 6:
+            return "Sa";
+    }
+};
+
 export const showOnCurrentDate = (selectedDate: Date, task: Task) => {
     return shouldShowTaskToday(
         selectedDate,
@@ -66,4 +85,17 @@ export const showOnCurrentDate = (selectedDate: Date, task: Task) => {
         task.every_frequency,
         task.days_in_frequency
     );
+};
+
+export const generateCardDescription = (task: Task) => {
+    return `Every ${
+        task.every_frequency > 1 ? task.every_frequency : ""
+    } ${task.frequency.replace("ly", "").replace("dai", "day")}${
+        task.every_frequency > 1 ? "s" : ""
+    } ${
+        task.frequency === Frequency.weekly
+            ? "on " +
+              task.days_in_frequency.map((day) => getWeekday(day)).join(", ")
+            : ""
+    }`;
 };

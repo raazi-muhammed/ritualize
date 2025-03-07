@@ -14,7 +14,11 @@ const Tasks = ({
 
     return (
         <section className="mb-16">
-            {tasks.length < 1 && <p>No tasks yet</p>}
+            {tasks.length < 1 && (
+                <p className="text-center text-muted-foreground mt-4">
+                    No tasks yet
+                </p>
+            )}
             {tasks?.map((task) => (
                 <>
                     {showOnCurrentDate(selectedDate, task) && (
