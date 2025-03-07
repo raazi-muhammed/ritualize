@@ -15,7 +15,7 @@ import { IoAddCircle as AddIcon } from "react-icons/io5";
 import { UserButton } from "@clerk/nextjs";
 import { formatDuration } from "@/lib/format";
 import { createRoutine, getRoutines } from "./actions";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import LoadingIndicator from "@/components/layout/LoadingIndicator";
 import ResponsiveModel, {
     ResponsiveModelTrigger,
@@ -29,13 +29,13 @@ import { toast } from "@/components/ui/use-toast";
 export const dynamic = "auto";
 
 export default async function Home() {
+    const queryClient = useQueryClient();
     const [isAddOpen, setIsAddOpen] = useState(false);
     const { data: routines, isLoading } = useQuery({
         queryKey: ["routines"],
         queryFn: () => getRoutines(),
     });
 
-    const router = useRouter();
     const { mutateAsync } = useMutation({
         mutationFn: createRoutine,
         onSuccess: (routine) => {
@@ -50,7 +50,9 @@ export default async function Home() {
             name: values.name,
             duration: values.duration,
         });
-        router.push(`/`);
+        queryClient.invalidateQueries({
+            queryKey: ["routines"],
+        });
     }
 
     return (

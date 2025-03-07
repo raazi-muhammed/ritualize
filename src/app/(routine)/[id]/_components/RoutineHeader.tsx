@@ -144,7 +144,11 @@ const RoutineHeader = () => {
                                         handleDeleteRoutine({
                                             id: routine.id,
                                         });
+                                        queryClient.invalidateQueries({
+                                            queryKey: ["routines"],
+                                        });
                                         router.push("/");
+                                        window.location.reload();
                                     }}>
                                     Continue
                                 </AlertDialogAction>
