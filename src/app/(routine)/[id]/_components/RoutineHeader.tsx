@@ -140,15 +140,14 @@ const RoutineHeader = () => {
                             <AlertDialogFooter>
                                 <AlertDialogCancel>Cancel</AlertDialogCancel>
                                 <AlertDialogAction
-                                    onClick={() => {
-                                        handleDeleteRoutine({
+                                    onClick={async () => {
+                                        await handleDeleteRoutine({
                                             id: routine.id,
                                         });
                                         queryClient.invalidateQueries({
                                             queryKey: ["routines"],
                                         });
                                         router.push("/");
-                                        window.location.reload();
                                     }}>
                                     Continue
                                 </AlertDialogAction>

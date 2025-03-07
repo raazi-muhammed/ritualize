@@ -22,16 +22,17 @@ import ResponsiveModel, {
 } from "@/components/layout/ResponsiveModel";
 import { useState } from "react";
 import RoutineForm, { routineSchema } from "./_forms/RoutineForm";
-import { useRouter } from "next/navigation";
 import { z } from "zod";
 import { toast } from "@/components/ui/use-toast";
-
-export const dynamic = "auto";
 
 export default async function Home() {
     const queryClient = useQueryClient();
     const [isAddOpen, setIsAddOpen] = useState(false);
-    const { data: routines, isLoading } = useQuery({
+    const {
+        data: routines,
+        isLoading,
+        refetch,
+    } = useQuery({
         queryKey: ["routines"],
         queryFn: () => getRoutines(),
     });
@@ -40,7 +41,7 @@ export default async function Home() {
         mutationFn: createRoutine,
         onSuccess: (routine) => {
             toast({
-                description: `${routine?.name ?? "Task"} created`,
+                description: `${routine?.name ?? "Routine"} created`,
             });
         },
     });
@@ -50,9 +51,11 @@ export default async function Home() {
             name: values.name,
             duration: values.duration,
         });
+        setIsAddOpen(false);
         queryClient.invalidateQueries({
             queryKey: ["routines"],
         });
+        refetch();
     }
 
     return (
