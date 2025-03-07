@@ -20,6 +20,7 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover";
+import { useMediaQuery } from "@/hooks/use-media-query";
 
 function RoutinePage({
     routine: r,
@@ -33,6 +34,7 @@ function RoutinePage({
     const [running, setRunning] = useState(false);
     const [mainTasks, setMainTasks] = useState<Task[]>([]);
     const [showWeekSelector, setShowWeekSelector] = useState(false);
+    const isDesktop = useMediaQuery("(min-width: 1200px)");
 
     useEffect(() => {
         setRoutine(() => r);
@@ -69,7 +71,7 @@ function RoutinePage({
     }
 
     return (
-        <main className="container py-4">
+        <main className="px-6 container-xl py-4">
             {!!routine && (
                 <>
                     <RoutineHeader />
@@ -115,7 +117,7 @@ function RoutinePage({
                                 <ChevronDown />
                             </Toggle>
                         </section>
-                        {showWeekSelector && (
+                        {(showWeekSelector || isDesktop) && (
                             <div className="grid grid-cols-7 mt-4">
                                 {getLast7DaysFromSunday().map((date, index) => (
                                     <Button
@@ -145,9 +147,26 @@ function RoutinePage({
                             </div>
                         )}
                     </section>
-                    <section className="gap-4">
-                        <Tasks tasks={mainTasks} selectedDate={selectedDate} />
-                    </section>
+                    {isDesktop ? (
+                        <section className="gap-4 grid grid-cols-7">
+                            {getLast7DaysFromSunday().map((date, index) => (
+                                <Tasks
+                                    key={index}
+                                    tasks={tasks.filter((task) =>
+                                        showOnCurrentDate(date, task)
+                                    )}
+                                    selectedDate={date}
+                                />
+                            ))}
+                        </section>
+                    ) : (
+                        <section className="gap-4">
+                            <Tasks
+                                tasks={mainTasks}
+                                selectedDate={selectedDate}
+                            />
+                        </section>
+                    )}
                     <footer className="fixed bottom-0 left-0 flex w-[100vw] justify-center py-4">
                         <Button
                             size="lg"
