@@ -48,10 +48,13 @@ const RoutineHeader = () => {
         if (!values.createNew) setIsAddTaskOpen(false);
         await handleAddTask({
             routine_id: routine.id,
-            days_of_week: [],
+            name: values.name,
             duration: values.duration,
             frequency: values.frequency as Frequency,
-            name: values.name,
+            every_frequency: values.everyFrequency,
+            days_in_frequency: [1],
+            start_date: new Date(values.startDate),
+            end_date: null,
         });
         queryClient.invalidateQueries({
             queryKey: ["routine"],

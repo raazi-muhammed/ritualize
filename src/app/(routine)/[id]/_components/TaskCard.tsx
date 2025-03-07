@@ -13,7 +13,7 @@ import { Task } from "@prisma/client";
 import { useRoutine } from "../_provider/RoutineProvider";
 import { DragEvent, useState } from "react";
 import { CircleEllipsis } from "lucide-react";
-import { formatDuration } from "@/lib/format";
+import { formatDateForInput, formatDuration } from "@/lib/format";
 import ResponsiveModel, {
     ResponsiveModelTrigger,
 } from "@/components/layout/ResponsiveModel";
@@ -31,6 +31,7 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import moment from "moment";
 
 const TaskCard = ({ task }: { routineId: string; task: Task }) => {
     const queryClient = useQueryClient();
@@ -51,7 +52,14 @@ const TaskCard = ({ task }: { routineId: string; task: Task }) => {
 
     async function onSubmit(values: z.infer<typeof taskSchema>) {
         setOpen(false);
-        await handleEditTask({ ...task, ...values } as any);
+        await handleEditTask({
+            ...task,
+            ...{
+                ...values,
+                every_frequency: values.everyFrequency,
+                start_date: new Date(values.startDate),
+            },
+        } as any);
         queryClient.invalidateQueries({
             queryKey: ["routine"],
         });
@@ -81,6 +89,13 @@ const TaskCard = ({ task }: { routineId: string; task: Task }) => {
                         <small className="text-muted-foreground">
                             {formatDuration(task.duration)}
                         </small>
+                        <small className="text-muted-foreground">
+                            {`, every ${task.every_frequency} ${
+                                task.frequency
+                            }, from ${moment(task.start_date).format(
+                                "DD, MMM, YYYY"
+                            )}`}
+                        </small>
                     </section>
                     <ResponsiveModel
                         open={open}
@@ -94,6 +109,10 @@ const TaskCard = ({ task }: { routineId: string; task: Task }) => {
                                     duration: task.duration,
                                     frequency: task.frequency,
                                     name: task.name,
+                                    everyFrequency: task.every_frequency,
+                                    startDate: formatDateForInput(
+                                        task.start_date
+                                    ),
                                 }}
                             />
                         }>

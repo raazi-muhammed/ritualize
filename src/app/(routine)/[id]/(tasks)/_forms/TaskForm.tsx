@@ -11,12 +11,15 @@ import { Form, FormField } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
+import { formatDateForInput } from "@/lib/format";
 
 export const taskSchema = z.object({
     name: z.string().min(1),
     duration: z.number().min(1),
     frequency: z.string().min(1),
     createNew: z.boolean().optional().default(false),
+    everyFrequency: z.number().min(1),
+    startDate: z.string(),
 });
 
 function TaskForm({
@@ -26,6 +29,8 @@ function TaskForm({
         duration: 2,
         frequency: Frequency.daily,
         createNew: false,
+        startDate: formatDateForInput(new Date()),
+        everyFrequency: 1,
     },
     hideCreateNew = false,
     className,
@@ -71,7 +76,10 @@ function TaskForm({
                                 type="number"
                                 {...field}
                                 onChange={(e) =>
-                                    field.onChange(Number(e.target.value))
+                                    field.onChange(
+                                        parseFloat(e.target.value) ||
+                                            e.target.value
+                                    )
                                 }
                             />
                         </FormInput>
@@ -88,6 +96,33 @@ function TaskForm({
                                 items={frequencyItems}
                                 {...field}
                             />
+                        </FormInput>
+                    )}
+                />
+                <FormField
+                    control={form.control}
+                    name="everyFrequency"
+                    render={({ field }) => (
+                        <FormInput label="Every">
+                            <Input
+                                type="number"
+                                {...field}
+                                onChange={(e) =>
+                                    field.onChange(
+                                        parseFloat(e.target.value) ||
+                                            e.target.value
+                                    )
+                                }
+                            />
+                        </FormInput>
+                    )}
+                />
+                <FormField
+                    control={form.control}
+                    name="startDate"
+                    render={({ field }) => (
+                        <FormInput label="Start date">
+                            <Input type="date" {...field} />
                         </FormInput>
                     )}
                 />

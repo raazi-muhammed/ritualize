@@ -14,14 +14,17 @@ enum Frequency {
 }
 
 model Task {
-    id           String    @id @default(auto()) @map("_id") @db.ObjectId
-    name         String
-    duration     Int
-    order        Int
-    routine_id   String    @db.ObjectId
-    routine      Routine   @relation(fields: [routine_id], references: [id])
-    frequency    Frequency @default(daily)
-    days_of_week Int[]     @default([])
+    id                String    @id @default(auto()) @map("_id") @db.ObjectId
+    name              String
+    duration          Int
+    order             Int
+    routine_id        String    @db.ObjectId
+    routine           Routine   @relation(fields: [routine_id], references: [id])
+    frequency         Frequency @default(daily)
+    every_frequency   Int       @default(1)
+    days_in_frequency Int[]     @default([])
+    start_date        DateTime  @default(now())
+    end_date          DateTime?
 }
 
 model Routine {

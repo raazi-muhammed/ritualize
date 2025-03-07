@@ -8,6 +8,10 @@ export const createTask = async ({
     routine_id,
     name,
     duration,
+    frequency,
+    every_frequency,
+    days_in_frequency,
+    start_date,
 }: Omit<Task, "order" | "id">) => {
     const lastTask = await prisma.task.findFirst({
         where: {
@@ -23,6 +27,10 @@ export const createTask = async ({
             routine_id,
             duration,
             order: lastTask?.order ? lastTask?.order + 1 : 1,
+            frequency,
+            every_frequency,
+            days_in_frequency,
+            start_date,
         },
     });
     revalidatePath(`/${routine_id}`);
@@ -35,6 +43,9 @@ export const updateTask = async ({
     name,
     duration,
     frequency,
+    every_frequency,
+    days_in_frequency,
+    start_date,
 }: Partial<Task> & { id: string; routine_id: string }) => {
     const updated = await prisma.task.update({
         where: {
@@ -45,6 +56,9 @@ export const updateTask = async ({
             name,
             duration,
             frequency,
+            every_frequency,
+            days_in_frequency,
+            start_date,
         },
     });
     revalidatePath(`/${routine_id}`);
