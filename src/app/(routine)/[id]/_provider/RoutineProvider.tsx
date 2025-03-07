@@ -1,12 +1,13 @@
 "use client";
 
-import { Task } from "@prisma/client";
+import { Routine, Task } from "@prisma/client";
 import { useMutation } from "@tanstack/react-query";
 import { ReactNode, useContext, useOptimistic, useState } from "react";
 import { createContext } from "react";
 import { createTask, deleteTask, moveTo, updateTask } from "../(tasks)/actions";
 import { toast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
+import { updateRoutine } from "../../actions";
 
 export const RoutineContext = createContext<{
     tasks: Task[];
@@ -19,7 +20,7 @@ export const RoutineContext = createContext<{
 
 const RoutineProvider = ({ children }: { children: ReactNode }) => {
     const [routine, setRoutine] = useState({ tasks: [] });
-    const [tasks, updateTasks] = useOptimistic<Task[]>(routine.tasks);
+    const [tasks, updateTasks] = useOptimistic<Task[]>(routine?.tasks || []);
 
     return (
         <RoutineContext.Provider
@@ -137,6 +138,11 @@ export const useRoutine = () => {
         await updateTask(task);
     };
 
+    const handleEditRoutine = async (r: Omit<Routine, "id" | "user_id">) => {
+        setRoutine(() => ({ ...routine, ...r }));
+        await updateRoutine({ id: routine.id, ...r });
+    };
+
     return {
         tasks,
         routine,
@@ -146,5 +152,6 @@ export const useRoutine = () => {
         setRoutine,
         updateTasks,
         handleAddTask,
+        handleEditRoutine,
     };
 };

@@ -8,26 +8,26 @@ import { Routine, Task } from "@prisma/client";
 import RoutineHeader from "./RoutineHeader";
 import { useRoutine } from "../_provider/RoutineProvider";
 import Tasks from "./Tasks";
-import { useEffect } from "react";
+import { startTransition, useEffect } from "react";
 
 function RoutinePage({
-    routine,
+    routine: r,
 }: {
     routine: Routine & {
         tasks: Task[];
     };
 }) {
-    const { setRoutine } = useRoutine();
+    const { setRoutine, routine } = useRoutine();
 
     useEffect(() => {
-        setRoutine(routine);
-    }, [routine, setRoutine]);
+        setRoutine(() => r);
+    }, [r, setRoutine]);
 
     return (
         <main className="container py-4">
-            <RoutineHeader routine={routine} />
             {!!routine && (
                 <>
+                    <RoutineHeader />
                     <section className="my-4 bg-background py-4">
                         <Heading>{routine.name}</Heading>
                     </section>

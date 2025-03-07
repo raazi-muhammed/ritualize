@@ -113,7 +113,6 @@ const TaskCard = ({ task }: { routineId: string; task: Task }) => {
                                             Edit
                                         </DropdownMenuItem>
                                     </ResponsiveModelTrigger>
-
                                     <AlertDialogTrigger className="w-full">
                                         <DropdownMenuItem>
                                             Delete

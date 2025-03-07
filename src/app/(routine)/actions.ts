@@ -60,3 +60,13 @@ export const deleteRoutine = async ({ id }: { id: string }) => {
     revalidatePath("/");
     return routine;
 };
+
+export async function getRoutines() {
+    const user = await getCurrentUser();
+
+    return await prisma.routine.findMany({
+        where: {
+            user_id: user.id,
+        },
+    });
+}
