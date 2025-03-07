@@ -1,7 +1,6 @@
 "use client";
 
 import Heading from "@/components/layout/Heading";
-import Link from "next/link";
 import { IoPlayCircle as StartIcon } from "react-icons/io5";
 import { Routine, Task } from "@prisma/client";
 import RoutineHeader from "./RoutineHeader";
@@ -9,6 +8,18 @@ import { useRoutine } from "../_provider/RoutineProvider";
 import Tasks from "./Tasks";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
+import StartComponent from "../start/_components/StartComponent";
+import { showOnCurrentDate } from "@/lib/utils";
+import { format } from "date-fns";
+import { Calendar as CalendarIcon, ChevronDown } from "lucide-react";
+import { Toggle } from "@/components/ui/toggle";
+import { cn } from "@/lib/utils";
+import { Calendar } from "@/components/ui/calendar";
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/ui/popover";
 
 function RoutinePage({
     routine: r,
@@ -17,8 +28,11 @@ function RoutinePage({
         tasks: Task[];
     };
 }) {
-    const { setRoutine, routine } = useRoutine();
+    const { setRoutine, routine, tasks } = useRoutine();
     const [selectedDate, setSelectedDate] = useState(new Date());
+    const [running, setRunning] = useState(false);
+    const [mainTasks, setMainTasks] = useState<Task[]>([]);
+    const [showWeekSelector, setShowWeekSelector] = useState(false);
 
     useEffect(() => {
         setRoutine(() => r);
@@ -26,7 +40,7 @@ function RoutinePage({
 
     const getLast7DaysFromSunday = () => {
         const days = [];
-        const today = new Date();
+        const today = selectedDate;
         const lastSunday = new Date(today);
         lastSunday.setDate(today.getDate() - today.getDay());
 
@@ -38,56 +52,109 @@ function RoutinePage({
         return days;
     };
 
+    useEffect(() => {
+        setMainTasks(
+            tasks.filter((task) => showOnCurrentDate(selectedDate, task))
+        );
+    }, [selectedDate, tasks]);
+
+    if (running) {
+        return (
+            <StartComponent
+                routine={routine}
+                tasks={mainTasks}
+                setRunning={setRunning}
+            />
+        );
+    }
+
     return (
         <main className="container py-4">
             {!!routine && (
                 <>
                     <RoutineHeader />
-                    <section className="my-4 bg-background py-4">
+                    <section className="my-4 bg-background">
                         <Heading>{routine.name}</Heading>
-                        <div className="flex space-x-2 mt-2">
-                            {getLast7DaysFromSunday().map((date, index) => (
-                                <Button
-                                    key={index}
-                                    onClick={() => setSelectedDate(date)}
-                                    variant={
-                                        selectedDate.toDateString() ===
-                                        date.toDateString()
-                                            ? "default"
-                                            : "ghost"
-                                    }>
-                                    {date.toLocaleDateString("en-US", {
-                                        weekday: "short",
-                                        month: "short",
-                                        day: "numeric",
-                                    })}
-                                </Button>
-                            ))}
-                        </div>
-                        <div className="mt-4">
-                            <label className="block text-sm font-medium text-gray-700">
-                                Select a Custom Date:
-                            </label>
-                            <input
-                                type="date"
-                                value={selectedDate.toISOString().split("T")[0]}
-                                onChange={(e) =>
-                                    setSelectedDate(new Date(e.target.value))
-                                }
-                                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                            />
-                        </div>
+                        <section className="flex mt-2 gap-2">
+                            <Popover>
+                                <PopoverTrigger asChild>
+                                    <Button
+                                        size={"sm"}
+                                        variant={"outline"}
+                                        className={cn(
+                                            "w-fit justify-start text-left font-normal",
+                                            !selectedDate &&
+                                                "text-muted-foreground"
+                                        )}>
+                                        <CalendarIcon className="mr-2 h-4 w-4" />
+                                        {selectedDate ? (
+                                            format(selectedDate, "PPP")
+                                        ) : (
+                                            <span>Pick a date</span>
+                                        )}
+                                    </Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-auto p-0">
+                                    <Calendar
+                                        mode="single"
+                                        selected={selectedDate}
+                                        onSelect={(date) => {
+                                            if (date)
+                                                setSelectedDate(new Date(date));
+                                        }}
+                                        initialFocus
+                                    />
+                                </PopoverContent>
+                            </Popover>
+                            <Toggle
+                                pressed={showWeekSelector}
+                                onPressedChange={setShowWeekSelector}
+                                variant={"outline"}
+                                size={"sm"}
+                                className="h-8">
+                                <ChevronDown />
+                            </Toggle>
+                        </section>
+                        {showWeekSelector && (
+                            <div className="grid grid-cols-7 mt-4">
+                                {getLast7DaysFromSunday().map((date, index) => (
+                                    <Button
+                                        key={index}
+                                        onClick={() => setSelectedDate(date)}
+                                        variant={
+                                            selectedDate.toDateString() ===
+                                            date.toDateString()
+                                                ? "default"
+                                                : "ghost"
+                                        }>
+                                        <p className="flex flex-col gap-0">
+                                            {date.toLocaleDateString("en-US", {
+                                                day: "numeric",
+                                            })}
+                                            <small>
+                                                {date.toLocaleDateString(
+                                                    "en-US",
+                                                    {
+                                                        weekday: "short",
+                                                    }
+                                                )}
+                                            </small>
+                                        </p>
+                                    </Button>
+                                ))}
+                            </div>
+                        )}
                     </section>
-                    <Tasks selectedDate={selectedDate} />
+                    <section className="gap-4">
+                        <Tasks tasks={mainTasks} selectedDate={selectedDate} />
+                    </section>
                     <footer className="fixed bottom-0 left-0 flex w-[100vw] justify-center py-4">
-                        <Button size="lg" className="w-fit px-5" asChild>
-                            <Link href={`${routine.id}/start`} prefetch={true}>
-                                <StartIcon
-                                    size="1.3em"
-                                    className="-ms-1 me-1"
-                                />
-                                Start
-                            </Link>
+                        <Button
+                            size="lg"
+                            className="w-fit px-5"
+                            onClick={() => setRunning(true)}>
+                            <StartIcon size="1.3em" className="-ms-1 me-1" />
+                            Start
                         </Button>
                     </footer>
                 </>

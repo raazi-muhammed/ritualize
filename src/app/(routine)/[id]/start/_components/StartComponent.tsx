@@ -1,22 +1,22 @@
 "use client";
+
 import Heading from "@/components/layout/Heading";
 import { Button } from "@/components/ui/button";
 import { useStopwatch } from "@/hooks/stop-watch";
 import { Routine, Task } from "@prisma/client";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useRouter } from "next/navigation";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "motion/react";
 
 function StartComponent({
     routine,
+    tasks,
+    setRunning,
 }: {
-    routine: Routine & {
-        tasks: Task[];
-    };
+    routine: Routine;
+    tasks: Task[];
+    setRunning: (running: boolean) => void;
 }) {
-    const router = useRouter();
-    const tasks = routine?.tasks;
     const [currentTaskIndex, setCurrentTaskIndex] = useState<number>(0);
     const { time, reset } = useStopwatch();
 
@@ -31,7 +31,9 @@ function StartComponent({
         <main className="container relative flex h-[100svh] w-full flex-col justify-around">
             <header className="sticky top-0 pt-8 pb-28 z-10 bg-gradient-to-b from-40% from-background">
                 <section className="flex justify-between">
-                    <div onClick={() => router.back()} className="flex gap-0">
+                    <div
+                        onClick={() => setRunning(false)}
+                        className="flex gap-0">
                         <ChevronLeft size="1em" className="m-0 my-auto" />
                         <Heading className="my-auto mb-1 text-lg">
                             {routine.name}
@@ -41,7 +43,7 @@ function StartComponent({
                     <small className="my-auto font-mono">{time}</small>
                 </section>
                 <section className="flex gap-1">
-                    {routine.tasks.map((task, index) => (
+                    {tasks.map((task, index) => (
                         <div
                             key={index}
                             className={`h-1 w-full rounded bg-white ${
@@ -53,8 +55,8 @@ function StartComponent({
                 </section>
             </header>
             <section className="grid z-0">
-                <div className="h-[100vh]"/>
-                {routine.tasks.map((task, index) => (
+                <div className="h-[100vh]" />
+                {tasks.map((task, index) => (
                     <motion.div
                         key={task.id}
                         className="scroll-mt-[40vh]"
@@ -94,7 +96,7 @@ function StartComponent({
                         </motion.small>
                     </motion.div>
                 ))}
-                <div className="flex h-[30vh]"/>
+                <div className="flex h-[30vh]" />
             </section>
             <footer className="fixed bottom-0 left-0 right-0 container z-10 bg-gradient-to-t from-40% from-background pb-8 pt-28">
                 <section className="flex justify-between">
@@ -116,7 +118,7 @@ function StartComponent({
                     </div>
 
                     {currentTaskIndex >= tasks.length - 1 ? (
-                        <Button onClick={() => router.back()}>
+                        <Button onClick={() => setRunning(false)}>
                             Done
                             <ChevronRight className="-me-2" />
                         </Button>
