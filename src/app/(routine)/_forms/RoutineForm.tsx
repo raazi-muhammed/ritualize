@@ -38,7 +38,7 @@ function RoutineForm({
                     name="name"
                     render={({ field }) => (
                         <FormInput label="Name">
-                            <Input {...field} />
+                            <Input {...field} autoFocus />
                         </FormInput>
                     )}
                 />
