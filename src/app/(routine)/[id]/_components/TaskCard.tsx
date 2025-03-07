@@ -58,6 +58,7 @@ const TaskCard = ({ task }: { routineId: string; task: Task }) => {
                 ...values,
                 every_frequency: values.everyFrequency,
                 start_date: new Date(values.startDate),
+                days_in_frequency: values.daysInFrequency,
             },
         } as any);
         queryClient.invalidateQueries({
@@ -92,7 +93,9 @@ const TaskCard = ({ task }: { routineId: string; task: Task }) => {
                         <small className="text-muted-foreground">
                             {`, every ${task.every_frequency} ${
                                 task.frequency
-                            }, from ${moment(task.start_date).format(
+                            } (${task.days_in_frequency.join(
+                                ", "
+                            )}),  from ${moment(task.start_date).format(
                                 "DD, MMM, YYYY"
                             )}`}
                         </small>
@@ -113,6 +116,7 @@ const TaskCard = ({ task }: { routineId: string; task: Task }) => {
                                     startDate: formatDateForInput(
                                         task.start_date
                                     ),
+                                    daysInFrequency: task.days_in_frequency,
                                 }}
                             />
                         }>

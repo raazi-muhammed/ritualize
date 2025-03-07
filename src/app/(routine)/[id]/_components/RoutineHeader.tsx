@@ -52,7 +52,7 @@ const RoutineHeader = () => {
             duration: values.duration,
             frequency: values.frequency as Frequency,
             every_frequency: values.everyFrequency,
-            days_in_frequency: [1],
+            days_in_frequency: values.daysInFrequency || [0],
             start_date: new Date(values.startDate),
             end_date: null,
         });

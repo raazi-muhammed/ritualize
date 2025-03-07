@@ -1,7 +1,7 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Frequency } from "@prisma/client";
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { DefaultValues, useForm } from "react-hook-form";
 import { z } from "zod";
 import FormInput from "@/components/form/FormInput";
@@ -12,15 +12,28 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { cn } from "@/lib/utils";
 import { formatDateForInput } from "@/lib/format";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
-export const taskSchema = z.object({
-    name: z.string().min(1),
-    duration: z.number().min(1),
-    frequency: z.string().min(1),
-    createNew: z.boolean().optional().default(false),
-    everyFrequency: z.number().min(1),
-    startDate: z.string(),
-});
+export const taskSchema = z
+    .object({
+        name: z.string().min(1),
+        duration: z.number().min(1),
+        frequency: z.string().min(1),
+        createNew: z.boolean().optional().default(false),
+        everyFrequency: z.number().min(1),
+        daysInFrequency: z.array(z.number()).optional(),
+        startDate: z.string(),
+    })
+    .refine(
+        (data) =>
+            !data.daysInFrequency ||
+            data.daysInFrequency.every((day) => day >= 0 && day <= 6),
+        {
+            message:
+                "daysInFrequency must only contain numbers between 0 (Sunday) and 6 (Saturday).",
+            path: ["daysInFrequency"],
+        }
+    );
 
 function TaskForm({
     onSubmit,
@@ -31,6 +44,7 @@ function TaskForm({
         createNew: false,
         startDate: formatDateForInput(new Date()),
         everyFrequency: 1,
+        daysInFrequency: [0],
     },
     hideCreateNew = false,
     className,
@@ -46,12 +60,55 @@ function TaskForm({
         mode: "onTouched",
     });
 
+    const [frequency, setFrequency] = useState(form.getValues("frequency"));
+
+    useEffect(() => {
+        // Update frequency state when the form value changes
+        const subscription = form.watch((value) => {
+            if (value.frequency) setFrequency(value.frequency);
+        });
+
+        // Cleanup subscription on unmount
+        return () => subscription.unsubscribe();
+    }, [form]);
+
     const frequencyItems = useMemo(() => {
         return Object.values(Frequency).map((v) => ({
             label: v,
             value: v,
         }));
     }, []);
+
+    const days = [
+        {
+            value: "0",
+            label: "S",
+        },
+        {
+            value: "1",
+            label: "M",
+        },
+        {
+            value: "2",
+            label: "T",
+        },
+        {
+            value: "3",
+            label: "W",
+        },
+        {
+            value: "4",
+            label: "T",
+        },
+        {
+            value: "5",
+            label: "F",
+        },
+        {
+            value: "6",
+            label: "S",
+        },
+    ];
 
     return (
         <Form {...form}>
@@ -122,10 +179,50 @@ function TaskForm({
                     name="startDate"
                     render={({ field }) => (
                         <FormInput label="Start date">
-                            <Input type="date" {...field} />
+                            <Input
+                                type="date"
+                                {...field}
+                                onChange={(e) => {
+                                    field.onChange(e.target.value);
+                                    const val = new Date(
+                                        e.target.value
+                                    ).getDay();
+
+                                    form.setValue("daysInFrequency", [val]);
+                                }}
+                            />
                         </FormInput>
                     )}
                 />
+                {frequency === Frequency.weekly && (
+                    <FormField
+                        control={form.control}
+                        name="daysInFrequency"
+                        render={({ field }) => (
+                            <FormInput label="Days in frequency">
+                                <ToggleGroup
+                                    type="multiple"
+                                    value={
+                                        field.value?.map((a) => String(a)) || []
+                                    }
+                                    onValueChange={(value) => {
+                                        form.setValue(
+                                            "daysInFrequency",
+                                            value.map((a) => parseInt(a))
+                                        );
+                                    }}>
+                                    {days.map((day) => (
+                                        <ToggleGroupItem
+                                            value={day.value}
+                                            aria-label="Toggle bold">
+                                            {day.label}
+                                        </ToggleGroupItem>
+                                    ))}
+                                </ToggleGroup>
+                            </FormInput>
+                        )}
+                    />
+                )}
                 {!hideCreateNew && (
                     <FormField
                         control={form.control}
