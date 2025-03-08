@@ -1,14 +1,13 @@
 import { Task } from "@prisma/client";
 import { useRoutine } from "../_provider/RoutineProvider";
 import TaskCard from "./TaskCard";
-import { showOnCurrentDate } from "@/lib/utils";
 
 const Tasks = ({
-    selectedDate,
     tasks,
+    showStartDate = false,
 }: {
-    selectedDate: Date;
     tasks: Task[];
+    showStartDate?: boolean;
 }) => {
     const { routine } = useRoutine();
 
@@ -20,15 +19,12 @@ const Tasks = ({
                 </p>
             )}
             {tasks?.map((task) => (
-                <>
-                    {showOnCurrentDate(selectedDate, task) && (
-                        <TaskCard
-                            key={task.id}
-                            task={task}
-                            routineId={routine.id}
-                        />
-                    )}
-                </>
+                <TaskCard
+                    key={task.id}
+                    task={task}
+                    routineId={routine.id}
+                    showStartDate={showStartDate}
+                />
             ))}
         </section>
     );

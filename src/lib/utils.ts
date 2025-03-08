@@ -1,6 +1,7 @@
 import { Frequency, Task } from "@prisma/client";
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { formatDate } from "./format";
 
 export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
@@ -87,7 +88,10 @@ export const showOnCurrentDate = (selectedDate: Date, task: Task) => {
     );
 };
 
-export const generateCardDescription = (task: Task) => {
+type Options = {
+    showStartDate?: boolean;
+};
+export const generateCardDescription = (task: Task, options: Options) => {
     return `Every ${
         task.every_frequency > 1 ? task.every_frequency : ""
     } ${task.frequency.replace("ly", "").replace("dai", "day")}${
@@ -97,5 +101,5 @@ export const generateCardDescription = (task: Task) => {
             ? "on " +
               task.days_in_frequency.map((day) => getWeekday(day)).join(", ")
             : ""
-    }`;
+    } ${options?.showStartDate ? `from ${formatDate(task.start_date)}` : ""}`;
 };

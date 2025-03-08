@@ -155,16 +155,12 @@ function RoutinePage({
                                     tasks={tasks.filter((task) =>
                                         showOnCurrentDate(date, task)
                                     )}
-                                    selectedDate={date}
                                 />
                             ))}
                         </section>
                     ) : (
                         <section className="gap-4">
-                            <Tasks
-                                tasks={mainTasks}
-                                selectedDate={selectedDate}
-                            />
+                            <Tasks tasks={mainTasks} />
                         </section>
                     )}
                     <footer className="fixed bottom-0 left-0 flex w-[100vw] justify-center py-4">

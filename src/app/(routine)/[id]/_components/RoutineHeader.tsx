@@ -29,12 +29,13 @@ import { deleteRoutine } from "../../actions";
 import TaskForm, { taskSchema } from "../(tasks)/_forms/TaskForm";
 import { z } from "zod";
 import { useRoutine } from "../_provider/RoutineProvider";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import ResponsiveModel, {
     ResponsiveModelTrigger,
 } from "@/components/layout/ResponsiveModel";
 import RoutineForm, { routineSchema } from "../../_forms/RoutineForm";
 import { useRouter } from "next/navigation";
+import Tasks from "./Tasks";
 
 const RoutineHeader = () => {
     const queryClient = useQueryClient();
@@ -43,6 +44,7 @@ const RoutineHeader = () => {
     const { handleAddTask, handleEditRoutine, routine } = useRoutine();
     const [isAddTaskOpen, setIsAddTaskOpen] = useState(false);
     const [isEditRoutineOpen, setIsEditRoutineOpen] = useState(false);
+    const [isAllTasksOpen, setIsAllTasksOpen] = useState(false);
 
     async function handleAddTaskSubmit(values: z.infer<typeof taskSchema>) {
         if (!values.createNew) setIsAddTaskOpen(false);
@@ -97,6 +99,15 @@ const RoutineHeader = () => {
                             Add
                         </Button>
                     </ResponsiveModelTrigger>
+                    <ResponsiveModel
+                        open={isAllTasksOpen}
+                        setOpen={setIsAllTasksOpen}
+                        title="All Tasks"
+                        content={<Tasks tasks={routine.tasks} showStartDate />}>
+                        <ResponsiveModelTrigger>
+                            <Button size="sm">All tasks</Button>
+                        </ResponsiveModelTrigger>
+                    </ResponsiveModel>
                 </ResponsiveModel>
                 <AlertDialog>
                     <ResponsiveModel
@@ -119,7 +130,7 @@ const RoutineHeader = () => {
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
-                                <ResponsiveModelTrigger>
+                                <ResponsiveModelTrigger className="w-full">
                                     <DropdownMenuItem className="w-full">
                                         Edit
                                     </DropdownMenuItem>

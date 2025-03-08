@@ -5,10 +5,8 @@ import {
     Dialog,
     DialogContent,
     DialogHeader,
-    DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog";
-import { useState } from "react";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import {
     Drawer,
@@ -36,7 +34,7 @@ const ResponsiveModel = ({
     if (isDesktop)
         return (
             <Dialog open={open} onOpenChange={setOpen}>
-                <DialogContent>
+                <DialogContent className="max-h-[calc(100vh-10rem)] overflow-auto">
                     <DialogHeader>
                         <Heading>{title}</Heading>
                     </DialogHeader>
@@ -47,11 +45,13 @@ const ResponsiveModel = ({
         );
     return (
         <Drawer open={open} onOpenChange={setOpen}>
-            <DrawerContent className="h-[calc(100vh-4rem)] px-4 sm:px-12">
+            <DrawerContent className="h-[calc(100vh-4rem)] px-4 sm:px-12 overflow-auto">
                 <DrawerHeader className="px-0">
                     <Heading>{title}</Heading>
                 </DrawerHeader>
-                {content}
+                <div className="h-[calc(100vh-4rem)] overflow-auto">
+                    {content}
+                </div>
             </DrawerContent>
             {children}
         </Drawer>

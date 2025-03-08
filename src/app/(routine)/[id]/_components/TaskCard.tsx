@@ -33,7 +33,14 @@ import {
 } from "@/components/ui/alert-dialog";
 import { generateCardDescription } from "@/lib/utils";
 
-const TaskCard = ({ task }: { routineId: string; task: Task }) => {
+const TaskCard = ({
+    task,
+    showStartDate = false,
+}: {
+    routineId: string;
+    task: Task;
+    showStartDate?: boolean;
+}) => {
     const queryClient = useQueryClient();
     const { handleMoveTask, handleDeleteTask, handleEditTask } = useRoutine();
     const [open, setOpen] = useState(false);
@@ -95,7 +102,9 @@ const TaskCard = ({ task }: { routineId: string; task: Task }) => {
                         </small>
                         <br />
                         <small className="text-muted-foreground">
-                            {generateCardDescription(task)}
+                            {generateCardDescription(task, {
+                                showStartDate,
+                            })}
                         </small>
                     </section>
                     <ResponsiveModel
