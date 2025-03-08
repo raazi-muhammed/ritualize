@@ -1,34 +1,40 @@
-import {
-    Card,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card";
+import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Icon } from "@/components/ui/icon-picker";
-import { formatDuration } from "@/lib/format";
 import { Routine } from "@prisma/client";
-import { Dot, Heart } from "lucide-react";
+import { Heart } from "lucide-react";
 
-const RoutineCard = ({ routine }: { routine: Routine }) => {
+const RoutineCard = ({
+    routine,
+    isList = false,
+}: {
+    routine: Routine;
+    isList?: boolean;
+}) => {
     return (
         <Card className="relative -z-0 overflow-hidden p-2">
-            <CardHeader className="z-10 p-4">
-                <CardTitle className="flex justify-between text-lg">
-                    {routine.name}
-                    {routine.is_favorite ? (
-                        <Heart
-                            className="fill-primary text-primary"
-                            size={18}
+            <CardHeader className="z-10 p-2 flex justify-between flex-row">
+                <div
+                    className={`flex ${
+                        isList ? "flex-col" : "flex-row"
+                    } gap-2 align-middle`}>
+                    <div
+                        className={`bg-secondary ${
+                            isList ? "size-12" : "size-8"
+                        } grid place-items-center rounded-full`}>
+                        <Icon
+                            name={routine.icon as any}
+                            size={isList ? "1.5rem" : "1rem"}
                         />
-                    ) : (
-                        <Heart className="text-secondary" size={18} />
-                    )}
-                </CardTitle>
-                <Icon name={routine.icon as any} />
-                <CardDescription className="flex">
-                    {formatDuration(routine.duration)} <Dot />
-                    {routine.type}
-                </CardDescription>
+                    </div>
+                    <CardTitle className="flex justify-between text-lg my-auto">
+                        {routine.name}
+                    </CardTitle>
+                </div>
+                {routine.is_favorite ? (
+                    <Heart className="fill-primary text-primary" size={18} />
+                ) : (
+                    <Heart className="text-secondary" size={18} />
+                )}
             </CardHeader>
         </Card>
     );

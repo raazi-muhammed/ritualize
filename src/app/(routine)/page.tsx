@@ -16,7 +16,6 @@ import RoutineForm, { routineSchema } from "./_forms/RoutineForm";
 import { z } from "zod";
 import { toast } from "@/components/ui/use-toast";
 import RoutineCard from "./[id]/_components/RoutineCard";
-import { IconPicker } from "@/components/ui/icon-picker";
 
 export default async function Home() {
     const queryClient = useQueryClient();
@@ -78,7 +77,10 @@ export default async function Home() {
                                     <Link
                                         href={`/${routine.id}`}
                                         key={routine.name}>
-                                        <RoutineCard routine={routine} />
+                                        <RoutineCard
+                                            isList={true}
+                                            routine={routine}
+                                        />
                                     </Link>
                                 ))}
                         </section>
@@ -95,7 +97,6 @@ export default async function Home() {
                     </section>
                 </>
             )}
-            <IconPicker />
         </main>
     );
 }

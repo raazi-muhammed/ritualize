@@ -20,7 +20,7 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, CircleEllipsis } from "lucide-react";
 import { IoAddCircle as AddIcon } from "react-icons/io5";
 import { Frequency } from "@prisma/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -120,18 +120,21 @@ const RoutineHeader = () => {
                                 defaultValues={routine}
                             />
                         }>
+                        <ResponsiveModelTrigger className="w-full" asChild>
+                            <Button size="sm" variant="secondary">
+                                <EditIcon size="1.3em" className="-mx-1" />
+                            </Button>
+                        </ResponsiveModelTrigger>
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <Button size="sm" variant="secondary">
-                                    <EditIcon size="1.3em" className="-mx-1" />
+                                    <CircleEllipsis
+                                        size="1.3em"
+                                        className="-mx-1"
+                                    />
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
-                                <ResponsiveModelTrigger className="w-full">
-                                    <DropdownMenuItem className="w-full">
-                                        Edit
-                                    </DropdownMenuItem>
-                                </ResponsiveModelTrigger>
                                 <AlertDialogTrigger className="w-full">
                                     <DropdownMenuItem>Delete</DropdownMenuItem>
                                 </AlertDialogTrigger>

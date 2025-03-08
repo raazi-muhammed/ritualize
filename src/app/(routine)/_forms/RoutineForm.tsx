@@ -48,86 +48,79 @@ function RoutineForm({
     }, []);
 
     return (
-        <>
-            <Form {...form}>
-                <form
-                    onSubmit={form.handleSubmit(onSubmit)}
-                    className="space-y-4">
-                    <FormField
-                        control={form.control}
-                        name="icon"
-                        render={({ field }) => (
-                            <FormInput label="Icon">
-                                <IconPicker
-                                    className="w-full"
-                                    value={field.value as any}
-                                    onValueChange={field.onChange}
-                                />
-                            </FormInput>
-                        )}
-                    />
-                    <FormField
-                        control={form.control}
-                        name="name"
-                        render={({ field }) => (
-                            <FormInput label="Name">
-                                <Input {...field} autoFocus />
-                            </FormInput>
-                        )}
-                    />
-                    {/* <IconPicker value={icon as any} onValueChange={setIcon} /> */}
-                    {form.getValues("icon")}
-
-                    <FormField
-                        control={form.control}
-                        name="duration"
-                        render={({ field }) => (
-                            <FormInput label="Duration">
-                                <Input
-                                    type="number"
-                                    {...field}
-                                    onChange={(e) =>
-                                        field.onChange(
-                                            parseFloat(e.target.value) ||
-                                                e.target.value
-                                        )
-                                    }
-                                />
-                            </FormInput>
-                        )}
-                    />
-                    <FormField
-                        control={form.control}
-                        name="type"
-                        render={({ field }) => (
-                            <FormInput label="Type">
-                                <FormSelect
-                                    onValueChange={field.onChange}
-                                    defaultValue={field.value}
-                                    items={typeItems}
-                                    {...field}
-                                />
-                            </FormInput>
-                        )}
-                    />
-                    <FormField
-                        control={form.control}
-                        name="is_favorite"
-                        render={({ field }) => (
-                            <FormInput label="Favorite" checkBox>
-                                <Checkbox
-                                    checked={field.value}
-                                    onCheckedChange={field.onChange}
-                                />
-                            </FormInput>
-                        )}
-                    />
-                    <FormButton isLoading={form.formState.isSubmitting}>
-                        Submit
-                    </FormButton>
-                </form>
-            </Form>
-        </>
+        <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <FormField
+                    control={form.control}
+                    name="icon"
+                    render={({ field }) => (
+                        <FormInput label="Icon">
+                            <IconPicker
+                                className="w-full"
+                                value={field.value as any}
+                                onValueChange={field.onChange}
+                            />
+                        </FormInput>
+                    )}
+                />
+                <FormField
+                    control={form.control}
+                    name="name"
+                    render={({ field }) => (
+                        <FormInput label="Name">
+                            <Input {...field} autoFocus />
+                        </FormInput>
+                    )}
+                />
+                <FormField
+                    control={form.control}
+                    name="duration"
+                    render={({ field }) => (
+                        <FormInput label="Duration">
+                            <Input
+                                type="number"
+                                {...field}
+                                onChange={(e) =>
+                                    field.onChange(
+                                        parseFloat(e.target.value) ||
+                                            e.target.value
+                                    )
+                                }
+                            />
+                        </FormInput>
+                    )}
+                />
+                <FormField
+                    control={form.control}
+                    name="type"
+                    render={({ field }) => (
+                        <FormInput label="Type">
+                            <FormSelect
+                                onValueChange={field.onChange}
+                                defaultValue={field.value}
+                                items={typeItems}
+                                {...field}
+                            />
+                        </FormInput>
+                    )}
+                />
+                <FormField
+                    control={form.control}
+                    name="is_favorite"
+                    render={({ field }) => (
+                        <FormInput label="Favorite" checkBox>
+                            <Checkbox
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                            />
+                        </FormInput>
+                    )}
+                />
+                <FormButton isLoading={form.formState.isSubmitting}>
+                    Submit
+                </FormButton>
+            </form>
+        </Form>
     );
 }
 
