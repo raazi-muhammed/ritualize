@@ -1,19 +1,10 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card";
 import Heading from "@/components/layout/Heading";
-import { IoPlayCircle as StartIcon } from "react-icons/io5";
 import Link from "next/link";
 import { IoAddCircle as AddIcon } from "react-icons/io5";
 import { UserButton } from "@clerk/nextjs";
-import { formatDuration } from "@/lib/format";
 import { createRoutine, getRoutines } from "./actions";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import LoadingIndicator from "@/components/layout/LoadingIndicator";
@@ -24,6 +15,7 @@ import { useState } from "react";
 import RoutineForm, { routineSchema } from "./_forms/RoutineForm";
 import { z } from "zod";
 import { toast } from "@/components/ui/use-toast";
+import RoutineCard from "./[id]/_components/RoutineCard";
 
 export default async function Home() {
     const queryClient = useQueryClient();
@@ -47,10 +39,7 @@ export default async function Home() {
     });
 
     async function onSubmit(values: z.infer<typeof routineSchema>) {
-        await mutateAsync({
-            name: values.name,
-            duration: values.duration,
-        });
+        await mutateAsync(values);
         setIsAddOpen(false);
         queryClient.invalidateQueries({
             queryKey: ["routines"],
@@ -81,29 +70,26 @@ export default async function Home() {
                     </ResponsiveModel>
                     <Heading className="my-4">Routines</Heading>
                     <section className="flex flex-col gap-4">
-                        {routines?.map((routine) => (
-                            <Link href={`/${routine.id}`} key={routine.name}>
-                                <Card className="relative -z-0 overflow-hidden border-none">
-                                    <CardHeader className="z-10 p-4">
-                                        <CardTitle>{routine.name}</CardTitle>
-                                        <CardDescription>
-                                            {formatDuration(routine.duration)}
-                                        </CardDescription>
-                                    </CardHeader>
-                                    <CardContent className="flex justify-end p-2">
-                                        <Button size="sm" asChild>
-                                            <Link href={`${routine.id}/start`}>
-                                                <StartIcon
-                                                    size="1.3em"
-                                                    className="-ms-1 me-1"
-                                                />
-                                                Start
-                                            </Link>
-                                        </Button>
-                                    </CardContent>
-                                </Card>
-                            </Link>
-                        ))}
+                        <section className="grid grid-cols-2 gap-4">
+                            {routines
+                                ?.filter((r) => r.is_favorite)
+                                .map((routine) => (
+                                    <Link
+                                        href={`/${routine.id}`}
+                                        key={routine.name}>
+                                        <RoutineCard routine={routine} />
+                                    </Link>
+                                ))}
+                        </section>
+                        {routines
+                            ?.filter((r) => !r.is_favorite)
+                            .map((routine) => (
+                                <Link
+                                    href={`/${routine.id}`}
+                                    key={routine.name}>
+                                    <RoutineCard routine={routine} />
+                                </Link>
+                            ))}
                         {routines?.length === 0 && <p>No routines yet</p>}
                     </section>
                 </>

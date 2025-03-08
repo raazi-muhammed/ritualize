@@ -2,16 +2,21 @@
 
 import FormButton from "@/components/form/FormButton";
 import FormInput from "@/components/form/FormInput";
+import FormSelect from "@/components/form/FormSelect";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Form, FormField } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React from "react";
+import { RoutineTypes } from "@prisma/client";
+import React, { useMemo } from "react";
 import { DefaultValues, useForm } from "react-hook-form";
 import { z } from "zod";
 
 export const routineSchema = z.object({
     name: z.string().min(1),
     duration: z.number().min(1),
+    type: z.enum([RoutineTypes.sop, RoutineTypes.recurring]),
+    is_favorite: z.boolean(),
 });
 
 function RoutineForm({
@@ -19,6 +24,8 @@ function RoutineForm({
     defaultValues = {
         name: "",
         duration: 2,
+        type: RoutineTypes.recurring,
+        is_favorite: false,
     },
 }: {
     onSubmit: any;
@@ -29,6 +36,13 @@ function RoutineForm({
         defaultValues,
         mode: "onTouched",
     });
+
+    const typeItems = useMemo(() => {
+        return Object.values(RoutineTypes).map((v) => ({
+            label: v,
+            value: v,
+        }));
+    }, []);
 
     return (
         <Form {...form}>
@@ -56,6 +70,32 @@ function RoutineForm({
                                             e.target.value
                                     )
                                 }
+                            />
+                        </FormInput>
+                    )}
+                />
+                <FormField
+                    control={form.control}
+                    name="type"
+                    render={({ field }) => (
+                        <FormInput label="Type">
+                            <FormSelect
+                                onValueChange={field.onChange}
+                                defaultValue={field.value}
+                                items={typeItems}
+                                {...field}
+                            />
+                        </FormInput>
+                    )}
+                />
+                <FormField
+                    control={form.control}
+                    name="is_favorite"
+                    render={({ field }) => (
+                        <FormInput label="Favorite" checkBox>
+                            <Checkbox
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
                             />
                         </FormInput>
                     )}

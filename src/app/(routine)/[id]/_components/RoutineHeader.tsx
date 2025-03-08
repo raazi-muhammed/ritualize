@@ -29,7 +29,7 @@ import { deleteRoutine } from "../../actions";
 import TaskForm, { taskSchema } from "../(tasks)/_forms/TaskForm";
 import { z } from "zod";
 import { useRoutine } from "../_provider/RoutineProvider";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import ResponsiveModel, {
     ResponsiveModelTrigger,
 } from "@/components/layout/ResponsiveModel";
@@ -117,10 +117,7 @@ const RoutineHeader = () => {
                         content={
                             <RoutineForm
                                 onSubmit={handleEditRoutineSubmit}
-                                defaultValues={{
-                                    name: routine.name,
-                                    duration: routine.duration ?? undefined,
-                                }}
+                                defaultValues={routine}
                             />
                         }>
                         <DropdownMenu>

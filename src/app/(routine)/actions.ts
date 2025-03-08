@@ -23,8 +23,7 @@ export const createRoutine = async ({
 };
 export const updateRoutine = async ({
     id,
-    name,
-    duration,
+    ...data
 }: Partial<Routine> & { id: string }) => {
     const user = await getCurrentUser();
 
@@ -33,10 +32,7 @@ export const updateRoutine = async ({
             id,
             user_id: user.id,
         },
-        data: {
-            name,
-            duration,
-        },
+        data: data,
     });
     revalidatePath("/");
     return updated;
@@ -67,6 +63,9 @@ export async function getRoutines() {
     return await prisma.routine.findMany({
         where: {
             user_id: user.id,
+        },
+        orderBy: {
+            is_favorite: "desc",
         },
     });
 }

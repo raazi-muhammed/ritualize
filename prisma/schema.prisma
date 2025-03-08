@@ -27,10 +27,17 @@ model Task {
     end_date          DateTime?
 }
 
+enum RoutineTypes {
+    recurring
+    sop
+}
+
 model Routine {
-    id       String @id @default(auto()) @map("_id") @db.ObjectId
-    name     String
-    duration Int?
-    tasks    Task[]
-    user_id  String // clerk user id
+    id          String       @id @default(auto()) @map("_id") @db.ObjectId
+    name        String
+    duration    Int?
+    tasks       Task[]
+    user_id     String // clerk user id
+    is_favorite Boolean      @default(false)
+    type        RoutineTypes @default(recurring)
 }

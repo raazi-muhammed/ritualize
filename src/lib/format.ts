@@ -2,7 +2,7 @@ import moment from "moment";
 
 export const formatDuration = (minutes: number | null) => {
     if (minutes == null) return "";
-    return `${minutes} minutes`;
+    return `${minutes} min`;
 };
 
 export const formatDateForInput = (date: Date | null) => {
