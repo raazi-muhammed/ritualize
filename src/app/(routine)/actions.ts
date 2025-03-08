@@ -5,16 +5,12 @@ import { prisma } from "@/lib/prisma";
 import { Routine } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 
-export const createRoutine = async ({
-    name,
-    duration,
-}: Omit<Routine, "id" | "user_id">) => {
+export const createRoutine = async (data: Omit<Routine, "id" | "user_id">) => {
     const user = await getCurrentUser();
 
     const created = await prisma.routine.create({
         data: {
-            name,
-            duration,
+            ...data,
             user_id: user.id,
         },
     });

@@ -4,6 +4,7 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
+import { Icon } from "@/components/ui/icon-picker";
 import { formatDuration } from "@/lib/format";
 import { Routine } from "@prisma/client";
 import { Dot, Heart } from "lucide-react";
@@ -23,6 +24,7 @@ const RoutineCard = ({ routine }: { routine: Routine }) => {
                         <Heart className="text-secondary" size={18} />
                     )}
                 </CardTitle>
+                <Icon name={routine.icon as any} />
                 <CardDescription className="flex">
                     {formatDuration(routine.duration)} <Dot />
                     {routine.type}
