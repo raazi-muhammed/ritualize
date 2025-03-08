@@ -10,15 +10,17 @@ function FormInput({
     children,
     label,
     checkBox = false,
+    controlClass,
 }: {
     children: ReactNode;
     label: string;
     checkBox?: boolean;
+    controlClass?: string;
 }) {
     return (
         <FormItem>
             {!checkBox && <FormLabel>{label}</FormLabel>}
-            <FormControl>{children}</FormControl>
+            <FormControl className={controlClass}>{children}</FormControl>
             {checkBox && (
                 <FormLabel className="ml-2 my-auto font-normal">
                     {label}

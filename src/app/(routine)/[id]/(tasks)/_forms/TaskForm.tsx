@@ -213,6 +213,7 @@ function TaskForm({
                                     }}>
                                     {days.map((day) => (
                                         <ToggleGroupItem
+                                            key={day.value}
                                             value={day.value}
                                             aria-label="Toggle bold">
                                             {day.label}

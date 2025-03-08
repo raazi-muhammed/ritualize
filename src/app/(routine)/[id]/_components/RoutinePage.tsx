@@ -8,7 +8,6 @@ import { useRoutine } from "../_provider/RoutineProvider";
 import Tasks from "./Tasks";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import StartComponent from "../start/_components/StartComponent";
 import { showOnCurrentDate } from "@/lib/utils";
 import { format } from "date-fns";
 import { Calendar as CalendarIcon, ChevronDown } from "lucide-react";
@@ -21,6 +20,7 @@ import {
     PopoverTrigger,
 } from "@/components/ui/popover";
 import { useMediaQuery } from "@/hooks/use-media-query";
+import StartComponent from "../start/_components/StartComponent";
 
 function RoutinePage({
     routine: r,

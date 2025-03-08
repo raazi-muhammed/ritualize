@@ -54,9 +54,11 @@ function RoutineForm({
                     control={form.control}
                     name="icon"
                     render={({ field }) => (
-                        <FormInput label="Icon">
+                        <FormInput
+                            label="Icon"
+                            controlClass="grid place-items-center">
                             <IconPicker
-                                className="w-full"
+                                className="mx-auto w-fit"
                                 value={field.value as any}
                                 onValueChange={field.onChange}
                             />
