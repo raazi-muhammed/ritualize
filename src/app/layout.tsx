@@ -44,20 +44,19 @@ export default function RootLayout({
                     rel="stylesheet"
                 />
             </head>
-            <ClerkProvider
-                appearance={{
-                    baseTheme: [dark],
-                }}>
-                <ReactQueryProvider>
-                    <ThemeProvider
-                        attribute="class"
-                        forcedTheme="dark"
-                        defaultTheme="dark"
-                        disableTransitionOnChange>
-                        <RoutineProvider>
-                            <AlertProvider>
-                                <ModalProvider>
-                                    <body className={inter.className}>
+            <body className={inter.className}>
+                <ClerkProvider
+                    appearance={{
+                        baseTheme: [dark],
+                    }}>
+                    <ReactQueryProvider>
+                        <ThemeProvider
+                            attribute="class"
+                            forcedTheme="dark"
+                            defaultTheme="dark">
+                            <RoutineProvider>
+                                <AlertProvider>
+                                    <ModalProvider>
                                         <SignedOut>
                                             <div className="grid place-items-center h-[100svh]">
                                                 <SignIn />
@@ -68,13 +67,13 @@ export default function RootLayout({
                                             {model}
                                         </SignedIn>
                                         <Toaster />
-                                    </body>
-                                </ModalProvider>
-                            </AlertProvider>
-                        </RoutineProvider>
-                    </ThemeProvider>
-                </ReactQueryProvider>
-            </ClerkProvider>
+                                    </ModalProvider>
+                                </AlertProvider>
+                            </RoutineProvider>
+                        </ThemeProvider>
+                    </ReactQueryProvider>
+                </ClerkProvider>
+            </body>
         </html>
     );
 }

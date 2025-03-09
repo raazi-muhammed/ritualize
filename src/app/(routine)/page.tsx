@@ -14,7 +14,7 @@ import { toast } from "@/components/ui/use-toast";
 import RoutineCard from "./[id]/_components/RoutineCard";
 import { useModal } from "@/providers/ModelProvider";
 
-export default async function Home() {
+export default function Home() {
     const queryClient = useQueryClient();
     const { openModal, closeModal } = useModal();
     const { data: routines, isLoading } = useQuery({

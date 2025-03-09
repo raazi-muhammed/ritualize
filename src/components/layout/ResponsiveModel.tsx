@@ -23,7 +23,7 @@ const ResponsiveModel = ({
     content,
     title,
 }: {
-    children: ReactNode;
+    children?: ReactNode;
     open: boolean;
     setOpen: (open: boolean) => any;
     content: ReactNode;

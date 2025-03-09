@@ -41,9 +41,7 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
                 setOpen={setOpen}
                 title={title}
                 content={content}
-                children={undefined}>
-                {/* No trigger needed as modal is controlled programmatically */}
-            </ResponsiveModel>
+            />
         </ModalContext.Provider>
     );
 };

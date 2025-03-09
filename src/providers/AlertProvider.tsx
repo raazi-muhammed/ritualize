@@ -55,7 +55,7 @@ export const AlertProvider = ({ children }: { children: ReactNode }) => {
         <AlertContext.Provider value={{ openAlert, closeAlert }}>
             {children}
             <AlertDialog open={open} onOpenChange={setOpen}>
-                <AlertDialogContent forceMount>
+                <AlertDialogContent>
                     <AlertDialogHeader>
                         <AlertDialogTitle>{title}</AlertDialogTitle>
                         <AlertDialogDescription>
