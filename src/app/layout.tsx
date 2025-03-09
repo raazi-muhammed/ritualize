@@ -7,6 +7,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { ClerkProvider, SignIn, SignedIn, SignedOut } from "@clerk/nextjs";
 import { dark } from "@clerk/themes";
 import RoutineProvider from "./(routine)/[id]/_provider/RoutineProvider";
+import { ModalProvider } from "@/providers/ModelProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -53,18 +54,20 @@ export default function RootLayout({
                         defaultTheme="dark"
                         disableTransitionOnChange>
                         <RoutineProvider>
-                            <body className={inter.className}>
-                                <SignedOut>
-                                    <div className="grid place-items-center h-[100svh]">
-                                        <SignIn />
-                                    </div>
-                                </SignedOut>
-                                <SignedIn>
-                                    {children}
-                                    {model}
-                                </SignedIn>
-                                <Toaster />
-                            </body>
+                            <ModalProvider>
+                                <body className={inter.className}>
+                                    <SignedOut>
+                                        <div className="grid place-items-center h-[100svh]">
+                                            <SignIn />
+                                        </div>
+                                    </SignedOut>
+                                    <SignedIn>
+                                        {children}
+                                        {model}
+                                    </SignedIn>
+                                    <Toaster />
+                                </body>
+                            </ModalProvider>
                         </RoutineProvider>
                     </ThemeProvider>
                 </ReactQueryProvider>

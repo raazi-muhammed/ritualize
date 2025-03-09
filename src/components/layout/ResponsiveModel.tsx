@@ -34,7 +34,11 @@ const ResponsiveModel = ({
     if (isDesktop)
         return (
             <Dialog open={open} onOpenChange={setOpen} modal={false}>
-                <DialogContent className="max-h-[calc(100vh-10rem)] overflow-auto">
+                <DialogContent
+                    onInteractOutside={(e) => {
+                        e.preventDefault();
+                    }}
+                    className="max-h-[calc(100vh-10rem)] overflow-auto">
                     <DialogHeader>
                         <Heading>{title}</Heading>
                     </DialogHeader>
@@ -45,7 +49,11 @@ const ResponsiveModel = ({
         );
     return (
         <Drawer open={open} onOpenChange={setOpen} modal={false}>
-            <DrawerContent className="h-[calc(100vh-4rem)] px-4 sm:px-12 overflow-auto">
+            <DrawerContent
+                onInteractOutside={(e) => {
+                    e.preventDefault();
+                }}
+                className="h-[calc(100vh-4rem)] px-4 sm:px-12 overflow-auto">
                 <DrawerHeader className="px-0">
                     <Heading>{title}</Heading>
                 </DrawerHeader>

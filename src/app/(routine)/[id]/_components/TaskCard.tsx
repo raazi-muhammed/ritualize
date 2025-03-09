@@ -32,6 +32,7 @@ import {
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { generateCardDescription } from "@/lib/utils";
+import { useModal } from "@/providers/ModelProvider";
 
 const TaskCard = ({
     task,
@@ -43,7 +44,7 @@ const TaskCard = ({
 }) => {
     const queryClient = useQueryClient();
     const { handleMoveTask, handleDeleteTask, handleEditTask } = useRoutine();
-    const [open, setOpen] = useState(false);
+    const { openModal, closeModal } = useModal();
 
     const handleDragStart = (e: DragEvent<HTMLDivElement>) => {
         e.dataTransfer.setData("taskId", task.id);
@@ -61,7 +62,7 @@ const TaskCard = ({
     };
 
     async function onSubmit(values: z.infer<typeof taskSchema>) {
-        setOpen(false);
+        closeModal();
         await handleEditTask({
             ...task,
             ...{
@@ -107,73 +108,71 @@ const TaskCard = ({
                             })}
                         </small>
                     </section>
-                    <ResponsiveModel
-                        open={open}
-                        setOpen={setOpen}
-                        title="Edit Task"
-                        content={
-                            <TaskForm
-                                hideCreateNew
-                                onSubmit={onSubmit}
-                                defaultValues={{
-                                    duration: task.duration,
-                                    frequency: task.frequency,
-                                    name: task.name,
-                                    everyFrequency: task.every_frequency,
-                                    startDate: formatDateForInput(
-                                        task.start_date
-                                    ),
-                                    daysInFrequency: task.days_in_frequency,
-                                }}
-                            />
-                        }>
-                        <AlertDialog>
-                            <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                    <Button
-                                        variant={"ghost"}
-                                        size="icon"
-                                        className="my-auto">
-                                        <CircleEllipsis />
-                                    </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end">
-                                    <ResponsiveModelTrigger className="w-full">
-                                        <DropdownMenuItem>
-                                            Edit
-                                        </DropdownMenuItem>
-                                    </ResponsiveModelTrigger>
-                                    <AlertDialogTrigger className="w-full">
-                                        <DropdownMenuItem>
-                                            Delete
-                                        </DropdownMenuItem>
-                                    </AlertDialogTrigger>
-                                </DropdownMenuContent>
-                                <AlertDialogContent>
-                                    <AlertDialogHeader>
-                                        <AlertDialogTitle>
-                                            Are you absolutely sure?
-                                        </AlertDialogTitle>
-                                        <AlertDialogDescription>
-                                            This action cannot be undone. This
-                                            will permanently delete your account
-                                            and remove your data from our
-                                            servers.
-                                        </AlertDialogDescription>
-                                    </AlertDialogHeader>
-                                    <AlertDialogFooter>
-                                        <AlertDialogCancel>
-                                            Cancel
-                                        </AlertDialogCancel>
-                                        <AlertDialogAction
-                                            onClick={handleDelete}>
-                                            Continue
-                                        </AlertDialogAction>
-                                    </AlertDialogFooter>
-                                </AlertDialogContent>
-                            </DropdownMenu>
-                        </AlertDialog>
-                    </ResponsiveModel>
+                    <AlertDialog>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button
+                                    variant={"ghost"}
+                                    size="icon"
+                                    className="my-auto">
+                                    <CircleEllipsis />
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                                <DropdownMenuItem
+                                    onSelect={() => {
+                                        openModal({
+                                            title: "Edit Task",
+                                            content: (
+                                                <TaskForm
+                                                    hideCreateNew
+                                                    onSubmit={onSubmit}
+                                                    defaultValues={{
+                                                        duration: task.duration,
+                                                        frequency:
+                                                            task.frequency,
+                                                        name: task.name,
+                                                        everyFrequency:
+                                                            task.every_frequency,
+                                                        startDate:
+                                                            formatDateForInput(
+                                                                task.start_date
+                                                            ),
+                                                        daysInFrequency:
+                                                            task.days_in_frequency,
+                                                    }}
+                                                />
+                                            ),
+                                        });
+                                    }}>
+                                    Edit
+                                </DropdownMenuItem>
+                                <AlertDialogTrigger className="w-full">
+                                    <DropdownMenuItem>Delete</DropdownMenuItem>
+                                </AlertDialogTrigger>
+                            </DropdownMenuContent>
+                            <AlertDialogContent>
+                                <AlertDialogHeader>
+                                    <AlertDialogTitle>
+                                        Are you absolutely sure?
+                                    </AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                        This action cannot be undone. This will
+                                        permanently delete your account and
+                                        remove your data from our servers.
+                                    </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                    <AlertDialogCancel>
+                                        Cancel
+                                    </AlertDialogCancel>
+                                    <AlertDialogAction onClick={handleDelete}>
+                                        Continue
+                                    </AlertDialogAction>
+                                </AlertDialogFooter>
+                            </AlertDialogContent>
+                        </DropdownMenu>
+                    </AlertDialog>
                 </CardContent>
             </Card>
         </>

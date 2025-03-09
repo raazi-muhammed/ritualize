@@ -2,7 +2,6 @@
 
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { IoPencil as EditIcon } from "react-icons/io5";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -29,25 +28,19 @@ import { deleteRoutine } from "../../actions";
 import TaskForm, { taskSchema } from "../(tasks)/_forms/TaskForm";
 import { z } from "zod";
 import { useRoutine } from "../_provider/RoutineProvider";
-import { useState } from "react";
-import ResponsiveModel, {
-    ResponsiveModelTrigger,
-} from "@/components/layout/ResponsiveModel";
 import RoutineForm, { routineSchema } from "../../_forms/RoutineForm";
 import { useRouter } from "next/navigation";
 import Tasks from "./Tasks";
+import { useModal } from "@/providers/ModelProvider";
 
 const RoutineHeader = () => {
     const queryClient = useQueryClient();
     const router = useRouter();
-
+    const { openModal, closeModal } = useModal();
     const { handleAddTask, handleEditRoutine, routine } = useRoutine();
-    const [isAddTaskOpen, setIsAddTaskOpen] = useState(false);
-    const [isEditRoutineOpen, setIsEditRoutineOpen] = useState(false);
-    const [isAllTasksOpen, setIsAllTasksOpen] = useState(false);
 
     async function handleAddTaskSubmit(values: z.infer<typeof taskSchema>) {
-        if (!values.createNew) setIsAddTaskOpen(false);
+        if (!values.createNew) closeModal();
         await handleAddTask({
             routine_id: routine.id,
             name: values.name,
@@ -75,7 +68,7 @@ const RoutineHeader = () => {
     async function handleEditRoutineSubmit(
         values: z.infer<typeof routineSchema>
     ) {
-        setIsEditRoutineOpen(false);
+        closeModal();
         handleEditRoutine(values);
         queryClient.invalidateQueries({
             queryKey: ["routine"],
@@ -88,86 +81,93 @@ const RoutineHeader = () => {
                 <ChevronLeft />
             </Link>
             <div className="flex gap-3">
-                <ResponsiveModel
-                    open={isAddTaskOpen}
-                    setOpen={setIsAddTaskOpen}
-                    title="Add Task"
-                    content={<TaskForm onSubmit={handleAddTaskSubmit} />}>
-                    <ResponsiveModelTrigger asChild>
-                        <Button size="sm" variant="secondary">
-                            <AddIcon />
-                            Add
-                        </Button>
-                    </ResponsiveModelTrigger>
-                    <ResponsiveModel
-                        open={isAllTasksOpen}
-                        setOpen={setIsAllTasksOpen}
-                        title="All Tasks"
-                        content={<Tasks tasks={routine.tasks} showStartDate />}>
-                        <ResponsiveModelTrigger>
-                            <Button size="sm">All tasks</Button>
-                        </ResponsiveModelTrigger>
-                    </ResponsiveModel>
-                </ResponsiveModel>
+                <Button
+                    size="sm"
+                    variant="secondary"
+                    onClick={() => {
+                        openModal({
+                            title: "Add Task",
+                            content: (
+                                <TaskForm onSubmit={handleAddTaskSubmit} />
+                            ),
+                        });
+                    }}>
+                    <AddIcon />
+                    Add
+                </Button>
                 <AlertDialog>
-                    <ResponsiveModel
-                        open={isEditRoutineOpen}
-                        setOpen={setIsEditRoutineOpen}
-                        title="Edit Routine"
-                        content={
-                            <RoutineForm
-                                onSubmit={handleEditRoutineSubmit}
-                                defaultValues={routine}
-                            />
-                        }>
-                        <ResponsiveModelTrigger className="w-full" asChild>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
                             <Button size="sm" variant="secondary">
-                                <EditIcon size="1.3em" className="-mx-1" />
+                                <CircleEllipsis
+                                    size="1.3em"
+                                    className="-mx-1"
+                                />
                             </Button>
-                        </ResponsiveModelTrigger>
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button size="sm" variant="secondary">
-                                    <CircleEllipsis
-                                        size="1.3em"
-                                        className="-mx-1"
-                                    />
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                                <AlertDialogTrigger className="w-full">
-                                    <DropdownMenuItem>Delete</DropdownMenuItem>
-                                </AlertDialogTrigger>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
-                        <AlertDialogContent>
-                            <AlertDialogHeader>
-                                <AlertDialogTitle>
-                                    Are you absolutely sure?
-                                </AlertDialogTitle>
-                                <AlertDialogDescription>
-                                    This action cannot be undone. This will
-                                    permanently delete your account and remove
-                                    your data from our servers.
-                                </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                <AlertDialogAction
-                                    onClick={async () => {
-                                        await handleDeleteRoutine({
-                                            id: routine.id,
-                                        });
-                                        queryClient.invalidateQueries({
-                                            queryKey: ["routines"],
-                                        });
-                                        router.push("/");
-                                    }}>
-                                    Continue
-                                </AlertDialogAction>
-                            </AlertDialogFooter>
-                        </AlertDialogContent>
-                    </ResponsiveModel>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            <DropdownMenuItem
+                                onSelect={() => {
+                                    openModal({
+                                        title: "All tasks",
+                                        content: (
+                                            <Tasks
+                                                tasks={routine.tasks}
+                                                showStartDate
+                                            />
+                                        ),
+                                    });
+                                }}>
+                                All tasks
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                                onSelect={() => {
+                                    openModal({
+                                        title: "Edit Routine",
+                                        content: (
+                                            <RoutineForm
+                                                onSubmit={
+                                                    handleEditRoutineSubmit
+                                                }
+                                                defaultValues={routine}
+                                            />
+                                        ),
+                                    });
+                                }}>
+                                Edit
+                            </DropdownMenuItem>
+                            <AlertDialogTrigger className="w-full">
+                                <DropdownMenuItem>Delete</DropdownMenuItem>
+                            </AlertDialogTrigger>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                    <AlertDialogContent>
+                        <AlertDialogHeader>
+                            <AlertDialogTitle>
+                                Are you absolutely sure?
+                            </AlertDialogTitle>
+                            <AlertDialogDescription>
+                                This action cannot be undone. This will
+                                permanently delete your account and remove your
+                                data from our servers.
+                            </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction
+                                onClick={async () => {
+                                    await handleDeleteRoutine({
+                                        id: routine.id,
+                                    });
+                                    queryClient.invalidateQueries({
+                                        queryKey: ["routines"],
+                                    });
+                                    router.push("/");
+                                }}>
+                                Continue
+                            </AlertDialogAction>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
                 </AlertDialog>
             </div>
         </header>
