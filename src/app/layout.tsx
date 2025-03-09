@@ -8,6 +8,7 @@ import { ClerkProvider, SignIn, SignedIn, SignedOut } from "@clerk/nextjs";
 import { dark } from "@clerk/themes";
 import RoutineProvider from "./(routine)/[id]/_provider/RoutineProvider";
 import { ModalProvider } from "@/providers/ModelProvider";
+import { AlertProvider } from "@/providers/AlertProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -54,20 +55,22 @@ export default function RootLayout({
                         defaultTheme="dark"
                         disableTransitionOnChange>
                         <RoutineProvider>
-                            <ModalProvider>
-                                <body className={inter.className}>
-                                    <SignedOut>
-                                        <div className="grid place-items-center h-[100svh]">
-                                            <SignIn />
-                                        </div>
-                                    </SignedOut>
-                                    <SignedIn>
-                                        {children}
-                                        {model}
-                                    </SignedIn>
-                                    <Toaster />
-                                </body>
-                            </ModalProvider>
+                            <AlertProvider>
+                                <ModalProvider>
+                                    <body className={inter.className}>
+                                        <SignedOut>
+                                            <div className="grid place-items-center h-[100svh]">
+                                                <SignIn />
+                                            </div>
+                                        </SignedOut>
+                                        <SignedIn>
+                                            {children}
+                                            {model}
+                                        </SignedIn>
+                                        <Toaster />
+                                    </body>
+                                </ModalProvider>
+                            </AlertProvider>
                         </RoutineProvider>
                     </ThemeProvider>
                 </ReactQueryProvider>

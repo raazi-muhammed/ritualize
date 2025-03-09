@@ -11,28 +11,16 @@ import {
 
 import { Task } from "@prisma/client";
 import { useRoutine } from "../_provider/RoutineProvider";
-import { DragEvent, useState } from "react";
+import { DragEvent } from "react";
 import { CircleEllipsis } from "lucide-react";
-import { formatDateForInput, formatDuration } from "@/lib/format";
-import ResponsiveModel, {
-    ResponsiveModelTrigger,
-} from "@/components/layout/ResponsiveModel";
+import { formatDateForInput } from "@/lib/format";
 import { useQueryClient } from "@tanstack/react-query";
 import TaskForm, { taskSchema } from "../(tasks)/_forms/TaskForm";
 import { z } from "zod";
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+import { AlertDialog } from "@/components/ui/alert-dialog";
 import { generateCardDescription } from "@/lib/utils";
 import { useModal } from "@/providers/ModelProvider";
+import { useAlert } from "@/providers/AlertProvider";
 
 const TaskCard = ({
     task,
@@ -45,6 +33,7 @@ const TaskCard = ({
     const queryClient = useQueryClient();
     const { handleMoveTask, handleDeleteTask, handleEditTask } = useRoutine();
     const { openModal, closeModal } = useModal();
+    const { openAlert } = useAlert();
 
     const handleDragStart = (e: DragEvent<HTMLDivElement>) => {
         e.dataTransfer.setData("taskId", task.id);
@@ -147,30 +136,19 @@ const TaskCard = ({
                                     }}>
                                     Edit
                                 </DropdownMenuItem>
-                                <AlertDialogTrigger className="w-full">
-                                    <DropdownMenuItem>Delete</DropdownMenuItem>
-                                </AlertDialogTrigger>
+                                <DropdownMenuItem
+                                    onSelect={(e) => {
+                                        e.preventDefault();
+                                        openAlert({
+                                            title: "Are you sure you want to delete",
+                                            description:
+                                                "This action cannot be undone.",
+                                            onConfirm: handleDelete,
+                                        });
+                                    }}>
+                                    Delete
+                                </DropdownMenuItem>
                             </DropdownMenuContent>
-                            <AlertDialogContent>
-                                <AlertDialogHeader>
-                                    <AlertDialogTitle>
-                                        Are you absolutely sure?
-                                    </AlertDialogTitle>
-                                    <AlertDialogDescription>
-                                        This action cannot be undone. This will
-                                        permanently delete your account and
-                                        remove your data from our servers.
-                                    </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                    <AlertDialogCancel>
-                                        Cancel
-                                    </AlertDialogCancel>
-                                    <AlertDialogAction onClick={handleDelete}>
-                                        Continue
-                                    </AlertDialogAction>
-                                </AlertDialogFooter>
-                            </AlertDialogContent>
                         </DropdownMenu>
                     </AlertDialog>
                 </CardContent>
