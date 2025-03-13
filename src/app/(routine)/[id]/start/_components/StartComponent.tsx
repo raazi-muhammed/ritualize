@@ -29,7 +29,7 @@ function StartComponent({
     }, [currentTaskIndex]);
     return (
         <main className="container relative flex h-[100svh] w-full flex-col justify-around">
-            <header className="sticky top-0 pt-8 pb-28 z-10 bg-gradient-to-b from-40% from-background">
+            <header className="fixed top-0 left-8 right-8 pt-8 z-10 bg-gradient-to-b from-40% from-background">
                 <section className="flex justify-between">
                     <div
                         onClick={() => setRunning(false)}
@@ -55,11 +55,11 @@ function StartComponent({
                 </section>
             </header>
             <section className="grid z-0">
-                <div className="h-[100vh]" />
+                <div className="h-[30vh]" />
                 {tasks.map((task, index) => (
                     <motion.div
                         key={task.id}
-                        className="scroll-mt-[40vh]"
+                        className="scroll-mt-[20vh]"
                         id={
                             currentTaskIndex == index
                                 ? "active-task"
