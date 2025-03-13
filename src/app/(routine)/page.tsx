@@ -40,7 +40,7 @@ export default function Home() {
     }
 
     return (
-        <main className="container min-h-screen pt-4 bg-background">
+        <main className="px-5 md:container py-4 min-h-screen bg-background">
             {isLoading ? (
                 <LoadingIndicator />
             ) : (

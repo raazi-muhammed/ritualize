@@ -71,7 +71,7 @@ function RoutinePage({
     }
 
     return (
-        <main className="px-6 container-xl py-4">
+        <main className="px-5 container-xl py-4">
             {!!routine && (
                 <>
                     <RoutineHeader />
