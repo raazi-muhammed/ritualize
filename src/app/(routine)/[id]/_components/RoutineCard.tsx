@@ -18,7 +18,7 @@ const RoutineCard = ({
                         isList ? "flex-col" : "flex-row"
                     } gap-2 align-middle`}>
                     <div
-                        className={`bg-secondary ${
+                        className={`bg-secondary shadow-inner shadow-secondary-border ${
                             isList ? "size-12" : "size-8"
                         } grid place-items-center rounded-full`}>
                         <Icon
@@ -26,7 +26,7 @@ const RoutineCard = ({
                             size={isList ? "1.5rem" : "1rem"}
                         />
                     </div>
-                    <CardTitle className="flex justify-between text-lg my-auto">
+                    <CardTitle className="flex justify-between text-lg my-auto font-medium">
                         {routine.name}
                     </CardTitle>
                 </div>

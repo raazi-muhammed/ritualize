@@ -40,7 +40,7 @@ export default function Home() {
     }
 
     return (
-        <main className="container min-h-screen pt-4">
+        <main className="container min-h-screen pt-4 bg-background">
             {isLoading ? (
                 <LoadingIndicator />
             ) : (
