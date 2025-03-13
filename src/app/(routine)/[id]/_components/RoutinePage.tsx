@@ -127,6 +127,9 @@ function RoutinePage({
                                             selectedDate.toDateString() ===
                                             date.toDateString()
                                                 ? "default"
+                                                : new Date().toDateString() ===
+                                                  date.toDateString()
+                                                ? "outline"
                                                 : "ghost"
                                         }>
                                         <p className="flex flex-col gap-0">

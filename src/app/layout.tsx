@@ -40,7 +40,7 @@ export default function RootLayout({
                 <link rel="preconnect" href="https://fonts.googleapis.com" />
                 <link rel="preconnect" href="https://fonts.gstatic.com" />
                 <link
-                    href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz@0,6..96;1,6..96&display=swap"
+                    href="https://fonts.googleapis.com/css2?family=Funnel+Display:wght@300..800&display=swap"
                     rel="stylesheet"
                 />
             </head>

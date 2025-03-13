@@ -12,7 +12,7 @@ export default function Heading({
     className,
     variant = "default",
 }: Props) {
-    let options = "text-4xl font-bold";
+    let options = "text-5xl font-bold";
 
     switch (variant) {
         case "default":
@@ -22,7 +22,7 @@ export default function Heading({
 
     return (
         <h3
-            style={{ fontFamily: "Bodoni Moda" }}
+            style={{ fontFamily: "Funnel Display" }}
             className={cn(options, className)}>
             {children}
         </h3>
