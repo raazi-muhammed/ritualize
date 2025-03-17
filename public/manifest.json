@@ -1,12 +1,12 @@
 {
-    "theme_color": "#0F0F10",
-    "background_color": "#0F0F10",
+    "theme_color": "#161618",
+    "background_color": "#161618",
     "display": "standalone",
     "scope": "/",
     "start_url": "/",
     "name": "Ritualize",
     "short_name": "ritualize",
-    "description": "Routine trakcer app",
+    "description": "Routine tracker app",
     "icons": [
         {
             "src": "/icon-192x192.png",

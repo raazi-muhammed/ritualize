@@ -166,7 +166,7 @@ function RoutinePage({
                             <Tasks tasks={mainTasks} />
                         </section>
                     )}
-                    <footer className="fixed bottom-0 left-0 flex w-[100vw] justify-center py-4">
+                    <footer className="fixed bottom-2 left-0 flex w-[100vw] justify-center py-4">
                         <Button
                             size="lg"
                             className="w-fit px-5"
