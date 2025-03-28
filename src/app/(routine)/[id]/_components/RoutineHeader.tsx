@@ -114,6 +114,7 @@ const RoutineHeader = () => {
                                             <Tasks
                                                 tasks={routine.tasks}
                                                 showStartDate
+                                                date={new Date()}
                                             />
                                         ),
                                     });

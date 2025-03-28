@@ -3,10 +3,11 @@
 import Heading from "@/components/layout/Heading";
 import { Button } from "@/components/ui/button";
 import { useStopwatch } from "@/hooks/stop-watch";
-import { Routine, Task } from "@prisma/client";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { CompletionStatus, Routine, Task } from "@prisma/client";
+import { ChevronLeft, ChevronRight, SkipForward } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { motion } from "motion/react";
+import { useRoutine } from "../../_provider/RoutineProvider";
 
 function StartComponent({
     routine,
@@ -19,6 +20,7 @@ function StartComponent({
 }) {
     const [currentTaskIndex, setCurrentTaskIndex] = useState<number>(0);
     const { time, reset } = useStopwatch();
+    const { handleChangeTaskStatus } = useRoutine();
 
     useEffect(() => {
         const item = document.getElementById("active-task");
@@ -27,6 +29,23 @@ function StartComponent({
             behavior: "smooth",
         });
     }, [currentTaskIndex]);
+
+    function completedTask() {
+        handleChangeTaskStatus({
+            taskId: tasks[currentTaskIndex].id,
+            date: new Date(),
+            status: CompletionStatus.completed,
+        });
+    }
+
+    function skipTask() {
+        handleChangeTaskStatus({
+            taskId: tasks[currentTaskIndex].id,
+            date: new Date(),
+            status: CompletionStatus.skipped,
+        });
+    }
+
     return (
         <main className="container relative flex h-[100svh] w-full flex-col justify-around">
             <header className="fixed top-0 left-8 right-8 pt-8 z-10 bg-gradient-to-b from-40% from-background">
@@ -118,23 +137,53 @@ function StartComponent({
                     </div>
 
                     {currentTaskIndex >= tasks.length - 1 ? (
-                        <Button onClick={() => setRunning(false)}>
-                            Done
-                            <ChevronRight className="-me-2" />
-                        </Button>
-                    ) : (
-                        <div className="grid gap-1">
+                        <div className="flex gap-2">
                             <Button
-                                variant="secondary"
+                                variant="ghost"
                                 className="ms-auto w-fit"
-                                disabled={currentTaskIndex >= tasks.length - 1}
                                 onClick={() => {
-                                    setCurrentTaskIndex((cti) => ++cti);
-                                    reset();
+                                    setRunning(false);
+                                    skipTask();
                                 }}>
-                                Next
+                                <SkipForward />
+                            </Button>
+                            <Button
+                                onClick={() => {
+                                    setRunning(false);
+                                    completedTask();
+                                }}>
+                                Done
                                 <ChevronRight className="-me-2" />
                             </Button>
+                        </div>
+                    ) : (
+                        <div className="grid gap-1">
+                            <div className="flex gap-2">
+                                <Button
+                                    variant="ghost"
+                                    className="ms-auto w-fit"
+                                    onClick={() => {
+                                        setCurrentTaskIndex((cti) => ++cti);
+                                        reset();
+                                        skipTask();
+                                    }}>
+                                    <SkipForward />
+                                </Button>
+                                <Button
+                                    variant="secondary"
+                                    className="ms-auto w-fit"
+                                    disabled={
+                                        currentTaskIndex >= tasks.length - 1
+                                    }
+                                    onClick={() => {
+                                        setCurrentTaskIndex((cti) => ++cti);
+                                        reset();
+                                        completedTask();
+                                    }}>
+                                    Next
+                                    <ChevronRight className="-me-2" />
+                                </Button>
+                            </div>
                             <small className="text-end text-muted-foreground">
                                 {tasks?.[currentTaskIndex + 1]?.name}
                             </small>
