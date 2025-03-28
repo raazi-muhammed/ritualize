@@ -1,7 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
-import { Task } from "@prisma/client";
+import { CompletionStatus, Task } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 
 export const createTask = async ({
@@ -105,4 +105,52 @@ export const moveTo = async ({
         },
     });
     revalidatePath(`/${routine_id}`);
+};
+
+export const changeTaskStatus = async ({
+    task_id,
+    routine_id,
+    date,
+    status,
+}: {
+    task_id: string;
+    routine_id: string;
+    date?: Date;
+    status: CompletionStatus;
+}) => {
+    const newDate = date
+        ? new Date(date.setHours(0, 0, 0, 0))
+        : new Date(new Date().setHours(0, 0, 0, 0));
+
+    const completion = await prisma.taskCompletion.upsert({
+        where: {
+            task_id_date: {
+                task_id,
+                date: newDate,
+            },
+        },
+        update: {
+            task_id,
+            date: newDate,
+            status,
+        },
+        create: {
+            task_id,
+            date: newDate,
+            status,
+        },
+    });
+    revalidatePath(`/${routine_id}`);
+    return completion;
+};
+
+export const getTaskCompletions = async (routine_id: string, date: Date) => {
+    return await prisma.taskCompletion.findMany({
+        where: {
+            task: {
+                routine_id,
+            },
+            date: new Date(date.setHours(0, 0, 0, 0)),
+        },
+    });
 };

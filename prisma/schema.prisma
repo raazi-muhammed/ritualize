@@ -13,18 +13,38 @@ enum Frequency {
     monthly
 }
 
+enum CompletionStatus {
+    completed
+    skipped
+    failed
+}
+
+model TaskCompletion {
+    id         String           @id @default(auto()) @map("_id") @db.ObjectId
+    task_id    String           @db.ObjectId
+    task       Task             @relation(fields: [task_id], references: [id])
+    date       DateTime
+    status     CompletionStatus @default(completed)
+    notes      String?
+    created_at DateTime         @default(now())
+    updated_at DateTime         @updatedAt
+
+    @@unique([task_id, date])
+}
+
 model Task {
-    id                String    @id @default(auto()) @map("_id") @db.ObjectId
+    id                String           @id @default(auto()) @map("_id") @db.ObjectId
     name              String
     duration          Int
     order             Int
-    routine_id        String    @db.ObjectId
-    routine           Routine   @relation(fields: [routine_id], references: [id])
-    frequency         Frequency @default(daily)
-    every_frequency   Int       @default(1)
-    days_in_frequency Int[]     @default([])
-    start_date        DateTime  @default(now())
+    routine_id        String           @db.ObjectId
+    routine           Routine          @relation(fields: [routine_id], references: [id])
+    frequency         Frequency        @default(daily)
+    every_frequency   Int              @default(1)
+    days_in_frequency Int[]            @default([])
+    start_date        DateTime         @default(now())
     end_date          DateTime?
+    completions       TaskCompletion[]
 }
 
 enum RoutineTypes {

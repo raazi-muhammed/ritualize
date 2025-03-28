@@ -8,8 +8,9 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Checkbox } from "@/components/ui/checkbox";
 
-import { Task } from "@prisma/client";
+import { CompletionStatus, Task } from "@prisma/client";
 import { useRoutine } from "../_provider/RoutineProvider";
 import { DragEvent } from "react";
 import { CircleEllipsis } from "lucide-react";
@@ -30,18 +31,27 @@ import {
 } from "@/components/ui/alert-dialog";
 import { generateCardDescription } from "@/lib/utils";
 import { useModal } from "@/providers/ModelProvider";
-import { useAlert } from "@/providers/AlertProvider";
+import React from "react";
 
 const TaskCard = ({
     task,
     showStartDate = false,
+    date,
+    status,
 }: {
     routineId: string;
     task: Task;
     showStartDate?: boolean;
+    date: Date;
+    status: CompletionStatus;
 }) => {
     const queryClient = useQueryClient();
-    const { handleMoveTask, handleDeleteTask, handleEditTask } = useRoutine();
+    const {
+        handleMoveTask,
+        handleDeleteTask,
+        handleEditTask,
+        handleChangeTaskStatus,
+    } = useRoutine();
     const { openModal, closeModal } = useModal();
 
     const handleDragStart = (e: DragEvent<HTMLDivElement>) => {
@@ -84,6 +94,18 @@ const TaskCard = ({
         });
     }
 
+    async function handleToggleCompletion(status: CompletionStatus) {
+        await handleChangeTaskStatus({
+            taskId: task.id,
+            date,
+            status,
+        });
+
+        queryClient.invalidateQueries({
+            queryKey: ["routine", "taskCompletions"],
+        });
+    }
+
     return (
         <Card
             key={task.id}
@@ -93,17 +115,30 @@ const TaskCard = ({
             onDragOver={(e) => e.preventDefault()}
             onDrop={handleDrop}>
             <CardContent className="flex justify-between p-4">
-                <section>
-                    <p>{task.name}</p>
-                    <small className="text-muted-foreground">
-                        {`${task.duration} min`}
-                    </small>
-                    <br />
-                    <small className="text-muted-foreground">
-                        {generateCardDescription(task, {
-                            showStartDate,
-                        })}
-                    </small>
+                <section className="flex items-start gap-2">
+                    <Checkbox
+                        checked={status === CompletionStatus.completed}
+                        onCheckedChange={(checked) => {
+                            handleToggleCompletion(
+                                checked
+                                    ? CompletionStatus.completed
+                                    : CompletionStatus.skipped
+                            );
+                        }}
+                        className="mt-1"
+                    />
+                    <div>
+                        <p>{task.name}</p>
+                        <small className="text-muted-foreground">
+                            {`${task.duration} min`}
+                        </small>
+                        <br />
+                        <small className="text-muted-foreground">
+                            {generateCardDescription(task, {
+                                showStartDate,
+                            })}
+                        </small>
+                    </div>
                 </section>
                 <AlertDialog>
                     <DropdownMenu>

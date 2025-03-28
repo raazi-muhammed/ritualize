@@ -155,6 +155,7 @@ function RoutinePage({
                             {getLast7DaysFromSunday().map((date, index) => (
                                 <Tasks
                                     key={index}
+                                    date={date}
                                     tasks={tasks.filter((task) =>
                                         showOnCurrentDate(date, task)
                                     )}
@@ -163,7 +164,7 @@ function RoutinePage({
                         </section>
                     ) : (
                         <section className="gap-4">
-                            <Tasks tasks={mainTasks} />
+                            <Tasks tasks={mainTasks} date={selectedDate} />
                         </section>
                     )}
                     <footer className="fixed bottom-2 left-0 flex w-[100vw] justify-center py-4">

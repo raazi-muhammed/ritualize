@@ -1,10 +1,16 @@
 "use client";
 
-import { Routine, Task } from "@prisma/client";
+import { CompletionStatus, Routine, Task } from "@prisma/client";
 import { useMutation } from "@tanstack/react-query";
 import { ReactNode, useContext, useOptimistic, useState } from "react";
 import { createContext } from "react";
-import { createTask, deleteTask, moveTo, updateTask } from "../(tasks)/actions";
+import {
+    changeTaskStatus,
+    createTask,
+    deleteTask,
+    moveTo,
+    updateTask,
+} from "../(tasks)/actions";
 import { toast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 import { updateRoutine } from "../../actions";
@@ -143,6 +149,33 @@ export const useRoutine = () => {
         await updateRoutine({ id: routine.id, ...r });
     };
 
+    const handleChangeTaskStatus = async ({
+        taskId,
+        date,
+        status,
+    }: {
+        taskId: string;
+        date?: Date;
+        status: CompletionStatus;
+    }) => {
+        if (!updateTasks) return alert("No updated function");
+        updateTasks((state) => {
+            return state.map((t) => {
+                if (t.id == taskId) {
+                    return { ...t, status };
+                }
+                return t;
+            });
+        });
+
+        await changeTaskStatus({
+            task_id: taskId,
+            routine_id: routine.id,
+            date,
+            status,
+        });
+    };
+
     return {
         tasks,
         routine,
@@ -153,5 +186,6 @@ export const useRoutine = () => {
         updateTasks,
         handleAddTask,
         handleEditRoutine,
+        handleChangeTaskStatus,
     };
 };
