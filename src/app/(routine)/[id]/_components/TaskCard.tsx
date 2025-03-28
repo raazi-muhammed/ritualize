@@ -38,12 +38,15 @@ const TaskCard = ({
     showStartDate = false,
     date,
     status,
+    routineId,
+    checkLoading,
 }: {
     routineId: string;
     task: Task;
     showStartDate?: boolean;
     date: Date;
     status: CompletionStatus;
+    checkLoading: boolean;
 }) => {
     const queryClient = useQueryClient();
     const {
@@ -95,15 +98,38 @@ const TaskCard = ({
     }
 
     async function handleToggleCompletion(status: CompletionStatus) {
-        await handleChangeTaskStatus({
-            taskId: task.id,
+        const previousCompletions = queryClient.getQueryData([
+            "taskCompletions",
+            routineId,
             date,
-            status,
-        });
+        ]);
 
-        queryClient.invalidateQueries({
-            queryKey: ["routine", "taskCompletions"],
-        });
+        queryClient.setQueryData(
+            ["taskCompletions", routineId, date],
+            (
+                old: { task_id: string; status: CompletionStatus }[] | undefined
+            ) => {
+                if (!old) return [{ task_id: task.id, status }];
+                return old.map((completion) =>
+                    completion.task_id === task.id
+                        ? { ...completion, status }
+                        : completion
+                );
+            }
+        );
+
+        try {
+            await handleChangeTaskStatus({
+                taskId: task.id,
+                date,
+                status,
+            });
+        } catch (error) {
+            queryClient.setQueryData(
+                ["taskCompletions", routineId, date],
+                previousCompletions
+            );
+        }
     }
 
     return (
@@ -118,6 +144,7 @@ const TaskCard = ({
                 <section className="flex items-start gap-2">
                     <Checkbox
                         checked={status === CompletionStatus.completed}
+                        disabled={checkLoading}
                         onCheckedChange={(checked) => {
                             handleToggleCompletion(
                                 checked

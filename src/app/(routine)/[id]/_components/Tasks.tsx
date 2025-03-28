@@ -14,7 +14,7 @@ const Tasks = ({
     date: Date;
 }) => {
     const { routine } = useRoutine();
-    const { data: taskCompletions } = useQuery({
+    const { data: taskCompletions, isLoading } = useQuery({
         queryKey: ["taskCompletions", routine.id, date],
         queryFn: () => getTaskCompletions(routine.id, date),
     });
@@ -28,6 +28,7 @@ const Tasks = ({
             )}
             {tasks?.map((task) => (
                 <TaskCard
+                    checkLoading={isLoading}
                     key={task.id}
                     task={task}
                     routineId={routine.id}

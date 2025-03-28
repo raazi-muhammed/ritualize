@@ -158,16 +158,6 @@ export const useRoutine = () => {
         date?: Date;
         status: CompletionStatus;
     }) => {
-        if (!updateTasks) return alert("No updated function");
-        updateTasks((state) => {
-            return state.map((t) => {
-                if (t.id == taskId) {
-                    return { ...t, status };
-                }
-                return t;
-            });
-        });
-
         await changeTaskStatus({
             task_id: taskId,
             routine_id: routine.id,
