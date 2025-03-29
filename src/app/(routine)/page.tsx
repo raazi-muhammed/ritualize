@@ -13,6 +13,7 @@ import { z } from "zod";
 import RoutineCard from "./[id]/_components/RoutineCard";
 import { useModal } from "@/providers/ModelProvider";
 import { Routine } from "@prisma/client";
+import InfoMessage from "@/components/message/InfoMessage";
 
 export default function Home() {
     const queryClient = useQueryClient();
@@ -96,7 +97,9 @@ export default function Home() {
                                     <RoutineCard routine={routine} />
                                 </Link>
                             ))}
-                        {routines?.length === 0 && <p>No routines yet</p>}
+                        {routines?.length === 0 && (
+                            <InfoMessage message="No routines yet" />
+                        )}
                     </section>
                 </>
             )}

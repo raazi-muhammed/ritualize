@@ -3,6 +3,7 @@ import { useRoutine } from "../_provider/RoutineProvider";
 import { getRoutineForDate } from "../actions";
 import TaskCard from "./TaskCard";
 import TasksSkeleton from "./TasksSkeleton";
+import InfoMessage from "@/components/message/InfoMessage";
 
 const Tasks = ({
     showStartDate = false,
@@ -25,9 +26,7 @@ const Tasks = ({
             ) : (
                 <>
                     {data?.tasks.length === 0 && (
-                        <p className="text-center text-muted-foreground mt-4">
-                            No tasks yet
-                        </p>
+                        <InfoMessage message="No tasks yet" />
                     )}
                     {data?.tasks?.map((task) => (
                         <TaskCard

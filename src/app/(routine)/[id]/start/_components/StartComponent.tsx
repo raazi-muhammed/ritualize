@@ -11,6 +11,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getRoutineForDate } from "../../actions";
 import { changeTaskStatus } from "../../(tasks)/actions";
 import { RoutineWithTasks, TaskWithStatus } from "@/types/entities";
+import InfoMessage from "@/components/message/InfoMessage";
 
 function getStartFrom(
     tasks: TaskWithStatus[] | undefined,
@@ -107,13 +108,19 @@ function StartComponent({
     if (startFrom == null) {
         return (
             <div className="flex flex-col items-center justify-center h-full mt-16">
-                <p className="text-center text-muted-foreground">
-                    No tasks to complete
-                </p>
-                <Button onClick={() => setRunning(false)}>
-                    <ChevronLeft />
-                    Back
-                </Button>
+                <InfoMessage
+                    message="No tasks to complete"
+                    actions={[
+                        <Button
+                            key="back"
+                            size="sm"
+                            variant="outline"
+                            onClick={() => setRunning(false)}>
+                            <ChevronLeft className="-ms-2" />
+                            Back
+                        </Button>,
+                    ]}
+                />
             </div>
         );
     }
