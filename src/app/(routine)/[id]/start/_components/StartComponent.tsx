@@ -7,20 +7,56 @@ import { CompletionStatus, Routine, Task } from "@prisma/client";
 import { ChevronLeft, ChevronRight, SkipForward } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { motion } from "motion/react";
-import { useRoutine } from "../../_provider/RoutineProvider";
-
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { getRoutineForDate } from "../../actions";
+import { changeTaskStatus } from "../../(tasks)/actions";
+import { RoutineWithTasks } from "@/types/entities";
 function StartComponent({
     routine,
-    tasks,
+    date,
     setRunning,
 }: {
     routine: Routine;
-    tasks: Task[];
+    date: Date;
     setRunning: (running: boolean) => void;
 }) {
     const [currentTaskIndex, setCurrentTaskIndex] = useState<number>(0);
     const { time, reset } = useStopwatch();
-    const { handleChangeTaskStatus } = useRoutine();
+    const queryClient = useQueryClient();
+
+    const { data } = useQuery({
+        queryKey: ["routine", routine.id, date],
+        queryFn: () => getRoutineForDate(routine.id, date),
+    });
+
+    const { mutateAsync: changeTaskStatusMutation } = useMutation({
+        mutationFn: changeTaskStatus,
+        onMutate: async ({ task_id, status }) => {
+            await queryClient.cancelQueries({
+                queryKey: ["routine", routine.id, date],
+            });
+
+            const previousQueryData = queryClient.getQueryData([
+                "routine",
+                routine.id,
+                date,
+            ]);
+
+            queryClient.setQueryData(
+                ["routine", routine.id, date],
+                (old: RoutineWithTasks) => {
+                    return {
+                        ...old,
+                        tasks: old.tasks.map((t) =>
+                            t.id === task_id ? { ...t, status } : t
+                        ),
+                    };
+                }
+            );
+
+            return { previousQueryData };
+        },
+    });
 
     useEffect(() => {
         const item = document.getElementById("active-task");
@@ -31,16 +67,18 @@ function StartComponent({
     }, [currentTaskIndex]);
 
     function completedTask() {
-        handleChangeTaskStatus({
-            taskId: tasks[currentTaskIndex].id,
+        changeTaskStatusMutation({
+            task_id: data?.tasks[currentTaskIndex].id || "",
+            routine_id: routine.id,
             date: new Date(),
             status: CompletionStatus.completed,
         });
     }
 
     function skipTask() {
-        handleChangeTaskStatus({
-            taskId: tasks[currentTaskIndex].id,
+        changeTaskStatusMutation({
+            task_id: data?.tasks[currentTaskIndex].id || "",
+            routine_id: routine.id,
             date: new Date(),
             status: CompletionStatus.skipped,
         });
@@ -62,7 +100,7 @@ function StartComponent({
                     <small className="my-auto font-mono">{time}</small>
                 </section>
                 <section className="flex gap-1">
-                    {tasks.map((task, index) => (
+                    {data?.tasks.map((task, index) => (
                         <div
                             key={index}
                             className={`h-1 w-full rounded bg-white ${
@@ -75,7 +113,7 @@ function StartComponent({
             </header>
             <section className="grid z-0">
                 <div className="h-[30vh]" />
-                {tasks.map((task, index) => (
+                {data?.tasks.map((task, index) => (
                     <motion.div
                         key={task.id}
                         className="scroll-mt-[20vh]"
@@ -111,7 +149,7 @@ function StartComponent({
                             transition={{
                                 duration: 0.75,
                             }}>
-                            {tasks[currentTaskIndex].duration} minutes
+                            {data?.tasks[currentTaskIndex].duration} minutes
                         </motion.small>
                     </motion.div>
                 ))}
@@ -132,11 +170,11 @@ function StartComponent({
                             Prev
                         </Button>
                         <small className="text-start text-muted-foreground">
-                            {tasks?.[currentTaskIndex - 1]?.name}
+                            {data?.tasks?.[currentTaskIndex - 1]?.name}
                         </small>
                     </div>
 
-                    {currentTaskIndex >= tasks.length - 1 ? (
+                    {currentTaskIndex >= (data?.tasks.length || 0) - 1 ? (
                         <div className="flex gap-2">
                             <Button
                                 variant="ghost"
@@ -144,6 +182,9 @@ function StartComponent({
                                 onClick={() => {
                                     setRunning(false);
                                     skipTask();
+                                    queryClient.invalidateQueries({
+                                        queryKey: ["routine", routine.id, date],
+                                    });
                                 }}>
                                 <SkipForward />
                             </Button>
@@ -151,6 +192,9 @@ function StartComponent({
                                 onClick={() => {
                                     setRunning(false);
                                     completedTask();
+                                    queryClient.invalidateQueries({
+                                        queryKey: ["routine", routine.id, date],
+                                    });
                                 }}>
                                 Done
                                 <ChevronRight className="-me-2" />
@@ -173,7 +217,8 @@ function StartComponent({
                                     variant="secondary"
                                     className="ms-auto w-fit"
                                     disabled={
-                                        currentTaskIndex >= tasks.length - 1
+                                        currentTaskIndex >=
+                                        (data?.tasks.length || 0) - 1
                                     }
                                     onClick={() => {
                                         setCurrentTaskIndex((cti) => ++cti);
@@ -185,7 +230,7 @@ function StartComponent({
                                 </Button>
                             </div>
                             <small className="text-end text-muted-foreground">
-                                {tasks?.[currentTaskIndex + 1]?.name}
+                                {data?.tasks?.[currentTaskIndex + 1]?.name}
                             </small>
                         </div>
                     )}

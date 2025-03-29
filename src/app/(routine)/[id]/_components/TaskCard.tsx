@@ -10,12 +10,12 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Checkbox } from "@/components/ui/checkbox";
 
-import { CompletionStatus, Task } from "@prisma/client";
+import { CompletionStatus, Frequency } from "@prisma/client";
 import { useRoutine } from "../_provider/RoutineProvider";
-import { DragEvent, useOptimistic } from "react";
+import { DragEvent } from "react";
 import { CircleEllipsis } from "lucide-react";
 import { formatDateForInput } from "@/lib/format";
-import { useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import TaskForm, { taskSchema } from "../(tasks)/_forms/TaskForm";
 import { z } from "zod";
 import {
@@ -31,8 +31,13 @@ import {
 } from "@/components/ui/alert-dialog";
 import { generateCardDescription } from "@/lib/utils";
 import { useModal } from "@/providers/ModelProvider";
-import React from "react";
 import { TaskWithStatus } from "@/types/entities";
+import {
+    changeTaskStatus,
+    deleteTask,
+    moveTo,
+    updateTask,
+} from "../(tasks)/actions";
 
 const TaskCard = ({
     task,
@@ -44,13 +49,156 @@ const TaskCard = ({
     date: Date;
 }) => {
     const queryClient = useQueryClient();
-    const {
-        handleMoveTask,
-        handleDeleteTask,
-        handleEditTask,
-        handleChangeTaskStatus,
-    } = useRoutine();
     const { openModal, closeModal } = useModal();
+    const { routine } = useRoutine();
+
+    const { mutateAsync: deleteTaskMutation } = useMutation({
+        mutationFn: deleteTask,
+        onMutate: async () => {
+            await queryClient.cancelQueries({
+                queryKey: ["routine", routine.id, date],
+            });
+
+            const previousQueryData = queryClient.getQueryData([
+                "routine",
+                routine.id,
+                date,
+            ]);
+
+            queryClient.setQueryData(
+                ["routine", routine.id, date],
+                (old: { tasks: TaskWithStatus[] }) => {
+                    return {
+                        ...old,
+                        tasks: old.tasks.filter((t) => t.id !== task.id),
+                    };
+                }
+            );
+
+            return { previousQueryData };
+        },
+        onSettled: () => {
+            queryClient.invalidateQueries({
+                queryKey: ["routine"],
+            });
+        },
+    });
+
+    const { mutateAsync: changeTaskStatusMutation } = useMutation({
+        mutationFn: changeTaskStatus,
+        onMutate: async ({ status, task_id }) => {
+            await queryClient.cancelQueries({
+                queryKey: ["routine", routine.id, date],
+            });
+
+            const previousQueryData = queryClient.getQueryData([
+                "routine",
+                routine.id,
+                date,
+            ]);
+
+            queryClient.setQueryData(
+                ["routine", routine.id, date],
+                (old: { tasks: TaskWithStatus[] }) => {
+                    return {
+                        ...old,
+                        tasks: old.tasks.map((t) =>
+                            t.id === task_id ? { ...t, status } : t
+                        ),
+                    };
+                }
+            );
+
+            return { previousQueryData };
+        },
+        onSettled: () => {
+            queryClient.invalidateQueries({
+                queryKey: ["routine", routine.id, date],
+            });
+        },
+    });
+
+    const { mutateAsync: moveTaskMutation } = useMutation({
+        mutationFn: moveTo,
+        onMutate: async ({ task_to_move_id, move_to }) => {
+            await queryClient.cancelQueries({
+                queryKey: ["routine", routine.id, date],
+            });
+
+            const previousQueryData = queryClient.getQueryData([
+                "routine",
+                routine.id,
+                date,
+            ]);
+
+            queryClient.setQueryData(
+                ["routine", routine.id, date],
+                (old: { tasks: TaskWithStatus[] }) => {
+                    return {
+                        ...old,
+                        tasks: old.tasks
+                            .map((t) => {
+                                if (t.id == task_to_move_id) {
+                                    return {
+                                        ...t,
+                                        order: move_to.order,
+                                    };
+                                }
+                                if (t.order >= move_to.order) {
+                                    return {
+                                        ...t,
+                                        order: t.order + 1,
+                                    };
+                                }
+                                return t;
+                            })
+                            .toSorted((a, b) => a.order - b.order),
+                    };
+                }
+            );
+
+            return { previousQueryData };
+        },
+        onSettled: () => {
+            queryClient.invalidateQueries({
+                queryKey: ["routine", routine.id, date],
+            });
+        },
+    });
+
+    const { mutateAsync: editTaskMutation } = useMutation({
+        mutationFn: updateTask,
+        onMutate: async (task) => {
+            await queryClient.cancelQueries({
+                queryKey: ["routine", routine.id, date],
+            });
+
+            const previousQueryData = queryClient.getQueryData([
+                "routine",
+                routine.id,
+                date,
+            ]);
+
+            queryClient.setQueryData(
+                ["routine", routine.id, date],
+                (old: { tasks: TaskWithStatus[] }) => {
+                    return {
+                        ...old,
+                        tasks: old.tasks.map((t) =>
+                            t.id === task.id ? task : t
+                        ),
+                    };
+                }
+            );
+
+            return { previousQueryData };
+        },
+        onSettled: () => {
+            queryClient.invalidateQueries({
+                queryKey: ["routine", routine.id, date],
+            });
+        },
+    });
 
     const handleDragStart = (e: DragEvent<HTMLDivElement>) => {
         e.dataTransfer.setData("taskId", task.id);
@@ -58,48 +206,31 @@ const TaskCard = ({
 
     const handleDrop = async (e: DragEvent<HTMLDivElement>) => {
         const taskId = e.dataTransfer.getData("taskId");
-        await handleMoveTask({
-            moveToTask: task,
-            taskToMoveId: taskId,
-        });
-        queryClient.invalidateQueries({
-            queryKey: ["routine"],
+        moveTaskMutation({
+            task_to_move_id: taskId,
+            move_to: task,
+            routine_id: routine.id,
         });
     };
 
-    async function onSubmit(values: z.infer<typeof taskSchema>) {
+    function onSubmit(values: z.infer<typeof taskSchema>) {
         closeModal();
-        await handleEditTask({
+        editTaskMutation({
             ...task,
             ...{
                 ...values,
                 every_frequency: values.everyFrequency,
                 start_date: new Date(values.startDate),
-                days_in_frequency: values.daysInFrequency,
+                frequency: values.frequency as Frequency,
             },
-        } as any);
-        queryClient.invalidateQueries({
-            queryKey: ["routine"],
         });
     }
 
-    async function handleDelete() {
-        await handleDeleteTask({
-            taskId: task.id,
-        });
-        queryClient.invalidateQueries({
-            queryKey: ["routine"],
-        });
-    }
-
-    async function handleToggleCompletion(status: CompletionStatus) {
-        await handleChangeTaskStatus({
-            taskId: task.id,
-            date,
+    function handleToggleCompletion(status: CompletionStatus) {
+        changeTaskStatusMutation({
+            task_id: task.id,
             status,
-        });
-        queryClient.invalidateQueries({
-            queryKey: ["routine"],
+            routine_id: routine.id,
         });
     }
 
@@ -192,7 +323,12 @@ const TaskCard = ({
                             </AlertDialogHeader>
                             <AlertDialogFooter>
                                 <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                <AlertDialogAction onClick={handleDelete}>
+                                <AlertDialogAction
+                                    onClick={() => {
+                                        deleteTaskMutation({
+                                            id: task.id,
+                                        });
+                                    }}>
                                     Continue
                                 </AlertDialogAction>
                             </AlertDialogFooter>

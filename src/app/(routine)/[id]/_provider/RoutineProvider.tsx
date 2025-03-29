@@ -29,7 +29,7 @@ export const RoutineContext = createContext<{
 
 const RoutineProvider = ({ children }: { children: ReactNode }) => {
     const [routine, setRoutine] = useState({ tasks: [] });
-    const [tasks, updateTasks] = useOptimistic<TaskWithStatus[]>(
+    const [tasks, updateTasks] = useState<TaskWithStatus[]>(
         routine?.tasks || []
     );
 

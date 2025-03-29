@@ -1,26 +1,31 @@
+import { useQuery } from "@tanstack/react-query";
 import { useRoutine } from "../_provider/RoutineProvider";
+import { getRoutineForDate } from "../actions";
 import TaskCard from "./TaskCard";
 import { TaskWithStatus } from "@/types/entities";
 
 const Tasks = ({
-    tasks,
     showStartDate = false,
     date,
 }: {
-    tasks: TaskWithStatus[];
     showStartDate?: boolean;
     date: Date;
 }) => {
     const { routine } = useRoutine();
 
+    const { data, isLoading } = useQuery({
+        queryKey: ["routine", routine.id, date],
+        queryFn: () => getRoutineForDate(routine.id, date),
+    });
+
     return (
         <section className="mb-16">
-            {tasks.length < 1 && (
+            {!!data?.tasks.length && (
                 <p className="text-center text-muted-foreground mt-4">
                     No tasks yet
                 </p>
             )}
-            {tasks?.map((task) => (
+            {data?.tasks?.map((task) => (
                 <TaskCard
                     key={task.id}
                     task={task}

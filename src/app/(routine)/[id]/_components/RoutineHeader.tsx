@@ -26,22 +26,56 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "@/components/ui/use-toast";
 import { deleteRoutine } from "../../actions";
 import TaskForm, { taskSchema } from "../(tasks)/_forms/TaskForm";
-import { z } from "zod";
-import { useRoutine } from "../_provider/RoutineProvider";
+import { date, z } from "zod";
 import RoutineForm, { routineSchema } from "../../_forms/RoutineForm";
 import { useRouter } from "next/navigation";
 import Tasks from "./Tasks";
 import { useModal } from "@/providers/ModelProvider";
+import { createTask } from "../(tasks)/actions";
+import { useRoutine } from "../_provider/RoutineProvider";
+import { RoutineWithTasks } from "@/types/entities";
 
-const RoutineHeader = () => {
+const RoutineHeader = ({ date }: { date: Date }) => {
     const queryClient = useQueryClient();
     const router = useRouter();
     const { openModal, closeModal } = useModal();
-    const { handleAddTask, handleEditRoutine, routine } = useRoutine();
 
-    async function handleAddTaskSubmit(values: z.infer<typeof taskSchema>) {
+    const { routine } = useRoutine();
+    const { mutateAsync: handleAddTask } = useMutation({
+        mutationFn: createTask,
+        onMutate: async (task) => {
+            await queryClient.cancelQueries({
+                queryKey: ["routine", routine.id, date],
+            });
+
+            const previousQueryData = queryClient.getQueryData([
+                "routine",
+                routine.id,
+                date,
+            ]);
+
+            queryClient.setQueryData(
+                ["routine", routine.id, date],
+                (old: RoutineWithTasks) => {
+                    return {
+                        ...old,
+                        tasks: [...(old?.tasks ?? []), task],
+                    };
+                }
+            );
+
+            return { previousQueryData };
+        },
+        onSettled: () => {
+            queryClient.invalidateQueries({
+                queryKey: ["routine", routine.id, date],
+            });
+        },
+    });
+
+    function handleAddTaskSubmit(values: z.infer<typeof taskSchema>) {
         if (!values.createNew) closeModal();
-        await handleAddTask({
+        handleAddTask({
             routine_id: routine.id,
             name: values.name,
             duration: values.duration,
@@ -51,17 +85,14 @@ const RoutineHeader = () => {
             start_date: new Date(values.startDate),
             end_date: null,
         });
-        queryClient.invalidateQueries({
-            queryKey: ["routine"],
-        });
     }
 
     const { mutateAsync: handleDeleteRoutine } = useMutation({
         mutationFn: deleteRoutine,
         onSuccess: (routine) => {
-            toast({
-                description: `${routine?.name ?? "Routine"} deleted`,
-            });
+            // toast({
+            //     description: `${routine?.name ?? "Routine"} deleted`,
+            // });
         },
     });
 
@@ -69,7 +100,7 @@ const RoutineHeader = () => {
         values: z.infer<typeof routineSchema>
     ) {
         closeModal();
-        handleEditRoutine(values);
+        //  handleEditRoutine(values);
         queryClient.invalidateQueries({
             queryKey: ["routine"],
         });
@@ -112,7 +143,6 @@ const RoutineHeader = () => {
                                         title: "All tasks",
                                         content: (
                                             <Tasks
-                                                tasks={routine.tasks}
                                                 showStartDate
                                                 date={new Date()}
                                             />
@@ -130,7 +160,6 @@ const RoutineHeader = () => {
                                                 onSubmit={
                                                     handleEditRoutineSubmit
                                                 }
-                                                defaultValues={routine}
                                             />
                                         ),
                                     });
@@ -157,9 +186,9 @@ const RoutineHeader = () => {
                             <AlertDialogCancel>Cancel</AlertDialogCancel>
                             <AlertDialogAction
                                 onClick={async () => {
-                                    await handleDeleteRoutine({
-                                        id: routine.id,
-                                    });
+                                    // await handleDeleteRoutine({
+                                    //     id: routine.id,
+                                    // });
                                     queryClient.invalidateQueries({
                                         queryKey: ["routines"],
                                     });

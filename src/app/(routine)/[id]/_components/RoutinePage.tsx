@@ -30,9 +30,8 @@ function RoutinePage({
     selectedDate: Date;
     onDateChange: (date: Date) => void;
 }) {
-    const { setRoutine, routine, tasks } = useRoutine();
+    const { setRoutine, routine } = useRoutine();
     const [running, setRunning] = useState(false);
-    const [mainTasks, setMainTasks] = useState<TaskWithStatus[]>([]);
     const [showWeekSelector, setShowWeekSelector] = useState(false);
     const isDesktop = useMediaQuery("(min-width: 1200px)");
 
@@ -54,16 +53,12 @@ function RoutinePage({
         return days;
     };
 
-    useEffect(() => {
-        setMainTasks(tasks);
-    }, [selectedDate, tasks]);
-
     if (running) {
         return (
             <StartComponent
                 routine={routine}
-                tasks={mainTasks}
                 setRunning={setRunning}
+                date={selectedDate}
             />
         );
     }
@@ -72,7 +67,7 @@ function RoutinePage({
         <main className="px-5 container-xl py-4">
             {!!routine && (
                 <>
-                    <RoutineHeader />
+                    <RoutineHeader date={selectedDate} />
                     <section className="my-4 bg-background">
                         <Heading>{routine.name}</Heading>
                         <section className="flex mt-2 gap-2">
@@ -151,12 +146,12 @@ function RoutinePage({
                     {isDesktop ? (
                         <section className="gap-4 grid grid-cols-7">
                             {getLast7DaysFromSunday().map((date, index) => (
-                                <Tasks key={index} date={date} tasks={tasks} />
+                                <Tasks key={index} date={date} />
                             ))}
                         </section>
                     ) : (
                         <section className="gap-4">
-                            <Tasks tasks={mainTasks} date={selectedDate} />
+                            <Tasks date={selectedDate} />
                         </section>
                     )}
                     <footer className="fixed bottom-2 left-0 flex w-[100vw] justify-center py-4">
