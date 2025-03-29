@@ -3,6 +3,7 @@ import { useRoutine } from "../_provider/RoutineProvider";
 import { getRoutine } from "../actions";
 import TaskCard from "./TaskCard";
 import { TaskWithStatus } from "@/types/entities";
+import TasksSkeleton from "./TasksSkeleton";
 
 const AllTasks = ({
     showStartDate = false,
@@ -20,19 +21,25 @@ const AllTasks = ({
 
     return (
         <section className="mb-16">
-            {data?.tasks.length === 0 && (
-                <p className="text-center text-muted-foreground mt-4">
-                    No tasks yet
-                </p>
+            {isLoading ? (
+                <TasksSkeleton />
+            ) : (
+                <>
+                    {data?.tasks.length === 0 && (
+                        <p className="text-center text-muted-foreground mt-4">
+                            No tasks yet
+                        </p>
+                    )}
+                    {data?.tasks?.map((task) => (
+                        <TaskCard
+                            key={task.id}
+                            task={task as TaskWithStatus}
+                            showStartDate={showStartDate}
+                            date={date ?? new Date()}
+                        />
+                    ))}
+                </>
             )}
-            {data?.tasks?.map((task) => (
-                <TaskCard
-                    key={task.id}
-                    task={task as TaskWithStatus}
-                    showStartDate={showStartDate}
-                    date={date ?? new Date()}
-                />
-            ))}
         </section>
     );
 };

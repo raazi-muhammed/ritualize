@@ -32,6 +32,7 @@ import {
 import { generateCardDescription } from "@/lib/utils";
 import { useModal } from "@/providers/ModelProvider";
 import { TaskWithStatus } from "@/types/entities";
+import { resourceUsage } from "process";
 
 const TaskCard = ({
     task,
@@ -83,6 +84,12 @@ const TaskCard = ({
             status,
         });
     }
+    function showCheckbox() {
+        if (!task.id) return true; // If task is new, show checkbox
+        if (task?.status) return true; // If task is completed, show checkbox
+
+        return false;
+    }
 
     return (
         <Card
@@ -94,7 +101,7 @@ const TaskCard = ({
             onDrop={handleDrop}>
             <CardContent className="flex justify-between p-4">
                 <section className="flex items-start gap-2">
-                    {task?.status && (
+                    {showCheckbox() ? (
                         <Checkbox
                             checked={task.status === CompletionStatus.completed}
                             onCheckedChange={(checked) => {
@@ -106,7 +113,7 @@ const TaskCard = ({
                             }}
                             className="mt-1"
                         />
-                    )}
+                    ) : null}
                     <div>
                         <p>{task.name}</p>
                         <small className="text-muted-foreground">
