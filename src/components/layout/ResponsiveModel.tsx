@@ -53,7 +53,7 @@ const ResponsiveModel = ({
                 onInteractOutside={(e) => {
                     e.preventDefault();
                 }}
-                className="h-[calc(100vh-4rem)] px-4 sm:px-12 overflow-auto">
+                className="h-[90vh] px-4 sm:px-12 overflow-auto">
                 <DrawerHeader className="px-0">
                     <Heading>{title}</Heading>
                 </DrawerHeader>
