@@ -12,7 +12,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 
 import { CompletionStatus, Task } from "@prisma/client";
 import { useRoutine } from "../_provider/RoutineProvider";
-import { DragEvent } from "react";
+import { DragEvent, useOptimistic } from "react";
 import { CircleEllipsis } from "lucide-react";
 import { formatDateForInput } from "@/lib/format";
 import { useQueryClient } from "@tanstack/react-query";
@@ -32,21 +32,16 @@ import {
 import { generateCardDescription } from "@/lib/utils";
 import { useModal } from "@/providers/ModelProvider";
 import React from "react";
+import { TaskWithStatus } from "@/types/entities";
 
 const TaskCard = ({
     task,
     showStartDate = false,
     date,
-    status,
-    routineId,
-    checkLoading,
 }: {
-    routineId: string;
-    task: Task;
+    task: TaskWithStatus;
     showStartDate?: boolean;
     date: Date;
-    status: CompletionStatus;
-    checkLoading: boolean;
 }) => {
     const queryClient = useQueryClient();
     const {
@@ -98,38 +93,14 @@ const TaskCard = ({
     }
 
     async function handleToggleCompletion(status: CompletionStatus) {
-        const previousCompletions = queryClient.getQueryData([
-            "taskCompletions",
-            routineId,
+        await handleChangeTaskStatus({
+            taskId: task.id,
             date,
-        ]);
-
-        queryClient.setQueryData(
-            ["taskCompletions", routineId, date],
-            (
-                old: { task_id: string; status: CompletionStatus }[] | undefined
-            ) => {
-                if (!old) return [{ task_id: task.id, status }];
-                return old.map((completion) =>
-                    completion.task_id === task.id
-                        ? { ...completion, status }
-                        : completion
-                );
-            }
-        );
-
-        try {
-            await handleChangeTaskStatus({
-                taskId: task.id,
-                date,
-                status,
-            });
-        } catch (error) {
-            queryClient.setQueryData(
-                ["taskCompletions", routineId, date],
-                previousCompletions
-            );
-        }
+            status,
+        });
+        queryClient.invalidateQueries({
+            queryKey: ["routine"],
+        });
     }
 
     return (
@@ -143,8 +114,7 @@ const TaskCard = ({
             <CardContent className="flex justify-between p-4">
                 <section className="flex items-start gap-2">
                     <Checkbox
-                        checked={status === CompletionStatus.completed}
-                        disabled={checkLoading}
+                        checked={task.status === CompletionStatus.completed}
                         onCheckedChange={(checked) => {
                             handleToggleCompletion(
                                 checked

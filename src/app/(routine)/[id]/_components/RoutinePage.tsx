@@ -21,18 +21,19 @@ import {
 } from "@/components/ui/popover";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import StartComponent from "../start/_components/StartComponent";
+import { TaskWithStatus } from "@/types/entities";
 
 function RoutinePage({
     routine: r,
 }: {
     routine: Routine & {
-        tasks: Task[];
+        tasks: TaskWithStatus[];
     };
 }) {
     const { setRoutine, routine, tasks } = useRoutine();
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [running, setRunning] = useState(false);
-    const [mainTasks, setMainTasks] = useState<Task[]>([]);
+    const [mainTasks, setMainTasks] = useState<TaskWithStatus[]>([]);
     const [showWeekSelector, setShowWeekSelector] = useState(false);
     const isDesktop = useMediaQuery("(min-width: 1200px)");
 

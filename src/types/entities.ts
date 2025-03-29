@@ -1,11 +1,5 @@
-export type Routine = {
-    name: string;
-    duration: number;
-    cover: string;
-    tasks: Task[];
-};
+import { CompletionStatus, Task } from "@prisma/client";
 
-export type Task = {
-    name: string;
-    duration: number;
+export type TaskWithStatus = Task & {
+    status: CompletionStatus;
 };

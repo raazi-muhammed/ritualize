@@ -14,10 +14,13 @@ import {
 import { toast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 import { updateRoutine } from "../../actions";
+import { TaskWithStatus } from "@/types/entities";
 
 export const RoutineContext = createContext<{
-    tasks: Task[];
-    updateTasks?: (action: (state: Task[]) => Task[]) => void;
+    tasks: TaskWithStatus[];
+    updateTasks?: (
+        action: (state: TaskWithStatus[]) => TaskWithStatus[]
+    ) => void;
     routine?: any;
     setRoutine?: any;
     isPending?: any;
@@ -26,7 +29,9 @@ export const RoutineContext = createContext<{
 
 const RoutineProvider = ({ children }: { children: ReactNode }) => {
     const [routine, setRoutine] = useState({ tasks: [] });
-    const [tasks, updateTasks] = useOptimistic<Task[]>(routine?.tasks || []);
+    const [tasks, updateTasks] = useOptimistic<TaskWithStatus[]>(
+        routine?.tasks || []
+    );
 
     return (
         <RoutineContext.Provider
@@ -115,7 +120,9 @@ export const useRoutine = () => {
         });
     };
 
-    const handleAddTask = async (task: Omit<Task, "id" | "order">) => {
+    const handleAddTask = async (
+        task: Omit<TaskWithStatus, "id" | "order">
+    ) => {
         if (!updateTasks) return alert("No updated function");
         updateTasks((state) => [
             ...state,
@@ -158,6 +165,16 @@ export const useRoutine = () => {
         date?: Date;
         status: CompletionStatus;
     }) => {
+        if (!updateTasks) return alert("No updated function");
+        updateTasks((state) => {
+            return state.map((t) => {
+                if (t.id == taskId) {
+                    return { ...t, status };
+                }
+                return t;
+            });
+        });
+
         await changeTaskStatus({
             task_id: taskId,
             routine_id: routine.id,
