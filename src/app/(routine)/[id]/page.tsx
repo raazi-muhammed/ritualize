@@ -33,6 +33,7 @@ export default function Page({ params }: { params: { id: string } }) {
                     message="Error loading routine"
                     actions={[
                         <Button
+                            key="back"
                             size="sm"
                             variant="outline"
                             onClick={() => {
