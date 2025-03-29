@@ -14,6 +14,7 @@ import {
 import { toast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 import { RoutineWithTasks, TaskWithStatus } from "@/types/entities";
+import { updateRoutine } from "../../actions";
 
 export const RoutineContext = createContext<{
     routine?: any;
@@ -222,6 +223,35 @@ export const useRoutine = (date: Date) => {
         },
     });
 
+    const { mutateAsync: editRoutineMutation } = useMutation({
+        mutationFn: updateRoutine,
+        onMutate: async (routine) => {
+            await queryClient.cancelQueries({
+                queryKey: ["routine", routine.id, date],
+            });
+
+            const previousQueryData = queryClient.getQueryData([
+                "routine",
+                routine.id,
+                date,
+            ]);
+
+            queryClient.setQueryData(
+                ["routine", routine.id, date],
+                (old: RoutineWithTasks) => {
+                    return { ...old, ...routine };
+                }
+            );
+
+            return { previousQueryData };
+        },
+        onSettled: () => {
+            queryClient.invalidateQueries({
+                queryKey: ["routine", routine.id, date],
+            });
+        },
+    });
+
     const handleMoveTask = async ({
         moveToTask,
         taskToMoveId,
@@ -249,7 +279,12 @@ export const useRoutine = (date: Date) => {
         editTaskMutation(task);
     };
 
-    const handleEditRoutine = async (r: Omit<Routine, "id" | "user_id">) => {};
+    const handleEditRoutine = async (r: Omit<Routine, "id" | "user_id">) => {
+        editRoutineMutation({
+            id: routine.id,
+            ...r,
+        });
+    };
 
     const handleChangeTaskStatus = async ({
         taskId,

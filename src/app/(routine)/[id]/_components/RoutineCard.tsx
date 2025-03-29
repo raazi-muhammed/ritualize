@@ -11,7 +11,10 @@ const RoutineCard = ({
     isList?: boolean;
 }) => {
     return (
-        <Card className="relative -z-0 overflow-hidden p-2">
+        <Card
+            className={`relative -z-0 overflow-hidden p-2 ${
+                routine?.id ?? "opacity-50 pointer-events-none"
+            }`}>
             <CardHeader className="z-10 p-2 flex justify-between flex-row">
                 <div
                     className={`flex ${

@@ -21,26 +21,24 @@ import {
 } from "@/components/ui/alert-dialog";
 import { ChevronLeft, CircleEllipsis } from "lucide-react";
 import { IoAddCircle as AddIcon } from "react-icons/io5";
-import { CompletionStatus, Frequency } from "@prisma/client";
+import { Frequency } from "@prisma/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "@/components/ui/use-toast";
 import { deleteRoutine } from "../../actions";
 import TaskForm, { taskSchema } from "../(tasks)/_forms/TaskForm";
-import { date, z } from "zod";
+import { z } from "zod";
 import RoutineForm, { routineSchema } from "../../_forms/RoutineForm";
 import { useRouter } from "next/navigation";
 import Tasks from "./Tasks";
 import { useModal } from "@/providers/ModelProvider";
-import { createTask } from "../(tasks)/actions";
 import { useRoutine } from "../_provider/RoutineProvider";
-import { RoutineWithTasks } from "@/types/entities";
 
 const RoutineHeader = ({ date }: { date: Date }) => {
     const queryClient = useQueryClient();
     const router = useRouter();
     const { openModal, closeModal } = useModal();
 
-    const { routine, handleAddTask } = useRoutine(date);
+    const { routine, handleAddTask, handleEditRoutine } = useRoutine(date);
 
     function handleAddTaskSubmit(values: z.infer<typeof taskSchema>) {
         if (!values.createNew) closeModal();
@@ -69,14 +67,9 @@ const RoutineHeader = ({ date }: { date: Date }) => {
         },
     });
 
-    async function handleEditRoutineSubmit(
-        values: z.infer<typeof routineSchema>
-    ) {
+    function handleEditRoutineSubmit(values: z.infer<typeof routineSchema>) {
         closeModal();
-        //  handleEditRoutine(values);
-        queryClient.invalidateQueries({
-            queryKey: ["routine"],
-        });
+        handleEditRoutine(values);
     }
 
     return (
@@ -133,6 +126,7 @@ const RoutineHeader = ({ date }: { date: Date }) => {
                                                 onSubmit={
                                                     handleEditRoutineSubmit
                                                 }
+                                                defaultValues={routine}
                                             />
                                         ),
                                     });

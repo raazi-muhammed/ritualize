@@ -10,9 +10,9 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import LoadingIndicator from "@/components/layout/LoadingIndicator";
 import RoutineForm, { routineSchema } from "./_forms/RoutineForm";
 import { z } from "zod";
-import { toast } from "@/components/ui/use-toast";
 import RoutineCard from "./[id]/_components/RoutineCard";
 import { useModal } from "@/providers/ModelProvider";
+import { Routine } from "@prisma/client";
 
 export default function Home() {
     const queryClient = useQueryClient();
@@ -24,19 +24,28 @@ export default function Home() {
 
     const { mutateAsync } = useMutation({
         mutationFn: createRoutine,
-        onSuccess: (routine) => {
-            toast({
-                description: `${routine?.name ?? "Routine"} created`,
+        onMutate: async (routine) => {
+            await queryClient.cancelQueries({
+                queryKey: ["routines"],
+            });
+            const previousQueryData = queryClient.getQueryData(["routines"]);
+            queryClient.setQueryData(["routines"], (old: Routine[]) => [
+                ...old,
+                routine,
+            ]);
+
+            return { previousQueryData };
+        },
+        onSettled: () => {
+            queryClient.invalidateQueries({
+                queryKey: ["routines"],
             });
         },
     });
 
-    async function onSubmit(values: z.infer<typeof routineSchema>) {
+    function onSubmit(values: z.infer<typeof routineSchema>) {
         closeModal();
-        await mutateAsync(values);
-        queryClient.invalidateQueries({
-            queryKey: ["routines"],
-        });
+        mutateAsync(values);
     }
 
     return (
