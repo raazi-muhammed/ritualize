@@ -2,13 +2,11 @@
 
 import Heading from "@/components/layout/Heading";
 import { IoPlayCircle as StartIcon } from "react-icons/io5";
-import { Routine, Task } from "@prisma/client";
 import RoutineHeader from "./RoutineHeader";
 import { useRoutine } from "../_provider/RoutineProvider";
 import Tasks from "./Tasks";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { showOnCurrentDate } from "@/lib/utils";
 import { format } from "date-fns";
 import { Calendar as CalendarIcon, ChevronDown } from "lucide-react";
 import { Toggle } from "@/components/ui/toggle";
@@ -21,17 +19,18 @@ import {
 } from "@/components/ui/popover";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import StartComponent from "../start/_components/StartComponent";
-import { TaskWithStatus } from "@/types/entities";
+import { RoutineWithTasks, TaskWithStatus } from "@/types/entities";
 
 function RoutinePage({
     routine: r,
+    selectedDate,
+    onDateChange,
 }: {
-    routine: Routine & {
-        tasks: TaskWithStatus[];
-    };
+    routine: RoutineWithTasks;
+    selectedDate: Date;
+    onDateChange: (date: Date) => void;
 }) {
     const { setRoutine, routine, tasks } = useRoutine();
-    const [selectedDate, setSelectedDate] = useState(new Date());
     const [running, setRunning] = useState(false);
     const [mainTasks, setMainTasks] = useState<TaskWithStatus[]>([]);
     const [showWeekSelector, setShowWeekSelector] = useState(false);
@@ -56,9 +55,7 @@ function RoutinePage({
     };
 
     useEffect(() => {
-        setMainTasks(
-            tasks.filter((task) => showOnCurrentDate(selectedDate, task))
-        );
+        setMainTasks(tasks);
     }, [selectedDate, tasks]);
 
     if (running) {
@@ -103,7 +100,7 @@ function RoutinePage({
                                         selected={selectedDate}
                                         onSelect={(date) => {
                                             if (date)
-                                                setSelectedDate(new Date(date));
+                                                onDateChange(new Date(date));
                                         }}
                                         initialFocus
                                     />
@@ -123,7 +120,7 @@ function RoutinePage({
                                 {getLast7DaysFromSunday().map((date, index) => (
                                     <Button
                                         key={index}
-                                        onClick={() => setSelectedDate(date)}
+                                        onClick={() => onDateChange(date)}
                                         variant={
                                             selectedDate.toDateString() ===
                                             date.toDateString()
@@ -154,13 +151,7 @@ function RoutinePage({
                     {isDesktop ? (
                         <section className="gap-4 grid grid-cols-7">
                             {getLast7DaysFromSunday().map((date, index) => (
-                                <Tasks
-                                    key={index}
-                                    date={date}
-                                    tasks={tasks.filter((task) =>
-                                        showOnCurrentDate(date, task)
-                                    )}
-                                />
+                                <Tasks key={index} date={date} tasks={tasks} />
                             ))}
                         </section>
                     ) : (
