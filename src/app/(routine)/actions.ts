@@ -36,7 +36,23 @@ export const updateRoutine = async ({
 
 export const deleteRoutine = async ({ id }: { id: string }) => {
     const user = await getCurrentUser();
+    const prevRoutine = await prisma.routine.findUnique({
+        where: {
+            id,
+            user_id: user.id,
+        },
+        include: {
+            tasks: true,
+        },
+    });
     const [_, routine] = await Promise.all([
+        await prisma.taskCompletion.deleteMany({
+            where: {
+                task_id: {
+                    in: prevRoutine?.tasks.map((task) => task.id) ?? [],
+                },
+            },
+        }),
         await prisma.task.deleteMany({
             where: {
                 routine_id: id,
