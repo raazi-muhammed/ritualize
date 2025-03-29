@@ -1,20 +1,21 @@
 import { useQuery } from "@tanstack/react-query";
 import { useRoutine } from "../_provider/RoutineProvider";
-import { getRoutineForDate } from "../actions";
+import { getRoutine } from "../actions";
 import TaskCard from "./TaskCard";
+import { TaskWithStatus } from "@/types/entities";
 
-const Tasks = ({
+const AllTasks = ({
     showStartDate = false,
     date,
 }: {
     showStartDate?: boolean;
-    date: Date;
+    date?: Date;
 }) => {
-    const { routine } = useRoutine(date);
+    const { routine } = useRoutine(date ?? new Date());
 
     const { data, isLoading } = useQuery({
-        queryKey: ["routine", routine.id],
-        queryFn: () => getRoutineForDate(routine.id, date ?? new Date()),
+        queryKey: ["routine-all", routine.id],
+        queryFn: () => getRoutine(routine.id),
     });
 
     return (
@@ -27,7 +28,7 @@ const Tasks = ({
             {data?.tasks?.map((task) => (
                 <TaskCard
                     key={task.id}
-                    task={task}
+                    task={task as TaskWithStatus}
                     showStartDate={showStartDate}
                     date={date ?? new Date()}
                 />
@@ -36,4 +37,4 @@ const Tasks = ({
     );
 };
 
-export default Tasks;
+export default AllTasks;

@@ -32,6 +32,7 @@ import { useRouter } from "next/navigation";
 import Tasks from "./Tasks";
 import { useModal } from "@/providers/ModelProvider";
 import { useRoutine } from "../_provider/RoutineProvider";
+import AllTasks from "./AllTasks";
 
 const RoutineHeader = ({ date }: { date: Date }) => {
     const queryClient = useQueryClient();
@@ -107,12 +108,7 @@ const RoutineHeader = ({ date }: { date: Date }) => {
                                 onSelect={() => {
                                     openModal({
                                         title: "All tasks",
-                                        content: (
-                                            <Tasks
-                                                showStartDate
-                                                date={new Date()}
-                                            />
-                                        ),
+                                        content: <AllTasks showStartDate />,
                                     });
                                 }}>
                                 All tasks

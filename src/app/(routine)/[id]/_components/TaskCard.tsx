@@ -10,12 +10,12 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Checkbox } from "@/components/ui/checkbox";
 
-import { CompletionStatus, Frequency } from "@prisma/client";
+import { CompletionStatus, Frequency, Task } from "@prisma/client";
 import { useRoutine } from "../_provider/RoutineProvider";
 import { DragEvent } from "react";
 import { CircleEllipsis } from "lucide-react";
 import { formatDateForInput } from "@/lib/format";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import TaskForm, { taskSchema } from "../(tasks)/_forms/TaskForm";
 import { z } from "zod";
 import {
@@ -32,12 +32,6 @@ import {
 import { generateCardDescription } from "@/lib/utils";
 import { useModal } from "@/providers/ModelProvider";
 import { TaskWithStatus } from "@/types/entities";
-import {
-    changeTaskStatus,
-    deleteTask,
-    moveTo,
-    updateTask,
-} from "../(tasks)/actions";
 
 const TaskCard = ({
     task,
@@ -100,17 +94,19 @@ const TaskCard = ({
             onDrop={handleDrop}>
             <CardContent className="flex justify-between p-4">
                 <section className="flex items-start gap-2">
-                    <Checkbox
-                        checked={task.status === CompletionStatus.completed}
-                        onCheckedChange={(checked) => {
-                            handleToggleCompletion(
-                                checked
-                                    ? CompletionStatus.completed
-                                    : CompletionStatus.skipped
-                            );
-                        }}
-                        className="mt-1"
-                    />
+                    {task?.status && (
+                        <Checkbox
+                            checked={task.status === CompletionStatus.completed}
+                            onCheckedChange={(checked) => {
+                                handleToggleCompletion(
+                                    checked
+                                        ? CompletionStatus.completed
+                                        : CompletionStatus.skipped
+                                );
+                            }}
+                            className="mt-1"
+                        />
+                    )}
                     <div>
                         <p>{task.name}</p>
                         <small className="text-muted-foreground">
