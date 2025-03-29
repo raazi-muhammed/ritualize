@@ -5,12 +5,20 @@ import RoutinePage from "./_components/RoutinePage";
 import { useQuery } from "@tanstack/react-query";
 import { getRoutineForDate } from "./actions";
 import LoadingIndicator from "@/components/layout/LoadingIndicator";
+import InfoMessage from "@/components/message/InfoMessage";
+import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
 
 export default function Page({ params }: { params: { id: string } }) {
     const routineId = params.id;
     const [selectedDate, setSelectedDate] = useState(new Date());
-
-    const { data: routine, isLoading } = useQuery({
+    const router = useRouter();
+    const {
+        data: routine,
+        isLoading,
+        isError,
+        error,
+    } = useQuery({
         queryKey: ["routine", routineId, selectedDate],
         queryFn: () => getRoutineForDate(routineId, selectedDate),
     });
@@ -19,6 +27,21 @@ export default function Page({ params }: { params: { id: string } }) {
         <>
             {isLoading ? (
                 <LoadingIndicator />
+            ) : isError ? (
+                <InfoMessage
+                    type="error"
+                    message="Error loading routine"
+                    actions={[
+                        <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => {
+                                router.push("/");
+                            }}>
+                            Back
+                        </Button>,
+                    ]}
+                />
             ) : (
                 routine && (
                     <RoutinePage

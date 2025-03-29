@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/popover";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import StartComponent from "../start/_components/StartComponent";
-import { RoutineWithTasks, TaskWithStatus } from "@/types/entities";
+import { RoutineWithTasks } from "@/types/entities";
 
 function RoutinePage({
     routine: r,

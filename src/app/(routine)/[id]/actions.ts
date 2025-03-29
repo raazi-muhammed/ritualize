@@ -91,7 +91,7 @@ export async function getRoutineForDate(id: string, date: Date) {
         },
     });
 
-    if (!routine) return null;
+    if (!routine) throw new Error("Routine not found");
 
     const filteredTasks = routine.tasks.filter((task) =>
         shouldShowTaskToday(
