@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { ChevronLeft, CircleEllipsis } from "lucide-react";
 import { IoAddCircle as AddIcon } from "react-icons/io5";
-import { Frequency } from "@prisma/client";
+import { CompletionStatus, Frequency } from "@prisma/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "@/components/ui/use-toast";
 import { deleteRoutine } from "../../actions";
@@ -40,38 +40,7 @@ const RoutineHeader = ({ date }: { date: Date }) => {
     const router = useRouter();
     const { openModal, closeModal } = useModal();
 
-    const { routine } = useRoutine();
-    const { mutateAsync: handleAddTask } = useMutation({
-        mutationFn: createTask,
-        onMutate: async (task) => {
-            await queryClient.cancelQueries({
-                queryKey: ["routine", routine.id, date],
-            });
-
-            const previousQueryData = queryClient.getQueryData([
-                "routine",
-                routine.id,
-                date,
-            ]);
-
-            queryClient.setQueryData(
-                ["routine", routine.id, date],
-                (old: RoutineWithTasks) => {
-                    return {
-                        ...old,
-                        tasks: [...(old?.tasks ?? []), task],
-                    };
-                }
-            );
-
-            return { previousQueryData };
-        },
-        onSettled: () => {
-            queryClient.invalidateQueries({
-                queryKey: ["routine", routine.id, date],
-            });
-        },
-    });
+    const { routine, handleAddTask } = useRoutine(date);
 
     function handleAddTaskSubmit(values: z.infer<typeof taskSchema>) {
         if (!values.createNew) closeModal();
@@ -89,10 +58,14 @@ const RoutineHeader = ({ date }: { date: Date }) => {
 
     const { mutateAsync: handleDeleteRoutine } = useMutation({
         mutationFn: deleteRoutine,
-        onSuccess: (routine) => {
-            // toast({
-            //     description: `${routine?.name ?? "Routine"} deleted`,
-            // });
+        onSuccess: () => {
+            toast({
+                description: `${routine?.name ?? "Routine"} deleted`,
+            });
+            queryClient.invalidateQueries({
+                queryKey: ["routines"],
+            });
+            router.push("/");
         },
     });
 
@@ -185,14 +158,10 @@ const RoutineHeader = ({ date }: { date: Date }) => {
                         <AlertDialogFooter>
                             <AlertDialogCancel>Cancel</AlertDialogCancel>
                             <AlertDialogAction
-                                onClick={async () => {
-                                    // await handleDeleteRoutine({
-                                    //     id: routine.id,
-                                    // });
-                                    queryClient.invalidateQueries({
-                                        queryKey: ["routines"],
+                                onClick={() => {
+                                    handleDeleteRoutine({
+                                        id: routine.id,
                                     });
-                                    router.push("/");
                                 }}>
                                 Continue
                             </AlertDialogAction>

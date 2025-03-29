@@ -11,7 +11,7 @@ const Tasks = ({
     showStartDate?: boolean;
     date: Date;
 }) => {
-    const { routine } = useRoutine();
+    const { routine } = useRoutine(date);
 
     const { data, isLoading } = useQuery({
         queryKey: ["routine", routine.id, date],

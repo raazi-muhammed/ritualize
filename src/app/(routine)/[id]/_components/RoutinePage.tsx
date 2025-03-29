@@ -30,7 +30,7 @@ function RoutinePage({
     selectedDate: Date;
     onDateChange: (date: Date) => void;
 }) {
-    const { setRoutine, routine } = useRoutine();
+    const { setRoutine, routine } = useRoutine(selectedDate);
     const [running, setRunning] = useState(false);
     const [showWeekSelector, setShowWeekSelector] = useState(false);
     const isDesktop = useMediaQuery("(min-width: 1200px)");

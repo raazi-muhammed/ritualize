@@ -1,8 +1,8 @@
 "use client";
 
 import { CompletionStatus, Routine, Task } from "@prisma/client";
-import { useMutation } from "@tanstack/react-query";
-import { ReactNode, useContext, useOptimistic, useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { ReactNode, useContext, useState } from "react";
 import { createContext } from "react";
 import {
     changeTaskStatus,
@@ -13,31 +13,21 @@ import {
 } from "../(tasks)/actions";
 import { toast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
-import { updateRoutine } from "../../actions";
-import { TaskWithStatus } from "@/types/entities";
+import { RoutineWithTasks, TaskWithStatus } from "@/types/entities";
 
 export const RoutineContext = createContext<{
-    tasks: TaskWithStatus[];
-    updateTasks?: (
-        action: (state: TaskWithStatus[]) => TaskWithStatus[]
-    ) => void;
     routine?: any;
     setRoutine?: any;
     isPending?: any;
     setIsPending?: any;
-}>({ tasks: [] });
+}>({});
 
 const RoutineProvider = ({ children }: { children: ReactNode }) => {
-    const [routine, setRoutine] = useState({ tasks: [] });
-    const [tasks, updateTasks] = useState<TaskWithStatus[]>(
-        routine?.tasks || []
-    );
+    const [routine, setRoutine] = useState<RoutineWithTasks>();
 
     return (
         <RoutineContext.Provider
             value={{
-                tasks,
-                updateTasks,
                 routine,
                 setRoutine,
             }}>
@@ -48,31 +38,187 @@ const RoutineProvider = ({ children }: { children: ReactNode }) => {
 
 export default RoutineProvider;
 
-export const useRoutine = () => {
+export const useRoutine = (date: Date) => {
     const router = useRouter();
-    const { tasks, routine, updateTasks, setRoutine } =
-        useContext(RoutineContext);
+    const { routine, setRoutine } = useContext(RoutineContext);
+    const queryClient = useQueryClient();
 
-    const { mutateAsync: handleDelete } = useMutation({
+    const { mutateAsync: deleteTaskMutation } = useMutation({
         mutationFn: deleteTask,
-        onSuccess: (task) => {
-            toast({
-                description: `${task?.name ?? "Task"} deleted`,
+        onMutate: async ({ id }) => {
+            await queryClient.cancelQueries({
+                queryKey: ["routine", routine.id, date],
+            });
+
+            const previousQueryData = queryClient.getQueryData([
+                "routine",
+                routine.id,
+                date,
+            ]);
+
+            queryClient.setQueryData(
+                ["routine", routine.id, date],
+                (old: { tasks: TaskWithStatus[] }) => {
+                    return {
+                        ...old,
+                        tasks: old.tasks.filter((t) => t.id !== id),
+                    };
+                }
+            );
+
+            return { previousQueryData };
+        },
+        onSettled: () => {
+            queryClient.invalidateQueries({
+                queryKey: ["routine"],
             });
         },
     });
 
-    const { mutateAsync: handleMoveTo } = useMutation({
-        mutationFn: moveTo,
+    const { mutateAsync: changeTaskStatusMutation } = useMutation({
+        mutationFn: changeTaskStatus,
+        onMutate: async ({ status, task_id }) => {
+            await queryClient.cancelQueries({
+                queryKey: ["routine", routine.id, date],
+            });
+
+            const previousQueryData = queryClient.getQueryData([
+                "routine",
+                routine.id,
+                date,
+            ]);
+
+            queryClient.setQueryData(
+                ["routine", routine.id, date],
+                (old: { tasks: TaskWithStatus[] }) => {
+                    return {
+                        ...old,
+                        tasks: old.tasks.map((t) =>
+                            t.id === task_id ? { ...t, status } : t
+                        ),
+                    };
+                }
+            );
+
+            return { previousQueryData };
+        },
+        onSettled: () => {
+            queryClient.invalidateQueries({
+                queryKey: ["routine", routine.id, date],
+            });
+        },
     });
 
-    const { mutateAsync: addTask } = useMutation({
-        mutationFn: createTask,
-        onSuccess: (task) => {
-            toast({
-                description: `${task?.name ?? "Task"} created`,
+    const { mutateAsync: moveTaskMutation } = useMutation({
+        mutationFn: moveTo,
+        onMutate: async ({ task_to_move_id, move_to }) => {
+            await queryClient.cancelQueries({
+                queryKey: ["routine", routine.id, date],
             });
-            router.push(`/${task.routine_id}`);
+
+            const previousQueryData = queryClient.getQueryData([
+                "routine",
+                routine.id,
+                date,
+            ]);
+
+            queryClient.setQueryData(
+                ["routine", routine.id, date],
+                (old: { tasks: TaskWithStatus[] }) => {
+                    return {
+                        ...old,
+                        tasks: old.tasks
+                            .map((t) => {
+                                if (t.id == task_to_move_id) {
+                                    return {
+                                        ...t,
+                                        order: move_to.order,
+                                    };
+                                }
+                                if (t.order >= move_to.order) {
+                                    return {
+                                        ...t,
+                                        order: t.order + 1,
+                                    };
+                                }
+                                return t;
+                            })
+                            .toSorted((a, b) => a.order - b.order),
+                    };
+                }
+            );
+
+            return { previousQueryData };
+        },
+        onSettled: () => {
+            queryClient.invalidateQueries({
+                queryKey: ["routine", routine.id, date],
+            });
+        },
+    });
+    const { mutateAsync: editTaskMutation } = useMutation({
+        mutationFn: updateTask,
+        onMutate: async (task) => {
+            await queryClient.cancelQueries({
+                queryKey: ["routine", routine.id, date],
+            });
+
+            const previousQueryData = queryClient.getQueryData([
+                "routine",
+                routine.id,
+                date,
+            ]);
+
+            queryClient.setQueryData(
+                ["routine", routine.id, date],
+                (old: { tasks: TaskWithStatus[] }) => {
+                    return {
+                        ...old,
+                        tasks: old.tasks.map((t) =>
+                            t.id === task.id ? task : t
+                        ),
+                    };
+                }
+            );
+
+            return { previousQueryData };
+        },
+        onSettled: () => {
+            queryClient.invalidateQueries({
+                queryKey: ["routine", routine.id, date],
+            });
+        },
+    });
+
+    const { mutateAsync: addTaskMutation } = useMutation({
+        mutationFn: createTask,
+        onMutate: async (task) => {
+            await queryClient.cancelQueries({
+                queryKey: ["routine", routine.id, date],
+            });
+
+            const previousQueryData = queryClient.getQueryData([
+                "routine",
+                routine.id,
+                date,
+            ]);
+
+            queryClient.setQueryData(
+                ["routine", routine.id, date],
+                (old: RoutineWithTasks) => {
+                    return {
+                        ...old,
+                        tasks: [...(old?.tasks ?? []), task],
+                    };
+                }
+            );
+
+            return { previousQueryData };
+        },
+        onSettled: () => {
+            queryClient.invalidateQueries({
+                queryKey: ["routine", routine.id, date],
+            });
         },
     });
 
@@ -83,78 +229,27 @@ export const useRoutine = () => {
         moveToTask: Task;
         taskToMoveId: string;
     }) => {
-        if (!updateTasks) return alert("No updated function");
-
-        updateTasks((state) => {
-            const updated = state.map((t) => {
-                if (t.id == taskToMoveId) {
-                    return {
-                        ...t,
-                        order: moveToTask.order,
-                    };
-                }
-                if (t.order >= moveToTask.order) {
-                    return {
-                        ...t,
-                        order: t.order + 1,
-                    };
-                }
-                return t;
-            });
-            return updated.toSorted((a, b) => a.order - b.order);
-        });
-        await handleMoveTo({
-            routine_id: routine.id,
-            move_to: moveToTask,
+        moveTaskMutation({
             task_to_move_id: taskToMoveId,
+            move_to: moveToTask,
+            routine_id: routine.id,
         });
     };
 
     const handleDeleteTask = async ({ taskId }: { taskId: string }) => {
-        if (!updateTasks) return alert("No updated function");
-        updateTasks((state) => {
-            return state.filter((t) => t.id != taskId);
-        });
-        await handleDelete({
+        deleteTaskMutation({
             id: taskId,
         });
     };
 
-    const handleAddTask = async (
-        task: Omit<TaskWithStatus, "id" | "order">
-    ) => {
-        if (!updateTasks) return alert("No updated function");
-        updateTasks((state) => [
-            ...state,
-            {
-                order: (tasks?.[tasks?.length - 1]?.order || 1000) + 1,
-                id: "",
-                ...task,
-            },
-        ]);
-        await addTask(task);
+    const handleAddTask = async (task: Omit<Task, "id" | "order">) => {
+        addTaskMutation(task);
     };
     const handleEditTask = async (task: Task) => {
-        if (!updateTasks) return alert("No updated function");
-        updateTasks((state) => {
-            return state.map((t) => {
-                if (t.id == task.id) {
-                    return {
-                        ...t,
-                        ...task,
-                    };
-                }
-                return t;
-            });
-        });
-
-        await updateTask(task);
+        editTaskMutation(task);
     };
 
-    const handleEditRoutine = async (r: Omit<Routine, "id" | "user_id">) => {
-        setRoutine(() => ({ ...routine, ...r }));
-        await updateRoutine({ id: routine.id, ...r });
-    };
+    const handleEditRoutine = async (r: Omit<Routine, "id" | "user_id">) => {};
 
     const handleChangeTaskStatus = async ({
         taskId,
@@ -165,32 +260,20 @@ export const useRoutine = () => {
         date?: Date;
         status: CompletionStatus;
     }) => {
-        if (!updateTasks) return alert("No updated function");
-        updateTasks((state) => {
-            return state.map((t) => {
-                if (t.id == taskId) {
-                    return { ...t, status };
-                }
-                return t;
-            });
-        });
-
-        await changeTaskStatus({
+        changeTaskStatusMutation({
             task_id: taskId,
-            routine_id: routine.id,
-            date,
             status,
+            date,
+            routine_id: routine.id,
         });
     };
 
     return {
-        tasks,
         routine,
+        setRoutine,
         handleMoveTask,
         handleDeleteTask,
         handleEditTask,
-        setRoutine,
-        updateTasks,
         handleAddTask,
         handleEditRoutine,
         handleChangeTaskStatus,
