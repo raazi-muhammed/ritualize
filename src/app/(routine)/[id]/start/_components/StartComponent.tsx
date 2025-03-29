@@ -10,7 +10,22 @@ import { motion } from "motion/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getRoutineForDate } from "../../actions";
 import { changeTaskStatus } from "../../(tasks)/actions";
-import { RoutineWithTasks } from "@/types/entities";
+import { RoutineWithTasks, TaskWithStatus } from "@/types/entities";
+
+function getStartFrom(
+    tasks: TaskWithStatus[] | undefined,
+    startFrom?: number
+): number | null {
+    if (!tasks) return null;
+
+    const found = tasks
+        .slice(startFrom || 0)
+        .findIndex((t) => t.status !== CompletionStatus.completed);
+    if (found == -1) return null;
+
+    return found + (startFrom || 0);
+}
+
 function StartComponent({
     routine,
     date,
@@ -20,7 +35,6 @@ function StartComponent({
     date: Date;
     setRunning: (running: boolean) => void;
 }) {
-    const [currentTaskIndex, setCurrentTaskIndex] = useState<number>(0);
     const { time, reset } = useStopwatch();
     const queryClient = useQueryClient();
 
@@ -28,6 +42,12 @@ function StartComponent({
         queryKey: ["routine", routine.id, date],
         queryFn: () => getRoutineForDate(routine.id, date),
     });
+
+    const startFrom = getStartFrom(data?.tasks);
+
+    const [currentTaskIndex, setCurrentTaskIndex] = useState<number>(
+        startFrom || 0
+    );
 
     const { mutateAsync: changeTaskStatusMutation } = useMutation({
         mutationFn: changeTaskStatus,
@@ -82,6 +102,20 @@ function StartComponent({
             date: new Date(),
             status: CompletionStatus.skipped,
         });
+    }
+
+    if (startFrom == null) {
+        return (
+            <div className="flex flex-col items-center justify-center h-full mt-16">
+                <p className="text-center text-muted-foreground">
+                    No tasks to complete
+                </p>
+                <Button onClick={() => setRunning(false)}>
+                    <ChevronLeft />
+                    Back
+                </Button>
+            </div>
+        );
     }
 
     return (
@@ -221,7 +255,15 @@ function StartComponent({
                                         (data?.tasks.length || 0) - 1
                                     }
                                     onClick={() => {
-                                        setCurrentTaskIndex((cti) => ++cti);
+                                        setCurrentTaskIndex((cti) => {
+                                            const startFrom = getStartFrom(
+                                                data?.tasks,
+                                                cti + 1
+                                            );
+                                            if (startFrom === null)
+                                                setRunning(false);
+                                            return startFrom || 0;
+                                        });
                                         reset();
                                         completedTask();
                                     }}>
