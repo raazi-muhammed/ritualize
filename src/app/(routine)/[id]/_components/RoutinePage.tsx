@@ -20,6 +20,7 @@ import {
 import { useMediaQuery } from "@/hooks/use-media-query";
 import StartComponent from "../start/_components/StartComponent";
 import { RoutineWithTasks } from "@/types/entities";
+import { RoutineTypes } from "@prisma/client";
 
 function RoutinePage({
     routine: r,
@@ -34,6 +35,7 @@ function RoutinePage({
     const [running, setRunning] = useState(false);
     const [showWeekSelector, setShowWeekSelector] = useState(false);
     const isDesktop = useMediaQuery("(min-width: 1200px)");
+    const showWeekView = isDesktop && routine.type === RoutineTypes.recurring;
 
     useEffect(() => {
         setRoutine(() => r);
@@ -70,47 +72,51 @@ function RoutinePage({
                     <RoutineHeader date={selectedDate} />
                     <section className="my-4 bg-background">
                         <Heading>{routine.name}</Heading>
-                        <section className="flex mt-2 gap-2">
-                            <Popover>
-                                <PopoverTrigger asChild>
-                                    <Button
-                                        size={"sm"}
-                                        variant={"outline"}
-                                        className={cn(
-                                            "w-fit justify-start text-left font-normal",
-                                            !selectedDate &&
-                                                "text-muted-foreground"
-                                        )}>
-                                        <CalendarIcon className="mr-2 h-4 w-4" />
-                                        {selectedDate ? (
-                                            format(selectedDate, "PPP")
-                                        ) : (
-                                            <span>Pick a date</span>
-                                        )}
-                                    </Button>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0">
-                                    <Calendar
-                                        mode="single"
-                                        selected={selectedDate}
-                                        onSelect={(date) => {
-                                            if (date)
-                                                onDateChange(new Date(date));
-                                        }}
-                                        initialFocus
-                                    />
-                                </PopoverContent>
-                            </Popover>
-                            <Toggle
-                                pressed={showWeekSelector}
-                                onPressedChange={setShowWeekSelector}
-                                variant={"outline"}
-                                size={"sm"}
-                                className="h-8">
-                                <ChevronDown />
-                            </Toggle>
-                        </section>
-                        {(showWeekSelector || isDesktop) && (
+                        {showWeekView && (
+                            <section className="flex mt-2 gap-2">
+                                <Popover>
+                                    <PopoverTrigger asChild>
+                                        <Button
+                                            size={"sm"}
+                                            variant={"outline"}
+                                            className={cn(
+                                                "w-fit justify-start text-left font-normal",
+                                                !selectedDate &&
+                                                    "text-muted-foreground"
+                                            )}>
+                                            <CalendarIcon className="mr-2 h-4 w-4" />
+                                            {selectedDate ? (
+                                                format(selectedDate, "PPP")
+                                            ) : (
+                                                <span>Pick a date</span>
+                                            )}
+                                        </Button>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="w-auto p-0">
+                                        <Calendar
+                                            mode="single"
+                                            selected={selectedDate}
+                                            onSelect={(date) => {
+                                                if (date)
+                                                    onDateChange(
+                                                        new Date(date)
+                                                    );
+                                            }}
+                                            initialFocus
+                                        />
+                                    </PopoverContent>
+                                </Popover>
+                                <Toggle
+                                    pressed={showWeekSelector}
+                                    onPressedChange={setShowWeekSelector}
+                                    variant={"outline"}
+                                    size={"sm"}
+                                    className="h-8">
+                                    <ChevronDown />
+                                </Toggle>
+                            </section>
+                        )}
+                        {(showWeekSelector || showWeekView) && (
                             <div className="grid grid-cols-7 mt-4">
                                 {getLast7DaysFromSunday().map((date, index) => (
                                     <Button
@@ -143,7 +149,7 @@ function RoutinePage({
                             </div>
                         )}
                     </section>
-                    {isDesktop ? (
+                    {showWeekView ? (
                         <section className="gap-4 grid grid-cols-7">
                             {getLast7DaysFromSunday().map((date, index) => (
                                 <Tasks key={index} date={date} />

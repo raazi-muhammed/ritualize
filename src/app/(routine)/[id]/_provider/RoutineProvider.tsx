@@ -15,7 +15,7 @@ import { toast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 import { RoutineWithTasks, TaskWithStatus } from "@/types/entities";
 import { updateRoutine } from "../../actions";
-
+import { uncheckAllTasks } from "../../actions";
 export const RoutineContext = createContext<{
     routine?: any;
     setRoutine?: any;
@@ -252,6 +252,41 @@ export const useRoutine = (date: Date) => {
         },
     });
 
+    const { mutateAsync: uncheckAllTasksMutation } = useMutation({
+        mutationFn: uncheckAllTasks,
+        onMutate: async () => {
+            await queryClient.cancelQueries({
+                queryKey: ["routine", routine.id, date],
+            });
+
+            const previousQueryData = queryClient.getQueryData([
+                "routine",
+                routine.id,
+                date,
+            ]);
+
+            queryClient.setQueryData(
+                ["routine", routine.id, date],
+                (old: RoutineWithTasks) => {
+                    return {
+                        ...old,
+                        tasks: old.tasks.map((t) => ({
+                            ...t,
+                            status: CompletionStatus.skipped,
+                        })),
+                    };
+                }
+            );
+
+            return { previousQueryData };
+        },
+        onSettled: () => {
+            queryClient.invalidateQueries({
+                queryKey: ["routine", routine.id, date],
+            });
+        },
+    });
+
     const handleMoveTask = async ({
         moveToTask,
         taskToMoveId,
@@ -303,6 +338,13 @@ export const useRoutine = (date: Date) => {
         });
     };
 
+    const handleUncheckAllTasks = async () => {
+        uncheckAllTasksMutation({
+            routineId: routine.id,
+            date,
+        });
+    };
+
     return {
         routine,
         setRoutine,
@@ -312,5 +354,6 @@ export const useRoutine = (date: Date) => {
         handleAddTask,
         handleEditRoutine,
         handleChangeTaskStatus,
+        handleUncheckAllTasks,
     };
 };

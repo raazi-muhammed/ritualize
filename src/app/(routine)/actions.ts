@@ -81,3 +81,32 @@ export async function getRoutines() {
         },
     });
 }
+
+export const uncheckAllTasks = async ({
+    routineId,
+    date,
+}: {
+    routineId: string;
+    date: Date;
+}) => {
+    const user = await getCurrentUser();
+    const routine = await prisma.routine.findUnique({
+        where: {
+            id: routineId,
+            user_id: user.id,
+        },
+        include: {
+            tasks: true,
+        },
+    });
+    await prisma.taskCompletion.deleteMany({
+        where: {
+            task_id: {
+                in: routine?.tasks.map((task) => task.id) ?? [],
+            },
+            date: new Date(date.setHours(0, 0, 0, 0)),
+        },
+    });
+    revalidatePath("/");
+    return routine;
+};

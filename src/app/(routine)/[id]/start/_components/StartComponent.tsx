@@ -4,14 +4,19 @@ import Heading from "@/components/layout/Heading";
 import { Button } from "@/components/ui/button";
 import { useStopwatch } from "@/hooks/stop-watch";
 import { CompletionStatus, Routine, Task } from "@prisma/client";
-import { ChevronLeft, ChevronRight, SkipForward } from "lucide-react";
+import {
+    CheckCheck,
+    ChevronLeft,
+    ChevronRight,
+    SkipForward,
+} from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { motion } from "motion/react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getRoutineForDate } from "../../actions";
-import { changeTaskStatus } from "../../(tasks)/actions";
-import { RoutineWithTasks, TaskWithStatus } from "@/types/entities";
+import { TaskWithStatus } from "@/types/entities";
 import InfoMessage from "@/components/message/InfoMessage";
+import { useRoutine } from "../../_provider/RoutineProvider";
 
 function getStartFrom(
     tasks: TaskWithStatus[] | undefined,
@@ -43,41 +48,13 @@ function StartComponent({
         queryKey: ["routine", routine.id, date],
         queryFn: () => getRoutineForDate(routine.id, date),
     });
+    const { handleChangeTaskStatus, handleUncheckAllTasks } = useRoutine(date);
 
     const startFrom = getStartFrom(data?.tasks);
 
     const [currentTaskIndex, setCurrentTaskIndex] = useState<number>(
         startFrom || 0
     );
-
-    const { mutateAsync: changeTaskStatusMutation } = useMutation({
-        mutationFn: changeTaskStatus,
-        onMutate: async ({ task_id, status }) => {
-            await queryClient.cancelQueries({
-                queryKey: ["routine", routine.id, date],
-            });
-
-            const previousQueryData = queryClient.getQueryData([
-                "routine",
-                routine.id,
-                date,
-            ]);
-
-            queryClient.setQueryData(
-                ["routine", routine.id, date],
-                (old: RoutineWithTasks) => {
-                    return {
-                        ...old,
-                        tasks: old.tasks.map((t) =>
-                            t.id === task_id ? { ...t, status } : t
-                        ),
-                    };
-                }
-            );
-
-            return { previousQueryData };
-        },
-    });
 
     useEffect(() => {
         const item = document.getElementById("active-task");
@@ -88,19 +65,15 @@ function StartComponent({
     }, [currentTaskIndex]);
 
     function completedTask() {
-        changeTaskStatusMutation({
-            task_id: data?.tasks[currentTaskIndex].id || "",
-            routine_id: routine.id,
-            date: new Date(),
+        handleChangeTaskStatus({
+            taskId: data?.tasks[currentTaskIndex].id || "",
             status: CompletionStatus.completed,
         });
     }
 
     function skipTask() {
-        changeTaskStatusMutation({
-            task_id: data?.tasks[currentTaskIndex].id || "",
-            routine_id: routine.id,
-            date: new Date(),
+        handleChangeTaskStatus({
+            taskId: data?.tasks[currentTaskIndex].id || "",
             status: CompletionStatus.skipped,
         });
     }
@@ -118,6 +91,17 @@ function StartComponent({
                             onClick={() => setRunning(false)}>
                             <ChevronLeft className="-ms-2" />
                             Back
+                        </Button>,
+                        <Button
+                            key="uncheck-all"
+                            size="sm"
+                            variant="outline"
+                            onClick={() => {
+                                setRunning(false);
+                                handleUncheckAllTasks();
+                            }}>
+                            <CheckCheck className="-ms-2" />
+                            Uncheck all
                         </Button>,
                     ]}
                 />

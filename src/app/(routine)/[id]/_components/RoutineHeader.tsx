@@ -38,7 +38,8 @@ const RoutineHeader = ({ date }: { date: Date }) => {
     const router = useRouter();
     const { openModal, closeModal } = useModal();
 
-    const { routine, handleAddTask, handleEditRoutine } = useRoutine(date);
+    const { routine, handleAddTask, handleEditRoutine, handleUncheckAllTasks } =
+        useRoutine(date);
 
     function handleAddTaskSubmit(values: z.infer<typeof taskSchema>) {
         if (!values.createNew) closeModal();
@@ -127,6 +128,12 @@ const RoutineHeader = ({ date }: { date: Date }) => {
                                     });
                                 }}>
                                 Edit
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                                onSelect={() => {
+                                    handleUncheckAllTasks();
+                                }}>
+                                Uncheck all
                             </DropdownMenuItem>
                             <AlertDialogTrigger className="w-full">
                                 <DropdownMenuItem>Delete</DropdownMenuItem>
