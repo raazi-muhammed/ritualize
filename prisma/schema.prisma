@@ -19,6 +19,12 @@ enum CompletionStatus {
     failed
 }
 
+// checkpoint type is to separate tasks by section, and checkpoint is basically the header of the section
+enum TaskType {
+    task
+    checkpoint
+}
+
 model TaskCompletion {
     id         String           @id @default(auto()) @map("_id") @db.ObjectId
     task_id    String           @db.ObjectId
@@ -45,6 +51,7 @@ model Task {
     start_date        DateTime         @default(now())
     end_date          DateTime?
     completions       TaskCompletion[]
+    type              TaskType         @default(task)
 }
 
 enum RoutineTypes {

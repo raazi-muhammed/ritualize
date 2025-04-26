@@ -3,7 +3,7 @@
 import Heading from "@/components/layout/Heading";
 import { Button } from "@/components/ui/button";
 import { useStopwatch } from "@/hooks/stop-watch";
-import { CompletionStatus, Routine, Task } from "@prisma/client";
+import { CompletionStatus, Routine, Task, TaskType } from "@prisma/client";
 import {
     CheckCheck,
     ChevronLeft,
@@ -163,7 +163,14 @@ function StartComponent({
                         onClick={() => {
                             setCurrentTaskIndex(index);
                         }}>
-                        <Heading> {task.name}</Heading>
+                        <Heading
+                            className={
+                                task.type == TaskType.checkpoint
+                                    ? "text-primary"
+                                    : ""
+                            }>
+                            {task.name}
+                        </Heading>
                         <motion.small
                             initial={{
                                 opacity: 0,

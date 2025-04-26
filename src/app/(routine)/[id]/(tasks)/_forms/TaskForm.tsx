@@ -1,6 +1,6 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Frequency } from "@prisma/client";
+import { Frequency, TaskType } from "@prisma/client";
 import React, { useEffect, useMemo, useState } from "react";
 import { DefaultValues, useForm } from "react-hook-form";
 import { z } from "zod";
@@ -23,6 +23,7 @@ export const taskSchema = z
         everyFrequency: z.number().min(1),
         daysInFrequency: z.array(z.number()).optional(),
         startDate: z.string(),
+        type: z.nativeEnum(TaskType),
     })
     .refine(
         (data) =>
@@ -45,6 +46,7 @@ function TaskForm({
         startDate: formatDateForInput(new Date()),
         everyFrequency: 1,
         daysInFrequency: [new Date().getDay()],
+        type: TaskType.task,
     },
     hideCreateNew = false,
     className,
@@ -110,6 +112,16 @@ function TaskForm({
         },
     ];
 
+    const typeItems = [
+        {
+            value: TaskType.task,
+            label: "Task",
+        },
+        {
+            value: TaskType.checkpoint,
+            label: "Checkpoint",
+        },
+    ];
     return (
         <Form {...form}>
             <form
@@ -239,6 +251,20 @@ function TaskForm({
                         )}
                     />
                 )}
+                <FormField
+                    control={form.control}
+                    name="type"
+                    render={({ field }) => (
+                        <FormInput label="Type">
+                            <FormSelect
+                                onValueChange={field.onChange}
+                                defaultValue={field.value}
+                                items={typeItems}
+                                {...field}
+                            />
+                        </FormInput>
+                    )}
+                />
                 <FormButton isLoading={form.formState.isSubmitting}>
                     Add
                 </FormButton>

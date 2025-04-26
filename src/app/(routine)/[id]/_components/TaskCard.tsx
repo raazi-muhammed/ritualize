@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Checkbox } from "@/components/ui/checkbox";
 
-import { CompletionStatus, Frequency, Task } from "@prisma/client";
+import { CompletionStatus, Frequency, Task, TaskType } from "@prisma/client";
 import { useRoutine } from "../_provider/RoutineProvider";
 import { DragEvent } from "react";
 import { CircleEllipsis } from "lucide-react";
@@ -67,6 +67,7 @@ const TaskCard = ({
 
     function onSubmit(values: z.infer<typeof taskSchema>) {
         closeModal();
+        console.log(values);
         handleEditTask({
             ...task,
             ...{
@@ -94,39 +95,54 @@ const TaskCard = ({
     return (
         <Card
             key={task.id}
-            className={`my-2 ${task.id == "" ? "opacity-50" : ""}`}
+            className={`${
+                task.type == TaskType.checkpoint
+                    ? "bg-transparent border-none my-0"
+                    : "my-2"
+            } ${task.id == "" ? "opacity-50" : ""}`}
             draggable
             onDragStart={handleDragStart}
             onDragOver={(e) => e.preventDefault()}
             onDrop={handleDrop}>
             <CardContent className="flex justify-between p-4">
-                <section className="flex items-start gap-2">
-                    {showCheckbox() ? (
-                        <Checkbox
-                            checked={task.status === CompletionStatus.completed}
-                            onCheckedChange={(checked) => {
-                                handleToggleCompletion(
-                                    checked
-                                        ? CompletionStatus.completed
-                                        : CompletionStatus.skipped
-                                );
-                            }}
-                            className="mt-1"
-                        />
-                    ) : null}
-                    <div>
-                        <p>{task.name}</p>
-                        <small className="text-muted-foreground">
-                            {`${task.duration} min`}
-                        </small>
-                        <br />
-                        <small className="text-muted-foreground">
-                            {generateCardDescription(task, {
-                                showStartDate,
-                            })}
-                        </small>
-                    </div>
-                </section>
+                {task.type == TaskType.task ? (
+                    <section className="flex items-start gap-2">
+                        {showCheckbox() ? (
+                            <Checkbox
+                                checked={
+                                    task.status === CompletionStatus.completed
+                                }
+                                onCheckedChange={(checked) => {
+                                    handleToggleCompletion(
+                                        checked
+                                            ? CompletionStatus.completed
+                                            : CompletionStatus.skipped
+                                    );
+                                }}
+                                className="mt-1"
+                            />
+                        ) : null}
+                        <div>
+                            <p>{task.name}</p>
+                            <small className="text-muted-foreground">
+                                {`${task.duration} min`}
+                            </small>
+                            <br />
+                            <small className="text-muted-foreground">
+                                {generateCardDescription(task, {
+                                    showStartDate,
+                                })}
+                            </small>
+                            <small className="text-muted-foreground">
+                                {task.type}
+                            </small>
+                        </div>
+                    </section>
+                ) : (
+                    <section className="flex items-end gap-2">
+                        <p className="text-lg font-bold">{task.name}</p>
+                    </section>
+                )}
                 <AlertDialog>
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -134,7 +150,7 @@ const TaskCard = ({
                                 variant={"ghost"}
                                 size="icon"
                                 className="my-auto">
-                                <CircleEllipsis />
+                                <CircleEllipsis size={18} />
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
@@ -158,6 +174,7 @@ const TaskCard = ({
                                                         ),
                                                     daysInFrequency:
                                                         task.days_in_frequency,
+                                                    type: task.type,
                                                 }}
                                             />
                                         ),
