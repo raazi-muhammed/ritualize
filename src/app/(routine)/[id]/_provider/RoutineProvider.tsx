@@ -1,7 +1,7 @@
 "use client";
 
 import { CompletionStatus, Routine, Task } from "@prisma/client";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ReactNode, useContext, useState } from "react";
 import { createContext } from "react";
 import {
@@ -11,7 +11,6 @@ import {
     moveTo,
     updateTask,
 } from "../(tasks)/actions";
-import { toast } from "@/components/ui/use-toast";
 import { useRouter } from "next/navigation";
 import { RoutineWithTasks, TaskWithStatus } from "@/types/entities";
 import { updateRoutine } from "../../actions";
@@ -40,9 +39,24 @@ const RoutineProvider = ({ children }: { children: ReactNode }) => {
 export default RoutineProvider;
 
 export const useRoutine = (date: Date) => {
-    const router = useRouter();
     const { routine, setRoutine } = useContext(RoutineContext);
     const queryClient = useQueryClient();
+
+    async function getShowGroupedTasks() {
+        return localStorage.getItem("showGroupedTasks") === "true";
+    }
+
+    const { data: showGroupedTasks } = useQuery({
+        queryKey: ["showGroupedTasks"],
+        queryFn: () => getShowGroupedTasks(),
+    });
+
+    function setShowGroupedTasks(value: boolean) {
+        localStorage.setItem("showGroupedTasks", value.toString());
+        queryClient.invalidateQueries({
+            queryKey: ["showGroupedTasks"],
+        });
+    }
 
     const { mutateAsync: deleteTaskMutation } = useMutation({
         mutationFn: deleteTask,
@@ -314,6 +328,10 @@ export const useRoutine = (date: Date) => {
         editTaskMutation(task);
     };
 
+    const handleDropTask = async (task: Task) => {
+        editTaskMutation(task);
+    };
+
     const handleEditRoutine = async (r: Omit<Routine, "id" | "user_id">) => {
         editRoutineMutation({
             id: routine.id,
@@ -355,5 +373,7 @@ export const useRoutine = (date: Date) => {
         handleEditRoutine,
         handleChangeTaskStatus,
         handleUncheckAllTasks,
+        showGroupedTasks,
+        setShowGroupedTasks,
     };
 };

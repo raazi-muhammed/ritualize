@@ -38,8 +38,14 @@ const RoutineHeader = ({ date }: { date: Date }) => {
     const router = useRouter();
     const { openModal, closeModal } = useModal();
 
-    const { routine, handleAddTask, handleEditRoutine, handleUncheckAllTasks } =
-        useRoutine(date);
+    const {
+        routine,
+        handleAddTask,
+        handleEditRoutine,
+        handleUncheckAllTasks,
+        showGroupedTasks,
+        setShowGroupedTasks,
+    } = useRoutine(date);
 
     function handleAddTaskSubmit(values: z.infer<typeof taskSchema>) {
         if (!values.createNew) closeModal();
@@ -52,6 +58,7 @@ const RoutineHeader = ({ date }: { date: Date }) => {
             days_in_frequency: values.daysInFrequency || [0],
             start_date: new Date(values.startDate),
             end_date: null,
+            tags: values.tags,
         });
     }
 
@@ -112,6 +119,12 @@ const RoutineHeader = ({ date }: { date: Date }) => {
                                     });
                                 }}>
                                 All tasks
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                                onSelect={() => {
+                                    setShowGroupedTasks(!showGroupedTasks);
+                                }}>
+                                {showGroupedTasks ? "Hide" : "Show"} grouped
                             </DropdownMenuItem>
                             <DropdownMenuItem
                                 onSelect={() => {

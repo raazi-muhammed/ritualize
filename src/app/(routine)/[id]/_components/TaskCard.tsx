@@ -10,12 +10,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Checkbox } from "@/components/ui/checkbox";
 
-import { CompletionStatus, Frequency, Task } from "@prisma/client";
+import { CompletionStatus, Frequency } from "@prisma/client";
 import { useRoutine } from "../_provider/RoutineProvider";
 import { DragEvent } from "react";
 import { CircleEllipsis } from "lucide-react";
 import { formatDateForInput } from "@/lib/format";
-import { useQueryClient } from "@tanstack/react-query";
 import TaskForm, { taskSchema } from "../(tasks)/_forms/TaskForm";
 import { z } from "zod";
 import {
@@ -32,7 +31,6 @@ import {
 import { generateCardDescription } from "@/lib/utils";
 import { useModal } from "@/providers/ModelProvider";
 import { TaskWithStatus } from "@/types/entities";
-import { resourceUsage } from "process";
 
 const TaskCard = ({
     task,
@@ -43,10 +41,8 @@ const TaskCard = ({
     showStartDate?: boolean;
     date: Date;
 }) => {
-    const queryClient = useQueryClient();
     const { openModal, closeModal } = useModal();
     const {
-        routine,
         handleDeleteTask,
         handleChangeTaskStatus,
         handleMoveTask,
@@ -116,15 +112,19 @@ const TaskCard = ({
                     ) : null}
                     <div>
                         <p>{task.name}</p>
-                        <small className="text-muted-foreground">
-                            {`${task.duration} min`}
-                        </small>
-                        <br />
-                        <small className="text-muted-foreground">
-                            {generateCardDescription(task, {
-                                showStartDate,
-                            })}
-                        </small>
+                        <div className="flex gap-1 text-muted-foreground">
+                            <small>{`${task.duration} min`}</small>
+                            <small>•</small>
+                            <small>
+                                {generateCardDescription(task, {
+                                    showStartDate,
+                                })}
+                            </small>
+                            {!!task.tags.length && <small>•</small>}
+                            <div className="flex flex-wrap gap-2">
+                                <small>{task.tags.join(",")}</small>
+                            </div>
+                        </div>
                     </div>
                 </section>
                 <AlertDialog>
@@ -158,6 +158,7 @@ const TaskCard = ({
                                                         ),
                                                     daysInFrequency:
                                                         task.days_in_frequency,
+                                                    tags: task.tags || [],
                                                 }}
                                             />
                                         ),

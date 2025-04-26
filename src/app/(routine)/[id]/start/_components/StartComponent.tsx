@@ -3,7 +3,7 @@
 import Heading from "@/components/layout/Heading";
 import { Button } from "@/components/ui/button";
 import { useStopwatch } from "@/hooks/stop-watch";
-import { CompletionStatus, Routine, Task } from "@prisma/client";
+import { CompletionStatus, Routine } from "@prisma/client";
 import {
     CheckCheck,
     ChevronLeft,
@@ -174,7 +174,8 @@ function StartComponent({
                             transition={{
                                 duration: 0.75,
                             }}>
-                            {data?.tasks[currentTaskIndex].duration} minutes
+                            {data?.tasks[currentTaskIndex].duration} minutes •{" "}
+                            {data?.tasks[currentTaskIndex].tags.join(", ")}
                         </motion.small>
                     </motion.div>
                 ))}

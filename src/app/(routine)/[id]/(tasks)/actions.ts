@@ -46,6 +46,7 @@ export const updateTask = async ({
     every_frequency,
     days_in_frequency,
     start_date,
+    tags,
 }: Partial<Task> & { id: string; routine_id: string }) => {
     const updated = await prisma.task.update({
         where: {
@@ -59,6 +60,7 @@ export const updateTask = async ({
             every_frequency,
             days_in_frequency,
             start_date,
+            tags,
         },
     });
     revalidatePath(`/${routine_id}`);

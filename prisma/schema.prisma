@@ -45,6 +45,7 @@ model Task {
     start_date        DateTime         @default(now())
     end_date          DateTime?
     completions       TaskCompletion[]
+    tags              String[]         @default([])
 }
 
 enum RoutineTypes {

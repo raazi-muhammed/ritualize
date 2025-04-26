@@ -23,6 +23,7 @@ export const taskSchema = z
         everyFrequency: z.number().min(1),
         daysInFrequency: z.array(z.number()).optional(),
         startDate: z.string(),
+        tags: z.array(z.string()).default([] as string[]),
     })
     .refine(
         (data) =>
@@ -45,6 +46,7 @@ function TaskForm({
         startDate: formatDateForInput(new Date()),
         everyFrequency: 1,
         daysInFrequency: [new Date().getDay()],
+        tags: [] as string[],
     },
     hideCreateNew = false,
     className,
@@ -61,15 +63,22 @@ function TaskForm({
     });
 
     const [frequency, setFrequency] = useState(form.getValues("frequency"));
+    const [tags, setTags] = useState(form.getValues("tags"));
 
     useEffect(() => {
         // Update frequency state when the form value changes
         const subscription = form.watch((value) => {
             if (value.frequency) setFrequency(value.frequency);
         });
+        const subscription2 = form.watch((value) => {
+            if (value.tags) setTags(value.tags as string[]);
+        });
 
         // Cleanup subscription on unmount
-        return () => subscription.unsubscribe();
+        return () => {
+            subscription.unsubscribe();
+            subscription2.unsubscribe();
+        };
     }, [form]);
 
     const frequencyItems = useMemo(() => {
@@ -194,6 +203,7 @@ function TaskForm({
                         </FormInput>
                     )}
                 />
+
                 {frequency === Frequency.weekly && (
                     <FormField
                         control={form.control}
@@ -224,6 +234,33 @@ function TaskForm({
                         )}
                     />
                 )}
+                <div className="flex flex-wrap gap-2">
+                    {tags.map((tag) => (
+                        <p
+                            key={tag}
+                            className="rounded-md bg-secondary px-2 py-1">
+                            {tag}
+                        </p>
+                    ))}
+                </div>
+                <FormField
+                    control={form.control}
+                    name="tags"
+                    render={({ field }) => (
+                        <FormInput label="Tags">
+                            <Input
+                                type="text"
+                                onChange={(e) => {
+                                    field.onChange(e.target.value);
+                                    form.setValue(
+                                        "tags",
+                                        e?.target?.value?.split(",") || []
+                                    );
+                                }}
+                            />
+                        </FormInput>
+                    )}
+                />
                 {!hideCreateNew && (
                     <FormField
                         control={form.control}
