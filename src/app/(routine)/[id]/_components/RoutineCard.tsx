@@ -29,10 +29,16 @@ const RoutineCard = ({
                             size={isList ? "1.5rem" : "1rem"}
                         />
                     </div>
-                    <CardTitle className="flex justify-between text-lg my-auto font-medium">
-                        {routine.name}
-                    </CardTitle>
+                    <div>
+                        <CardTitle className="flex justify-between text-lg my-auto font-medium">
+                            {routine.name}
+                        </CardTitle>
+                        <small className="text-muted-foreground">
+                            {routine.type}
+                        </small>
+                    </div>
                 </div>
+
                 {routine.is_favorite ? (
                     <Heart className="fill-primary text-primary" size={18} />
                 ) : (

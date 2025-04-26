@@ -72,7 +72,7 @@ function RoutinePage({
                     <RoutineHeader date={selectedDate} />
                     <section className="my-4 bg-background">
                         <Heading>{routine.name}</Heading>
-                        {showWeekView && (
+                        {routine.type == RoutineTypes.recurring && (
                             <section className="flex mt-2 gap-2">
                                 <Popover>
                                     <PopoverTrigger asChild>

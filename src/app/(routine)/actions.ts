@@ -76,9 +76,14 @@ export async function getRoutines() {
         where: {
             user_id: user.id,
         },
-        orderBy: {
-            is_favorite: "desc",
-        },
+        orderBy: [
+            {
+                is_favorite: "desc",
+            },
+            {
+                name: "asc",
+            },
+        ],
     });
 }
 

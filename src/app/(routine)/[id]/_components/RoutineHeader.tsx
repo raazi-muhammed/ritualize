@@ -32,6 +32,7 @@ import { useRouter } from "next/navigation";
 import { useModal } from "@/providers/ModelProvider";
 import { useRoutine } from "../_provider/RoutineProvider";
 import AllTasks from "./AllTasks";
+import { formatDateForInput } from "@/lib/format";
 
 const RoutineHeader = ({ date }: { date: Date }) => {
     const queryClient = useQueryClient();
@@ -87,7 +88,12 @@ const RoutineHeader = ({ date }: { date: Date }) => {
                         openModal({
                             title: "Add Task",
                             content: (
-                                <TaskForm onSubmit={handleAddTaskSubmit} />
+                                <TaskForm
+                                    onSubmit={handleAddTaskSubmit}
+                                    defaultValues={{
+                                        startDate: formatDateForInput(date),
+                                    }}
+                                />
                             ),
                         });
                     }}>
