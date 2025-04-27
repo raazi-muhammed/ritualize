@@ -21,11 +21,14 @@ import {
 } from "@/components/ui/alert-dialog";
 import { ChevronLeft, CircleEllipsis } from "lucide-react";
 import { IoAddCircle as AddIcon } from "react-icons/io5";
-import { Frequency } from "@prisma/client";
+import { Frequency, TaskType } from "@prisma/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "@/components/ui/use-toast";
 import { deleteRoutine } from "../../actions";
-import TaskForm, { taskSchema } from "../(tasks)/_forms/TaskForm";
+import TaskForm, {
+    DEFAULT_TASK_VALUES,
+    taskSchema,
+} from "../(tasks)/_forms/TaskForm";
 import { z } from "zod";
 import RoutineForm, { routineSchema } from "../../_forms/RoutineForm";
 import { useRouter } from "next/navigation";
@@ -91,6 +94,7 @@ const RoutineHeader = ({ date }: { date: Date }) => {
                                 <TaskForm
                                     onSubmit={handleAddTaskSubmit}
                                     defaultValues={{
+                                        ...DEFAULT_TASK_VALUES,
                                         startDate: formatDateForInput(date),
                                     }}
                                 />

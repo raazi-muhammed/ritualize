@@ -14,6 +14,17 @@ import { cn } from "@/lib/utils";
 import { formatDateForInput } from "@/lib/format";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
+export const DEFAULT_TASK_VALUES = {
+    name: "",
+    duration: 2,
+    frequency: Frequency.daily,
+    createNew: false,
+    startDate: formatDateForInput(new Date()),
+    everyFrequency: 1,
+    daysInFrequency: [new Date().getDay()],
+    type: TaskType.task,
+};
+
 export const taskSchema = z
     .object({
         name: z.string().min(1),
