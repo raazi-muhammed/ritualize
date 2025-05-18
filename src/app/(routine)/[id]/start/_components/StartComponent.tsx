@@ -78,6 +78,14 @@ function StartComponent({
         });
     }
 
+    function moveToNextPossibleTask() {
+        setCurrentTaskIndex((cti) => {
+            const startFrom = getStartFrom(data?.tasks, cti + 1);
+            if (startFrom === null) setRunning(false);
+            return startFrom || 0;
+        });
+    }
+
     if (startFrom == null) {
         return (
             <div className="flex flex-col items-center justify-center h-full mt-16">
@@ -239,7 +247,7 @@ function StartComponent({
                                     variant="ghost"
                                     className="ms-auto w-fit"
                                     onClick={() => {
-                                        setCurrentTaskIndex((cti) => ++cti);
+                                        moveToNextPossibleTask();
                                         reset();
                                         skipTask();
                                     }}>
@@ -253,15 +261,7 @@ function StartComponent({
                                         (data?.tasks.length || 0) - 1
                                     }
                                     onClick={() => {
-                                        setCurrentTaskIndex((cti) => {
-                                            const startFrom = getStartFrom(
-                                                data?.tasks,
-                                                cti + 1
-                                            );
-                                            if (startFrom === null)
-                                                setRunning(false);
-                                            return startFrom || 0;
-                                        });
+                                        moveToNextPossibleTask();
                                         reset();
                                         completedTask();
                                     }}>
