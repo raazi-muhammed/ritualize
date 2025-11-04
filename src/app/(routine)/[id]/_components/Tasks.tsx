@@ -4,6 +4,7 @@ import { getRoutineForDate } from "../actions";
 import TaskCard from "./TaskCard";
 import TasksSkeleton from "./TasksSkeleton";
 import InfoMessage from "@/components/message/InfoMessage";
+import { formatDate } from "@/lib/format";
 
 const Tasks = ({
     showStartDate = false,
@@ -15,7 +16,7 @@ const Tasks = ({
     const { routine } = useRoutine(date);
 
     const { data, isLoading } = useQuery({
-        queryKey: ["routine", routine.id, date],
+        queryKey: ["routine", routine.id, formatDate(date)],
         queryFn: () => getRoutineForDate(routine.id, date ?? new Date()),
     });
 

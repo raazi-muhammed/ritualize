@@ -8,6 +8,7 @@ import LoadingIndicator from "@/components/layout/LoadingIndicator";
 import InfoMessage from "@/components/message/InfoMessage";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+import { formatDate } from "@/lib/format";
 
 export default function Page({ params }: { params: { id: string } }) {
     const routineId = params.id;
@@ -19,7 +20,7 @@ export default function Page({ params }: { params: { id: string } }) {
         isError,
         error,
     } = useQuery({
-        queryKey: ["routine", routineId, selectedDate],
+        queryKey: ["routine", routineId, formatDate(selectedDate)],
         queryFn: () => getRoutineForDate(routineId, selectedDate),
     });
 

@@ -14,6 +14,9 @@ import RoutineCard from "./[id]/_components/RoutineCard";
 import { useModal } from "@/providers/ModelProvider";
 import { Routine } from "@prisma/client";
 import InfoMessage from "@/components/message/InfoMessage";
+import { getRoutine, getRoutineForDate } from "./[id]/actions";
+import { useEffect } from "react";
+import { formatDate } from "@/lib/format";
 
 export default function Home() {
     const queryClient = useQueryClient();
@@ -48,6 +51,20 @@ export default function Home() {
         closeModal();
         mutateAsync(values);
     }
+
+    // prefetch favorite routines
+    useEffect(() => {
+        routines
+            ?.filter((r) => r.is_favorite)
+            .forEach(async (r) => {
+                await queryClient.prefetchQuery({
+                    queryKey: ["routine", r.id, formatDate(new Date())],
+                    queryFn: () => getRoutineForDate(r.id, new Date()),
+                });
+
+                console.log(`Prefetched routine ${r.name}`);
+            });
+    }, [routines]);
 
     return (
         <main className="px-5 md:container py-4 min-h-screen bg-background">
