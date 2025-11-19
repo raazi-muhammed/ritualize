@@ -108,6 +108,20 @@ export const useStore = create<StoreState>()(
           taskId: string,
           status: CompletionStatus
         ) => {
+          // optimistic updates
+          set({
+            routines: get().routines.map((r) =>
+              r.id === routineId
+                ? {
+                    ...r,
+                    tasks: r.tasks.map((t) =>
+                      t.id === taskId ? { ...t, status: status } : t
+                    ),
+                  }
+                : r
+            ),
+          });
+
           const response = await fetch(
             `/api/routines/${routineId}/tasks/${taskId}`,
             {
@@ -121,6 +135,18 @@ export const useStore = create<StoreState>()(
           return updated;
         },
         handleUncheckAllTasks: async (routineId: string) => {
+          // optimistic updates
+          set({
+            routines: get().routines.map((r) =>
+              r.id === routineId
+                ? {
+                    ...r,
+                    tasks: r.tasks.map((t) => ({ ...t, status: "skipped" })),
+                  }
+                : r
+            ),
+          });
+
           const response = await fetch(`/api/routines/${routineId}/tasks`, {
             method: "DELETE",
           });
@@ -128,6 +154,14 @@ export const useStore = create<StoreState>()(
           initializeRoutines();
         },
         deleteTask: async (routineId: string, taskId: string) => {
+          // optimistic updates
+          set({
+            routines: get().routines.map((r) =>
+              r.id === routineId
+                ? { ...r, tasks: r.tasks.filter((t) => t.id !== taskId) }
+                : r
+            ),
+          });
           const response = await fetch(
             `/api/routines/${routineId}/tasks/${taskId}`,
             {
@@ -142,6 +176,20 @@ export const useStore = create<StoreState>()(
           taskId: string,
           task: Partial<Omit<Task, "id" | "order" | "routine_id">>
         ) => {
+          // optimistic updates
+          set({
+            routines: get().routines.map((r) =>
+              r.id === routineId
+                ? {
+                    ...r,
+                    tasks: r.tasks.map((t) =>
+                      t.id === taskId ? { ...t, ...task } : t
+                    ),
+                  }
+                : r
+            ),
+          });
+
           const response = await fetch(
             `/api/routines/${routineId}/tasks/${taskId}`,
             {
@@ -158,6 +206,35 @@ export const useStore = create<StoreState>()(
           routineId: string,
           body: { taskToMoveId: string; moveToTaskId: string }
         ) => {
+          // optimistic updates
+          const moveToTask = get()
+            .routines.find((r) => r.id === routineId)
+            ?.tasks.find((t) => t.id === body.moveToTaskId);
+          if (!moveToTask) throw new Error("Move to task not found");
+
+          set({
+            routines: get().routines.map((r) =>
+              r.id === routineId
+                ? {
+                    ...r,
+                    tasks: r.tasks
+                      .map((t) =>
+                        t.id === body.taskToMoveId
+                          ? {
+                              ...t,
+                              order: moveToTask.order,
+                            }
+                          : {
+                              ...t,
+                              order: t.order > t.order ? t.order : t.order + 1,
+                            }
+                      )
+                      .toSorted((a, b) => a.order - b.order),
+                  }
+                : r
+            ),
+          });
+
           const response = await fetch(
             `/api/routines/${routineId}/tasks/move`,
             {
