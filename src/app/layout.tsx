@@ -6,7 +6,6 @@ import ReactQueryProvider from "@/providers/ReactQueryProvider";
 import { Toaster } from "@/components/ui/toaster";
 import { ClerkProvider, SignIn, SignedIn, SignedOut } from "@clerk/nextjs";
 import { dark } from "@clerk/themes";
-import RoutineProvider from "./(routine)/[id]/_provider/RoutineProvider";
 import { ModalProvider } from "@/providers/ModelProvider";
 import { AlertProvider } from "@/providers/AlertProvider";
 
@@ -56,22 +55,20 @@ export default function RootLayout({
               forcedTheme="dark"
               defaultTheme="dark"
             >
-              <RoutineProvider>
-                <AlertProvider>
-                  <ModalProvider>
-                    <SignedOut>
-                      <div className="grid place-items-center h-[100svh]">
-                        <SignIn />
-                      </div>
-                    </SignedOut>
-                    <SignedIn>
-                      {children}
-                      {model}
-                    </SignedIn>
-                    <Toaster />
-                  </ModalProvider>
-                </AlertProvider>
-              </RoutineProvider>
+              <AlertProvider>
+                <ModalProvider>
+                  <SignedOut>
+                    <div className="grid place-items-center h-[100svh]">
+                      <SignIn />
+                    </div>
+                  </SignedOut>
+                  <SignedIn>
+                    {children}
+                    {model}
+                  </SignedIn>
+                  <Toaster />
+                </ModalProvider>
+              </AlertProvider>
             </ThemeProvider>
           </ReactQueryProvider>
         </ClerkProvider>
