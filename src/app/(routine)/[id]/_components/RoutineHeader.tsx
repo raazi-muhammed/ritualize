@@ -24,7 +24,6 @@ import { IoAddCircle as AddIcon } from "react-icons/io5";
 import { Frequency } from "@prisma/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "@/components/ui/use-toast";
-import { deleteRoutine } from "../../actions";
 import TaskForm, {
   DEFAULT_TASK_VALUES,
   taskSchema,
@@ -33,7 +32,6 @@ import { z } from "zod";
 import RoutineForm, { routineSchema } from "../../_forms/RoutineForm";
 import { useRouter } from "next/navigation";
 import { useModal } from "@/providers/ModelProvider";
-import { useRoutine } from "../_provider/RoutineProvider";
 import AllTasks from "./AllTasks";
 import { formatDateForInput } from "@/lib/format";
 import { RoutineWithTasks } from "@/types/entities";
@@ -49,14 +47,16 @@ const RoutineHeader = ({
   const queryClient = useQueryClient();
   const router = useRouter();
   const { openModal, closeModal } = useModal();
-  const { updateRoutine, deleteRoutine } = useStore();
-
-  const { handleAddTask, handleUncheckAllTasks } = useRoutine(date);
+  const {
+    updateRoutine,
+    deleteRoutine,
+    addTaskToRoutine,
+    handleUncheckAllTasks,
+  } = useStore();
 
   function handleAddTaskSubmit(values: z.infer<typeof taskSchema>) {
     if (!values.createNew) closeModal();
-    handleAddTask({
-      routine_id: routine.id,
+    addTaskToRoutine(routine.id, {
       name: values.name,
       duration: values.duration,
       frequency: values.frequency as Frequency,
@@ -154,7 +154,7 @@ const RoutineHeader = ({
               </DropdownMenuItem>
               <DropdownMenuItem
                 onSelect={() => {
-                  handleUncheckAllTasks();
+                  handleUncheckAllTasks(routine.id);
                 }}
               >
                 Uncheck all

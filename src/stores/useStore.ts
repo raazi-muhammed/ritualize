@@ -1,5 +1,5 @@
-import { RoutineWithTasks } from "@/types/entities";
-import { Routine } from "@prisma/client";
+import { RoutineWithTasks, TaskWithStatus } from "@/types/entities";
+import { CompletionStatus, Routine, Task } from "@prisma/client";
 import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
 
@@ -17,6 +17,16 @@ interface StoreState {
     routine: Partial<Omit<Routine, "id" | "user_id">>
   ) => Promise<RoutineWithTasks>;
   deleteRoutine: (id: string) => Promise<void>;
+  addTaskToRoutine: (
+    routineId: string,
+    task: Omit<Task, "id" | "order" | "routine_id">
+  ) => Promise<TaskWithStatus>;
+  updateTaskStatus: (
+    routineId: string,
+    taskId: string,
+    status: CompletionStatus
+  ) => Promise<TaskWithStatus>;
+  handleUncheckAllTasks: (routineId: string) => Promise<void>;
 }
 
 // Create the store with Zustand
@@ -63,6 +73,43 @@ export const useStore = create<StoreState>()(
             method: "DELETE",
           });
           if (!response.ok) throw new Error("Failed to delete routine");
+          initializeRoutines();
+        },
+        addTaskToRoutine: async (
+          routineId: string,
+          task: Omit<Task, "id" | "order" | "routine_id">
+        ) => {
+          const response = await fetch(`/api/routines/${routineId}/tasks`, {
+            method: "POST",
+            body: JSON.stringify(task),
+          });
+          if (!response.ok) throw new Error("Failed to add task to routine");
+          const created: TaskWithStatus = await response.json();
+          initializeRoutines();
+          return created;
+        },
+        updateTaskStatus: async (
+          routineId: string,
+          taskId: string,
+          status: CompletionStatus
+        ) => {
+          const response = await fetch(
+            `/api/routines/${routineId}/tasks/${taskId}`,
+            {
+              method: "PATCH",
+              body: JSON.stringify({ status }),
+            }
+          );
+          if (!response.ok) throw new Error("Failed to update task status");
+          const updated: TaskWithStatus = await response.json();
+          initializeRoutines();
+          return updated;
+        },
+        handleUncheckAllTasks: async (routineId: string) => {
+          const response = await fetch(`/api/routines/${routineId}/tasks`, {
+            method: "DELETE",
+          });
+          if (!response.ok) throw new Error("Failed to uncheck all tasks");
           initializeRoutines();
         },
       }),

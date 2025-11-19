@@ -3,20 +3,19 @@
 import Heading from "@/components/layout/Heading";
 import { Button } from "@/components/ui/button";
 import { useStopwatch } from "@/hooks/stop-watch";
-import { CompletionStatus, Routine, Task, TaskType } from "@prisma/client";
+import { CompletionStatus, TaskType } from "@prisma/client";
 import {
   CheckCheck,
   ChevronLeft,
   ChevronRight,
   SkipForward,
 } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "motion/react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { getRoutineForDate } from "../../actions";
+import { useQueryClient } from "@tanstack/react-query";
 import { RoutineWithTasks, TaskWithStatus } from "@/types/entities";
 import InfoMessage from "@/components/message/InfoMessage";
-import { useRoutine } from "../../_provider/RoutineProvider";
+import { useStore } from "@/stores";
 
 function getStartFrom(
   tasks: TaskWithStatus[] | undefined,
@@ -43,10 +42,9 @@ function StartComponent({
 }) {
   const { time, reset } = useStopwatch();
   const queryClient = useQueryClient();
+  const { updateTaskStatus, handleUncheckAllTasks } = useStore();
 
-  const { handleChangeTaskStatus, handleUncheckAllTasks } = useRoutine(date);
-
-  const startFrom = getStartFrom(routine?.tasks) || 0;
+  const startFrom = getStartFrom(routine?.tasks);
 
   const [currentTaskIndex, setCurrentTaskIndex] = useState<number>(
     startFrom || 0
@@ -61,17 +59,19 @@ function StartComponent({
   }, [currentTaskIndex]);
 
   function completedTask() {
-    handleChangeTaskStatus({
-      taskId: routine?.tasks[currentTaskIndex].id || "",
-      status: CompletionStatus.completed,
-    });
+    updateTaskStatus(
+      routine.id,
+      routine?.tasks[currentTaskIndex].id,
+      CompletionStatus.completed
+    );
   }
 
   function skipTask() {
-    handleChangeTaskStatus({
-      taskId: routine?.tasks[currentTaskIndex].id || "",
-      status: CompletionStatus.skipped,
-    });
+    updateTaskStatus(
+      routine.id,
+      routine?.tasks[currentTaskIndex].id,
+      CompletionStatus.skipped
+    );
   }
 
   function moveToNextPossibleTask() {
@@ -103,7 +103,7 @@ function StartComponent({
               variant="outline"
               onClick={() => {
                 setRunning(false);
-                handleUncheckAllTasks();
+                handleUncheckAllTasks(routine.id);
               }}
             >
               <CheckCheck className="-ms-2" />
