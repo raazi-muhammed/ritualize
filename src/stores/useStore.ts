@@ -7,6 +7,8 @@ import { devtools, persist } from "zustand/middleware";
 interface StoreState {
   // Add your state properties here
   routines: RoutineWithTasks[];
+  isSyncing: boolean;
+  setIsSyncing: (isSyncing: boolean) => void;
   setRoutines: (routines: RoutineWithTasks[]) => void;
   getRoutine: (routineId: string) => RoutineWithTasks | null;
   createRoutine: (
@@ -46,6 +48,8 @@ export const useStore = create<StoreState>()(
       (set, get) => ({
         // Initial state
         routines: [],
+        isSyncing: false,
+        setIsSyncing: (isSyncing: boolean) => set({ isSyncing }),
 
         // Actions
         setRoutines: (routines: RoutineWithTasks[]) => set({ routines }),
@@ -181,6 +185,7 @@ export const useStore = create<StoreState>()(
  */
 export async function initializeRoutines() {
   try {
+    useStore.getState().setIsSyncing(true);
     const response = await fetch("/api/routines");
     if (!response.ok) throw new Error("Failed to fetch routines");
     const routines: RoutineWithTasks[] = await response.json();
@@ -190,5 +195,7 @@ export async function initializeRoutines() {
     // Handle error accordingly, or rethrow
     console.error("Error initializing routines:", error);
     return [];
+  } finally {
+    useStore.getState().setIsSyncing(false);
   }
 }
