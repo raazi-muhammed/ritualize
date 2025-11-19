@@ -2,6 +2,7 @@ import { RoutineWithTasks, TaskWithStatus } from "@/types/entities";
 import { CompletionStatus, Routine, Task } from "@prisma/client";
 import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
+import debounce from "lodash.debounce";
 
 // Example store interface - customize based on your needs
 interface StoreState {
@@ -183,7 +184,12 @@ export const useStore = create<StoreState>()(
  * Fetch routines from the API and initialize the store.
  * Returns a promise resolving to the fetched routines.
  */
-export async function initializeRoutines() {
+async function _initializeRoutines() {
+  // Skip if already syncing to prevent duplicate calls
+  if (useStore.getState().isSyncing) {
+    return;
+  }
+
   try {
     useStore.getState().setIsSyncing(true);
     const response = await fetch("/api/routines");
@@ -198,4 +204,24 @@ export async function initializeRoutines() {
   } finally {
     useStore.getState().setIsSyncing(false);
   }
+}
+
+/**
+ * Debounced version of initializeRoutines to prevent excessive API calls.
+ * Waits 800ms after the last call before executing.
+ * This ensures that rapid consecutive calls (like clicking "Next" multiple times)
+ * will only result in a single API call once the user stops clicking.
+ */
+const debouncedInitializeRoutines = debounce(_initializeRoutines, 800);
+
+/**
+ * Wrapper to ensure we cancel any pending calls if a sync is already in progress
+ */
+export function initializeRoutines() {
+  // Cancel any pending debounced calls if we're already syncing
+  if (useStore.getState().isSyncing) {
+    debouncedInitializeRoutines.cancel();
+    return;
+  }
+  debouncedInitializeRoutines();
 }
