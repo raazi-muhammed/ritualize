@@ -12,6 +12,9 @@ export async function GET(request: Request) {
     },
     include: {
       tasks: {
+        orderBy: {
+          order: "asc",
+        },
         include: {
           completions: {
             where: {

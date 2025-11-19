@@ -112,7 +112,7 @@ const TaskCard = ({
             <div>
               <p>{task.name}</p>
               <small className="text-muted-foreground">
-                {`${task.duration} min`}
+                {`${task.duration} min • ${task.order}`}
               </small>
               <br />
               <small className="text-muted-foreground">
