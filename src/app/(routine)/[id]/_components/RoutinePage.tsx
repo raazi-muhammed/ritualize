@@ -3,13 +3,11 @@
 import Heading from "@/components/layout/Heading";
 import { IoPlayCircle as StartIcon } from "react-icons/io5";
 import RoutineHeader from "./RoutineHeader";
-import { useRoutine } from "../_provider/RoutineProvider";
 import Tasks from "./Tasks";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
-import { Calendar as CalendarIcon, ChevronDown } from "lucide-react";
-import { Toggle } from "@/components/ui/toggle";
+import { Calendar as CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -17,7 +15,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { useMediaQuery } from "@/hooks/use-media-query";
 import StartComponent from "../start/_components/StartComponent";
 import { RoutineWithTasks } from "@/types/entities";
 import { RoutineTypes } from "@prisma/client";

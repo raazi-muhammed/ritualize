@@ -33,3 +33,44 @@ export async function PATCH(
 
   return NextResponse.json(completion);
 }
+
+export async function PUT(
+  request: Request,
+  { params }: { params: { routineId: string; taskId: string } }
+) {
+  const { routineId, taskId } = params;
+  const user = await getCurrentUser();
+  const body = await request.json();
+
+  const updated = await prisma.task.update({
+    where: {
+      id: taskId,
+      routine_id: routineId,
+    },
+    data: body,
+  });
+
+  return NextResponse.json(updated);
+}
+
+export async function DELETE(
+  request: Request,
+  { params }: { params: { routineId: string; taskId: string } }
+) {
+  const { routineId, taskId } = params;
+  const user = await getCurrentUser();
+
+  await prisma.taskCompletion.deleteMany({
+    where: {
+      task_id: taskId,
+    },
+  });
+
+  await prisma.task.delete({
+    where: {
+      id: taskId,
+    },
+  });
+
+  return NextResponse.json({ message: "Task deleted" });
+}

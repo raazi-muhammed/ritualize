@@ -125,7 +125,7 @@ const RoutineHeader = ({
                 onSelect={() => {
                   openModal({
                     title: "All tasks",
-                    content: <AllTasks showStartDate />,
+                    content: <AllTasks showStartDate routine={routine} />,
                   });
                 }}
               >

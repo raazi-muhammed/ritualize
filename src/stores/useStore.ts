@@ -27,6 +27,16 @@ interface StoreState {
     status: CompletionStatus
   ) => Promise<TaskWithStatus>;
   handleUncheckAllTasks: (routineId: string) => Promise<void>;
+  deleteTask: (routineId: string, taskId: string) => Promise<void>;
+  updateTask: (
+    routineId: string,
+    taskId: string,
+    task: Partial<Omit<Task, "id" | "order" | "routine_id">>
+  ) => Promise<TaskWithStatus>;
+  moveTask: (
+    routineId: string,
+    body: { taskToMoveId: string; moveToTaskId: string }
+  ) => Promise<TaskWithStatus>;
 }
 
 // Create the store with Zustand
@@ -111,6 +121,49 @@ export const useStore = create<StoreState>()(
           });
           if (!response.ok) throw new Error("Failed to uncheck all tasks");
           initializeRoutines();
+        },
+        deleteTask: async (routineId: string, taskId: string) => {
+          const response = await fetch(
+            `/api/routines/${routineId}/tasks/${taskId}`,
+            {
+              method: "DELETE",
+            }
+          );
+          if (!response.ok) throw new Error("Failed to delete task");
+          initializeRoutines();
+        },
+        updateTask: async (
+          routineId: string,
+          taskId: string,
+          task: Partial<Omit<Task, "id" | "order" | "routine_id">>
+        ) => {
+          const response = await fetch(
+            `/api/routines/${routineId}/tasks/${taskId}`,
+            {
+              method: "PUT",
+              body: JSON.stringify(task),
+            }
+          );
+          if (!response.ok) throw new Error("Failed to update task");
+          const updated: TaskWithStatus = await response.json();
+          initializeRoutines();
+          return updated;
+        },
+        moveTask: async (
+          routineId: string,
+          body: { taskToMoveId: string; moveToTaskId: string }
+        ) => {
+          const response = await fetch(
+            `/api/routines/${routineId}/tasks/move`,
+            {
+              method: "POST",
+              body: JSON.stringify(body),
+            }
+          );
+          if (!response.ok) throw new Error("Failed to move task");
+          const updated: TaskWithStatus = await response.json();
+          initializeRoutines();
+          return updated;
         },
       }),
       {
