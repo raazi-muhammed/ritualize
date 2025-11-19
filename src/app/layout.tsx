@@ -13,67 +13,69 @@ import { AlertProvider } from "@/providers/AlertProvider";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-    title: "Ritualize",
-    description: "Routine app",
-    manifest: "/manifest.json",
-    icons: { apple: "/icon.png" },
+  title: "Ritualize",
+  description: "Routine app",
+  manifest: "/manifest.json",
+  icons: { apple: "/icon.png" },
 };
 
 export const viewport: Viewport = {
-    width: "device-width",
-    initialScale: 1,
-    maximumScale: 1,
-    userScalable: false,
-    interactiveWidget: "overlays-content",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  interactiveWidget: "overlays-content",
 };
 
 export default function RootLayout({
-    children,
-    model,
+  children,
+  model,
 }: Readonly<{
-    children: React.ReactNode;
-    model: React.ReactNode;
+  children: React.ReactNode;
+  model: React.ReactNode;
 }>) {
-    return (
-        <html lang="en">
-            <head>
-                <link rel="preconnect" href="https://fonts.googleapis.com" />
-                <link rel="preconnect" href="https://fonts.gstatic.com" />
-                <link
-                    href="https://fonts.googleapis.com/css2?family=Funnel+Display:wght@300..800&display=swap"
-                    rel="stylesheet"
-                />
-            </head>
-            <body className={inter.className}>
-                <ClerkProvider
-                    appearance={{
-                        baseTheme: [dark],
-                    }}>
-                    <ReactQueryProvider>
-                        <ThemeProvider
-                            attribute="class"
-                            forcedTheme="dark"
-                            defaultTheme="dark">
-                            <RoutineProvider>
-                                <AlertProvider>
-                                    <ModalProvider>
-                                        <SignedOut>
-                                            <div className="grid place-items-center h-[100svh]">
-                                                <SignIn />
-                                            </div>
-                                        </SignedOut>
-                                        <SignedIn>
-                                            {children}
-                                            {model}
-                                        </SignedIn>
-                                        <Toaster />
-                                    </ModalProvider>
-                                </AlertProvider>
-                            </RoutineProvider>
-                        </ThemeProvider>
-                    </ReactQueryProvider>
-                </ClerkProvider>
-            </body>
-        </html>
-    );
+  return (
+    <html lang="en">
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Funnel+Display:wght@300..800&display=swap"
+          rel="stylesheet"
+        />
+      </head>
+      <body className={inter.className}>
+        <ClerkProvider
+          appearance={{
+            baseTheme: [dark],
+          }}
+        >
+          <ReactQueryProvider>
+            <ThemeProvider
+              attribute="class"
+              forcedTheme="dark"
+              defaultTheme="dark"
+            >
+              <RoutineProvider>
+                <AlertProvider>
+                  <ModalProvider>
+                    <SignedOut>
+                      <div className="grid place-items-center h-[100svh]">
+                        <SignIn />
+                      </div>
+                    </SignedOut>
+                    <SignedIn>
+                      {children}
+                      {model}
+                    </SignedIn>
+                    <Toaster />
+                  </ModalProvider>
+                </AlertProvider>
+              </RoutineProvider>
+            </ThemeProvider>
+          </ReactQueryProvider>
+        </ClerkProvider>
+      </body>
+    </html>
+  );
 }
