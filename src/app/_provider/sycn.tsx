@@ -1,6 +1,7 @@
 "use client";
 
-import { useStore } from "@/stores";
+import { useStore, initializeRoutines } from "@/stores";
+import { useEffect } from "react";
 
 export default function Syncing({
   children,
@@ -8,6 +9,10 @@ export default function Syncing({
   children: React.ReactNode;
 }>) {
   const { isSyncing } = useStore();
+
+  useEffect(() => {
+    initializeRoutines();
+  }, []);
 
   return (
     <div>

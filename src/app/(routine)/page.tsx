@@ -5,17 +5,14 @@ import Heading from "@/components/layout/Heading";
 import Link from "next/link";
 import { IoAddCircle as AddIcon } from "react-icons/io5";
 import { UserButton } from "@clerk/nextjs";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import LoadingIndicator from "@/components/layout/LoadingIndicator";
 import RoutineForm, { routineSchema } from "./_forms/RoutineForm";
 import { z } from "zod";
 import RoutineCard from "./[id]/_components/RoutineCard";
 import { useModal } from "@/providers/ModelProvider";
 import InfoMessage from "@/components/message/InfoMessage";
-import { getRoutineForDate } from "./[id]/actions";
-import { useEffect, useState } from "react";
-import { formatDate } from "@/lib/format";
-import { initializeRoutines, useStore } from "@/stores";
+import { useStore } from "@/stores";
 import { RoutineWithTasks } from "@/types/entities";
 
 async function fetchRoutines(): Promise<RoutineWithTasks[]> {
@@ -27,16 +24,8 @@ async function fetchRoutines(): Promise<RoutineWithTasks[]> {
 }
 
 export default function Home() {
-  const queryClient = useQueryClient();
   const { openModal, closeModal } = useModal();
-  const { routines, createRoutine } = useStore((state) => state);
-  const [isLoading, setIsLoading] = useState(true);
-  useEffect(() => {
-    setIsLoading(true);
-    initializeRoutines().then(() => {
-      setIsLoading(false);
-    });
-  }, []);
+  const { routines, createRoutine, isSyncing } = useStore((state) => state);
 
   const { mutateAsync } = useMutation({
     mutationFn: createRoutine,
@@ -49,7 +38,7 @@ export default function Home() {
 
   return (
     <main className="px-5 md:container py-4 min-h-screen bg-background">
-      {routines.length === 0 && isLoading ? (
+      {routines.length === 0 && isSyncing ? (
         <LoadingIndicator />
       ) : (
         <>
