@@ -1,5 +1,7 @@
 "use client";
 
+export const dynamic = "force-static";
+
 import { Button } from "@/components/ui/button";
 import Heading from "@/components/layout/Heading";
 import Link from "next/link";
@@ -13,15 +15,6 @@ import RoutineCard from "./[id]/_components/RoutineCard";
 import { useModal } from "@/providers/ModelProvider";
 import InfoMessage from "@/components/message/InfoMessage";
 import { useStore } from "@/stores";
-import { RoutineWithTasks } from "@/types/entities";
-
-async function fetchRoutines(): Promise<RoutineWithTasks[]> {
-  const response = await fetch("/api/routines");
-  if (!response.ok) {
-    throw new Error("Failed to fetch routines");
-  }
-  return response.json();
-}
 
 export default function Home() {
   const { openModal, closeModal } = useModal();

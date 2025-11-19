@@ -1,5 +1,7 @@
 "use client";
 
+export const dynamic = 'force-static';
+
 import { useState } from "react";
 import RoutinePage from "./_components/RoutinePage";
 import InfoMessage from "@/components/message/InfoMessage";
