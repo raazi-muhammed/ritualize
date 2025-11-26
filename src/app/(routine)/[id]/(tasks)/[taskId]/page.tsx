@@ -1,5 +1,8 @@
 "use client";
 
+import Heading from "@/components/layout/Heading";
+import PageTemplate from "@/components/layout/PageTemplate";
+import { Card } from "@/components/ui/card";
 import { formatDate } from "@/lib/format";
 import { useStore } from "@/stores";
 import { TaskWithCompletions } from "@/types/entities";
@@ -25,17 +28,18 @@ export default function Page({
   if (!task) return <div>Loading...</div>;
 
   return (
-    <div>
-      <h1>Task {taskId}</h1>
-      <h1>{task.name}</h1>
-
-      <p> {task.completions.length} completions</p>
-
-      <ul>
+    <PageTemplate title={task.name}>
+      <p className="text-xl font-bold">{`${task.completions.length} Completions`}</p>
+      <ul className="space-y-2">
         {task.completions.map((completion) => (
-          <li key={completion.id}>{formatDate(completion.date)}</li>
+          <li key={completion.id}>
+            <Card className="p-2">
+              <p className="text-lg">{formatDate(completion.date)}</p>
+              <p>{completion.status}</p>
+            </Card>
+          </li>
         ))}
       </ul>
-    </div>
+    </PageTemplate>
   );
 }
