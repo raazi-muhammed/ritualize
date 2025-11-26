@@ -2,6 +2,7 @@
 
 import Heading from "@/components/layout/Heading";
 import PageTemplate from "@/components/layout/PageTemplate";
+import { Calendar } from "@/components/ui/calendar";
 import { Card } from "@/components/ui/card";
 import { formatDate } from "@/lib/format";
 import { useStore } from "@/stores";
@@ -30,6 +31,11 @@ export default function Page({
   return (
     <PageTemplate title={task.name}>
       <p className="text-xl font-bold">{`${task.completions.length} Completions`}</p>
+      <Calendar
+        numberOfMonths={1}
+        mode="multiple"
+        selected={task.completions.map((c) => new Date(c.date))}
+      />
       <ul className="space-y-2">
         {task.completions.map((completion) => (
           <li key={completion.id}>
