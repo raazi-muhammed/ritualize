@@ -16,7 +16,9 @@ export default function Syncing({
 
   return (
     <div>
-      <p>{isSyncing ? "Syncing..." : "Synced"}</p>
+      <div className="fixed bottom-12 left-12 border border-muted px-2 rounded-md">
+        <p>{isSyncing ? "Syncing..." : "Synced"}</p>
+      </div>
       {children}
     </div>
   );

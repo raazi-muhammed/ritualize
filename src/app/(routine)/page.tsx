@@ -15,10 +15,13 @@ import RoutineCard from "./[id]/_components/RoutineCard";
 import { useModal } from "@/providers/ModelProvider";
 import InfoMessage from "@/components/message/InfoMessage";
 import { useStore } from "@/stores";
+import { useEffect } from "react";
+import DateSelector from "../_components/DateSelector";
 
 export default function Home() {
   const { openModal, closeModal } = useModal();
-  const { routines, createRoutine, isSyncing } = useStore((state) => state);
+  const { routines, createRoutine, isSyncing, selectedDate, setSelectedDate } =
+    useStore((state) => state);
 
   const { mutateAsync } = useMutation({
     mutationFn: createRoutine,
@@ -28,6 +31,10 @@ export default function Home() {
     closeModal();
     mutateAsync(values);
   }
+
+  useEffect(() => {
+    setSelectedDate(new Date());
+  }, []);
 
   return (
     <main className="px-5 md:container py-4 min-h-screen bg-background">
@@ -73,6 +80,7 @@ export default function Home() {
               <InfoMessage message="No routines yet" />
             )}
           </section>
+          <DateSelector />
         </>
       )}
     </main>

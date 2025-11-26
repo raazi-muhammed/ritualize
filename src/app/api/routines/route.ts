@@ -4,7 +4,12 @@ import { NextResponse } from "next/server";
 import { RoutineWithTasks } from "@/types/entities";
 
 export async function GET(request: Request) {
-  const date = new Date();
+  const url = new URL(request.url);
+
+  const date = new Date(
+    url.searchParams.get("date") || new Date().toISOString()
+  );
+
   const user = await getCurrentUser();
   const routines = await prisma.routine.findMany({
     where: {

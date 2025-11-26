@@ -13,6 +13,8 @@ interface StoreState {
   // Add your state properties here
   routines: RoutineWithTasks[];
   isSyncing: boolean;
+  selectedDate: Date;
+  setSelectedDate: (date: Date) => void;
   setIsSyncing: (isSyncing: boolean) => void;
   setRoutines: (routines: RoutineWithTasks[]) => void;
   getRoutine: (routineId: string) => RoutineWithTasks | null;
@@ -55,6 +57,11 @@ export const useStore = create<StoreState>()(
         // Initial state
         routines: [],
         isSyncing: false,
+        selectedDate: new Date(),
+        setSelectedDate: (date: Date) => {
+          set({ selectedDate: date });
+          initializeRoutines();
+        },
         setIsSyncing: (isSyncing: boolean) => set({ isSyncing }),
 
         // Actions
@@ -131,7 +138,7 @@ export const useStore = create<StoreState>()(
             `/api/routines/${routineId}/tasks/${taskId}`,
             {
               method: "PATCH",
-              body: JSON.stringify({ status }),
+              body: JSON.stringify({ status, date: get().selectedDate }),
             }
           );
           if (!response.ok) throw new Error("Failed to update task status");
@@ -282,7 +289,9 @@ async function _initializeRoutines() {
 
   try {
     useStore.getState().setIsSyncing(true);
-    const response = await fetch("/api/routines");
+    const response = await fetch(
+      `/api/routines?date=${useStore.getState().selectedDate.toISOString()}`
+    );
     if (!response.ok) throw new Error("Failed to fetch routines");
     const routines: RoutineWithTasks[] = await response.json();
     useStore.getState().setRoutines(routines);

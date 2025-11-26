@@ -8,9 +8,6 @@ import { ClerkProvider, SignIn, SignedIn, SignedOut } from "@clerk/nextjs";
 import { dark } from "@clerk/themes";
 import { ModalProvider } from "@/providers/ModelProvider";
 import { AlertProvider } from "@/providers/AlertProvider";
-import { useStore } from "@/stores";
-import { toast } from "@/components/ui/use-toast";
-import { useEffect } from "react";
 import Syncing from "./_provider/sycn";
 
 const inter = Inter({ subsets: ["latin"] });

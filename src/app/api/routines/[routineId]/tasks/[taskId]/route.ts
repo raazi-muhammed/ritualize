@@ -12,8 +12,8 @@ export async function GET(
     where: { id: taskId, routine_id: routineId },
     include: {
       completions: {
-        where: {
-          date: new Date(new Date().setHours(0, 0, 0, 0)),
+        orderBy: {
+          date: "desc",
         },
       },
     },
@@ -25,11 +25,10 @@ export async function PATCH(
   request: Request,
   { params }: { params: { routineId: string; taskId: string } }
 ) {
-  const { routineId, taskId } = params;
+  const { taskId } = params;
   const body = await request.json();
   const user = await getCurrentUser();
-
-  const newDate = new Date(new Date().setHours(0, 0, 0, 0));
+  const newDate = new Date(new Date(body.date).setHours(0, 0, 0, 0));
 
   const completion = await prisma.taskCompletion.upsert({
     where: {
