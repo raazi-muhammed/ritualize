@@ -2,11 +2,19 @@
 
 import Heading from "@/components/layout/Heading";
 import PageTemplate from "@/components/layout/PageTemplate";
+import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Card } from "@/components/ui/card";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { formatDate } from "@/lib/format";
 import { useStore } from "@/stores";
 import { TaskWithCompletions } from "@/types/entities";
+import { Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export default function Page({
@@ -14,15 +22,15 @@ export default function Page({
 }: {
   params: { taskId: string; id: string };
 }) {
-  const taskId = params.taskId;
-  const { getTask } = useStore();
+  const { getTask, deleteTaskCompletion } = useStore();
   const [task, setTask] = useState<TaskWithCompletions | null>(null);
 
+  const fetchTask = async () => {
+    const task = await getTask(params.id, params.taskId);
+    setTask(task);
+  };
+
   useEffect(() => {
-    const fetchTask = async () => {
-      const task = await getTask(params.id, params.taskId);
-      setTask(task);
-    };
     fetchTask();
   }, [params.id, params.taskId]);
 
@@ -39,9 +47,28 @@ export default function Page({
       <ul className="space-y-2">
         {task.completions.map((completion) => (
           <li key={completion.id}>
-            <Card className="p-2">
-              <p className="text-lg">{formatDate(completion.date)}</p>
-              <p>{completion.status}</p>
+            <Card className="py-2 px-4 flex justify-between items-center">
+              <div>
+                <p className="text-lg">{formatDate(completion.date)}</p>
+                <p>{completion.status}</p>
+              </div>
+              <DropdownMenu>
+                <DropdownMenuTrigger>...</DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem
+                    onClick={async () => {
+                      await deleteTaskCompletion(
+                        params.id,
+                        params.taskId,
+                        completion.id
+                      );
+                      fetchTask();
+                    }}
+                  >
+                    Delete
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </Card>
           </li>
         ))}

@@ -47,6 +47,7 @@ interface StoreState {
     body: { taskToMoveId: string; moveToTaskId: string }
   ) => Promise<TaskWithStatus>;
   getTask: (routineId: string, taskId: string) => Promise<TaskWithCompletions>;
+  deleteTaskCompletion: (routineId: string, taskId: string, completionId: string) => Promise<void>;
 }
 
 // Create the store with Zustand
@@ -266,6 +267,16 @@ export const useStore = create<StoreState>()(
           if (!response.ok) throw new Error("Failed to get task");
           const task: TaskWithCompletions = await response.json();
           return task;
+        },
+        deleteTaskCompletion: async (routineId: string, taskId: string, completionId: string) => {
+          const response = await fetch(
+            `/api/routines/${routineId}/tasks/${taskId}/complitions/${completionId}`,
+            {
+              method: "DELETE",
+            }
+          );
+          if (!response.ok) throw new Error("Failed to delete task completion");
+          initializeRoutines();
         },
       }),
       {
