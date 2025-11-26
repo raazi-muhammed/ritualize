@@ -1,9 +1,18 @@
-import { CompletionStatus, Routine, Task } from "@prisma/client";
+import {
+  CompletionStatus,
+  Routine,
+  Task,
+  TaskCompletion,
+} from "@prisma/client";
 
 export type TaskWithStatus = Task & {
-    status: CompletionStatus;
+  status: CompletionStatus;
 };
 
 export type RoutineWithTasks = Routine & {
-    tasks: TaskWithStatus[];
+  tasks: TaskWithStatus[];
+};
+
+export type TaskWithCompletions = Task & {
+  completions: TaskCompletion[];
 };

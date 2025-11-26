@@ -2,6 +2,25 @@ import { getCurrentUser } from "@/lib/clerk";
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
+export async function GET(
+  request: Request,
+  { params }: { params: { routineId: string; taskId: string } }
+) {
+  const { routineId, taskId } = params;
+  const user = await getCurrentUser();
+  const task = await prisma.task.findUnique({
+    where: { id: taskId, routine_id: routineId },
+    include: {
+      completions: {
+        where: {
+          date: new Date(new Date().setHours(0, 0, 0, 0)),
+        },
+      },
+    },
+  });
+  return NextResponse.json(task);
+}
+
 export async function PATCH(
   request: Request,
   { params }: { params: { routineId: string; taskId: string } }

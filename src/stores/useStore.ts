@@ -1,4 +1,8 @@
-import { RoutineWithTasks, TaskWithStatus } from "@/types/entities";
+import {
+  RoutineWithTasks,
+  TaskWithCompletions,
+  TaskWithStatus,
+} from "@/types/entities";
 import { CompletionStatus, Routine, Task } from "@prisma/client";
 import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
@@ -40,6 +44,7 @@ interface StoreState {
     routineId: string,
     body: { taskToMoveId: string; moveToTaskId: string }
   ) => Promise<TaskWithStatus>;
+  getTask: (routineId: string, taskId: string) => Promise<TaskWithCompletions>;
 }
 
 // Create the store with Zustand
@@ -246,6 +251,14 @@ export const useStore = create<StoreState>()(
           const updated: TaskWithStatus = await response.json();
           initializeRoutines();
           return updated;
+        },
+        getTask: async (routineId: string, taskId: string) => {
+          const response = await fetch(
+            `/api/routines/${routineId}/tasks/${taskId}`
+          );
+          if (!response.ok) throw new Error("Failed to get task");
+          const task: TaskWithCompletions = await response.json();
+          return task;
         },
       }),
       {

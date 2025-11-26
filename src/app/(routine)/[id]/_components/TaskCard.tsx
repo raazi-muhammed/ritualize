@@ -31,6 +31,7 @@ import { generateCardDescription } from "@/lib/utils";
 import { useModal } from "@/providers/ModelProvider";
 import { TaskWithStatus } from "@/types/entities";
 import { useStore } from "@/stores";
+import { useRouter } from "next/navigation";
 
 const TaskCard = ({
   task,
@@ -43,6 +44,7 @@ const TaskCard = ({
 }) => {
   const { openModal, closeModal } = useModal();
   const { deleteTask, updateTask, updateTaskStatus, moveTask } = useStore();
+  const router = useRouter();
 
   const handleDragStart = (e: DragEvent<HTMLDivElement>) => {
     e.dataTransfer.setData("taskId", task.id);
@@ -136,6 +138,13 @@ const TaskCard = ({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
+              <DropdownMenuItem
+                onSelect={() => {
+                  router.push(`/${task.routine_id}/${task.id}`);
+                }}
+              >
+                View
+              </DropdownMenuItem>
               <DropdownMenuItem
                 onSelect={() => {
                   openModal({
