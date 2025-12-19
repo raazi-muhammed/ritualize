@@ -59,7 +59,7 @@ export default function Home() {
             <UserButton />
           </section>
           <Heading className="my-4">Routines</Heading>
-          <section className="flex flex-col gap-4">
+          <section className="flex flex-col gap-4 mb-12">
             <section className="grid grid-cols-2 gap-4">
               {routines
                 ?.filter((r) => r.is_favorite)
