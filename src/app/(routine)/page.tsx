@@ -64,17 +64,17 @@ export default function Home() {
               {routines
                 ?.filter((r) => r.is_favorite)
                 .map((routine) => (
-                  <Link href={`/${routine.id}`} key={routine.name}>
-                    <RoutineCard isList={true} routine={routine} />
-                  </Link>
+                  <RoutineCard
+                    key={routine.id}
+                    isList={true}
+                    routine={routine}
+                  />
                 ))}
             </section>
             {routines
               ?.filter((r) => !r.is_favorite)
               .map((routine) => (
-                <Link href={`/${routine.id}`} key={routine.name}>
-                  <RoutineCard routine={routine} />
-                </Link>
+                <RoutineCard key={routine.id} routine={routine} />
               ))}
             {routines?.length === 0 && (
               <InfoMessage message="No routines yet" />

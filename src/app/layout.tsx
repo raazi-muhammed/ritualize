@@ -8,6 +8,7 @@ import { ClerkProvider, SignIn, SignedIn, SignedOut } from "@clerk/nextjs";
 import { dark } from "@clerk/themes";
 import { ModalProvider } from "@/providers/ModelProvider";
 import { AlertProvider } from "@/providers/AlertProvider";
+import { ViewTransitions } from "next-view-transitions";
 import Syncing from "./_provider/sycn";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -35,45 +36,47 @@ export default function RootLayout({
   model: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Funnel+Display:wght@300..800&display=swap"
-          rel="stylesheet"
-        />
-      </head>
-      <body className={inter.className}>
-        <ClerkProvider
-          appearance={{
-            baseTheme: [dark],
-          }}
-        >
-          <ReactQueryProvider>
-            <ThemeProvider
-              attribute="class"
-              forcedTheme="dark"
-              defaultTheme="dark"
-            >
-              <AlertProvider>
-                <ModalProvider>
-                  <SignedOut>
-                    <div className="grid place-items-center h-[100svh]">
-                      <SignIn />
-                    </div>
-                  </SignedOut>
-                  <SignedIn>
-                    <Syncing>{children}</Syncing>
-                    {model}
-                  </SignedIn>
-                  <Toaster />
-                </ModalProvider>
-              </AlertProvider>
-            </ThemeProvider>
-          </ReactQueryProvider>
-        </ClerkProvider>
-      </body>
-    </html>
+    <ViewTransitions>
+      <html lang="en">
+        <head>
+          <link rel="preconnect" href="https://fonts.googleapis.com" />
+          <link rel="preconnect" href="https://fonts.gstatic.com" />
+          <link
+            href="https://fonts.googleapis.com/css2?family=Funnel+Display:wght@300..800&display=swap"
+            rel="stylesheet"
+          />
+        </head>
+        <body className={inter.className}>
+          <ClerkProvider
+            appearance={{
+              baseTheme: [dark],
+            }}
+          >
+            <ReactQueryProvider>
+              <ThemeProvider
+                attribute="class"
+                forcedTheme="dark"
+                defaultTheme="dark"
+              >
+                <AlertProvider>
+                  <ModalProvider>
+                    <SignedOut>
+                      <div className="grid place-items-center h-[100svh]">
+                        <SignIn />
+                      </div>
+                    </SignedOut>
+                    <SignedIn>
+                      <Syncing>{children}</Syncing>
+                      {model}
+                    </SignedIn>
+                    <Toaster />
+                  </ModalProvider>
+                </AlertProvider>
+              </ThemeProvider>
+            </ReactQueryProvider>
+          </ClerkProvider>
+        </body>
+      </html>
+    </ViewTransitions>
   );
 }
