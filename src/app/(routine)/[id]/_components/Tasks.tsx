@@ -12,7 +12,7 @@ const Tasks = ({
   routine: RoutineWithTasks;
 }) => {
   return (
-    <section className="mb-16">
+    <section className="mb-36">
       {!routine ? (
         <InfoMessage message="No tasks yet" />
       ) : (

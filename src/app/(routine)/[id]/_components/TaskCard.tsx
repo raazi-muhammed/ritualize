@@ -86,14 +86,13 @@ const TaskCard = ({
     <Card
       key={task.id}
       className={`${
-        task.type == TaskType.checkpoint
-          ? "bg-transparent border-none my-0"
-          : "my-2"
+        task.type == TaskType.checkpoint ? "bg-transparent my-0" : "my-2"
       } ${task.id == "" ? "opacity-50" : ""}`}
       draggable
       onDragStart={handleDragStart}
       onDragOver={(e) => e.preventDefault()}
       onDrop={handleDrop}
+      onClick={() => router.push(`/${task.routine_id}/${task.id}`)}
     >
       <CardContent className="flex justify-between p-4">
         {task.type == TaskType.task ? (
@@ -113,16 +112,11 @@ const TaskCard = ({
             ) : null}
             <div>
               <p>{task.name}</p>
-              <small className="text-muted-foreground">
-                {`${task.duration} min • ${task.order}`}
-              </small>
-              <br />
-              <small className="text-muted-foreground">
-                {generateCardDescription(task, {
+              <p className="text-muted-foreground text-xs">
+                {`${task.duration} min • ${generateCardDescription(task, {
                   showStartDate,
-                })}
-              </small>
-              <small className="text-muted-foreground">{task.type}</small>
+                })} • ${task.type}`}
+              </p>
             </div>
           </section>
         ) : (
