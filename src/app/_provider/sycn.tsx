@@ -16,8 +16,10 @@ export default function Syncing({
 
   return (
     <div>
-      <div className="fixed bottom-12 left-12 border border-muted px-2 rounded-md">
-        <p>{isSyncing ? "Syncing..." : "Synced"}</p>
+      <div className="fixed top-0 left-0 right-0 z-10">
+        <div className="mx-auto flex w-fit bg-secondary px-2 rounded-md">
+          <p className="text-xs">{isSyncing ? "Syncing..." : "Synced"}</p>
+        </div>
       </div>
       {children}
     </div>
