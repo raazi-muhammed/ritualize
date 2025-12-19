@@ -1,5 +1,9 @@
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Icon } from "@/components/ui/icon-picker";
+import {
+  pageSlideAnimation,
+  PRESSABLE_ANIMATION_CLASSES,
+} from "@/lib/animations";
 import { Routine } from "@prisma/client";
 import { Heart } from "lucide-react";
 import { useTransitionRouter } from "next-view-transitions";
@@ -20,12 +24,12 @@ const RoutineCard = ({
       onClick={(e) => {
         e.preventDefault();
         router.push(`/${routine.id}`, {
-          onTransitionReady: pageAnimation,
+          onTransitionReady: pageSlideAnimation,
         });
       }}
     >
       <Card
-        className={`relative -z-0 overflow-hidden p-2 ${
+        className={`${PRESSABLE_ANIMATION_CLASSES} relative -z-0 overflow-hidden p-2 transition-transform active:scale-90 duration-200 ease-in-out ${
           routine?.id ?? "opacity-50 pointer-events-none"
         }`}
       >
@@ -63,31 +67,6 @@ const RoutineCard = ({
         </CardHeader>
       </Card>
     </Link>
-  );
-};
-
-const pageAnimation = () => {
-  document.documentElement.animate(
-    [
-      { opacity: 1, scale: 1, transform: "translateY(0)" },
-      { opacity: 1, scale: 0.9, transform: "translateY(-100px)" },
-    ],
-    {
-      duration: 1000,
-      easing: "cubic-bezier(0.76, 0, 0.24, 1)",
-      fill: "forwards",
-      pseudoElement: "::view-transition-old(root)",
-    }
-  );
-
-  document.documentElement.animate(
-    [{ transform: "translateY(100%)" }, { transform: "translateY(0)" }],
-    {
-      duration: 1000,
-      easing: "cubic-bezier(0.76, 0, 0.24, 1)",
-      fill: "forwards",
-      pseudoElement: "::view-transition-new(root)",
-    }
   );
 };
 

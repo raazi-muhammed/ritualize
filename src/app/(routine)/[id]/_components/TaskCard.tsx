@@ -32,6 +32,7 @@ import { useModal } from "@/providers/ModelProvider";
 import { TaskWithStatus } from "@/types/entities";
 import { useStore } from "@/stores";
 import { useRouter } from "next/navigation";
+import { PRESSABLE_ANIMATION_CLASSES } from "@/lib/animations";
 
 const TaskCard = ({
   task,
@@ -92,7 +93,6 @@ const TaskCard = ({
       onDragStart={handleDragStart}
       onDragOver={(e) => e.preventDefault()}
       onDrop={handleDrop}
-      onClick={() => router.push(`/${task.routine_id}/${task.id}`)}
     >
       <CardContent className="flex justify-between p-4">
         {task.type == TaskType.task ? (

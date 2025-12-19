@@ -36,6 +36,8 @@ import AllTasks from "./AllTasks";
 import { formatDateForInput } from "@/lib/format";
 import { RoutineWithTasks } from "@/types/entities";
 import { useStore } from "@/stores";
+import { useTransitionRouter } from "next-view-transitions";
+import { pageSlideAnimation, pageSlideBackAnimation } from "@/lib/animations";
 
 const RoutineHeader = ({
   date,
@@ -46,6 +48,7 @@ const RoutineHeader = ({
 }) => {
   const queryClient = useQueryClient();
   const router = useRouter();
+  const tRouter = useTransitionRouter();
   const { openModal, closeModal } = useModal();
   const {
     updateRoutine,
@@ -88,7 +91,15 @@ const RoutineHeader = ({
 
   return (
     <header className="flex justify-between gap-3">
-      <Link href="/">
+      <Link
+        href="/"
+        onClick={(e) => {
+          e.preventDefault();
+          tRouter.push("/", {
+            onTransitionReady: pageSlideBackAnimation,
+          });
+        }}
+      >
         <ChevronLeft />
       </Link>
       <div className="flex gap-3">
