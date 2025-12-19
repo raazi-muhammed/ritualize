@@ -1,14 +1,16 @@
-import moment from "moment";
+import { format } from "date-fns";
 
 export const formatDuration = (minutes: number | null) => {
-    if (minutes == null) return "";
-    return `${minutes} min`;
+  if (minutes == null) return "";
+  return `${minutes} min`;
 };
 
 export const formatDateForInput = (date: Date | null) => {
-    return moment(date).format("YYYY-MM-DD");
+  if (!date) return "";
+  return format(date, "yyyy-MM-dd");
 };
 
 export const formatDate = (date: Date | null) => {
-    return moment(date).format("MMM, Do YYYY");
+  if (!date) return "";
+  return format(date, "MMM, do yyyy");
 };

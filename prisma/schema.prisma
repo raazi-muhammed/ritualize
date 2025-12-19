@@ -52,6 +52,8 @@ model Task {
     end_date          DateTime?
     completions       TaskCompletion[]
     type              TaskType         @default(task)
+
+    @@index([routine_id])
 }
 
 enum RoutineTypes {
@@ -68,4 +70,6 @@ model Routine {
     user_id     String // clerk user id
     is_favorite Boolean      @default(false)
     type        RoutineTypes @default(recurring)
+
+    @@index([user_id])
 }
