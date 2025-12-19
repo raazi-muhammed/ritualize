@@ -1,8 +1,6 @@
 "use client";
 
-import Heading from "@/components/layout/Heading";
 import PageTemplate from "@/components/layout/PageTemplate";
-import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Card } from "@/components/ui/card";
 import {
@@ -14,7 +12,6 @@ import {
 import { formatDate } from "@/lib/format";
 import { useStore } from "@/stores";
 import { TaskWithCompletions } from "@/types/entities";
-import { Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export default function Page({
@@ -40,10 +37,21 @@ export default function Page({
     <PageTemplate title={task.name}>
       <p className="text-xl font-bold">{`${task.completions.length} Completions`}</p>
       <Calendar
-        numberOfMonths={1}
+        className="w-full"
+        classNames={{
+          months:
+            "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0 w-full",
+          month: "space-y-4 w-full",
+          table: "w-full border-collapse space-y-1",
+          head_row: "flex w-full justify-between",
+          row: "flex w-full mt-2 justify-between",
+        }}
+        numberOfMonths={3}
         mode="multiple"
         selected={task.completions.map((c) => new Date(c.date))}
       />
+
+      <p className="text-xl font-bold mt-4 ps-2">Records</p>
       <ul className="space-y-2">
         {task.completions.map((completion) => (
           <li key={completion.id}>
