@@ -8,7 +8,7 @@ import { useStore } from "@/stores";
 import DateSelector from "@/app/_components/DateSelector";
 import { useQuery } from "@tanstack/react-query";
 import { RoutineWithTasks } from "@/types/entities";
-import LoadingIndicator from "@/components/layout/LoadingIndicator";
+import RoutineSkeleton from "../_components/RoutineSkeleton";
 
 export default function Page({ params }: { params: { id: string } }) {
   const routineId = params.id;
@@ -27,7 +27,7 @@ export default function Page({ params }: { params: { id: string } }) {
     },
   });
 
-  if (isFetching && !routine) return <LoadingIndicator />;
+  if (isFetching) return <RoutineSkeleton />;
 
   return (
     <>

@@ -5,7 +5,7 @@ import {
 } from "@/types/entities";
 import { CompletionStatus, Routine, Task } from "@prisma/client";
 import { create } from "zustand";
-import { devtools, persist } from "zustand/middleware";
+import { devtools } from "zustand/middleware";
 
 // Example store interface - customize based on your needs
 interface StoreState {
