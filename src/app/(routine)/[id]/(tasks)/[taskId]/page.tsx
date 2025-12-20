@@ -19,7 +19,8 @@ import TaskForm, { taskSchema } from "../_forms/TaskForm";
 import { useModal } from "@/providers/ModelProvider";
 import { z } from "zod";
 import { Frequency, Task } from "@prisma/client";
-import { useRouter } from "next/navigation";
+import { useTransitionRouter } from "next-view-transitions";
+import { pageSlideBackAnimation } from "@/lib/animations";
 
 export default function Page({
   params,
@@ -27,7 +28,7 @@ export default function Page({
   params: { taskId: string; id: string };
 }) {
   const queryClient = useQueryClient();
-  const router = useRouter();
+  const router = useTransitionRouter();
   const { openModal, closeModal } = useModal();
   const { data: task, isLoading } = useQuery({
     queryKey: ["task", params.id, params.taskId],
@@ -77,7 +78,9 @@ export default function Page({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["routines"] });
       queryClient.invalidateQueries({ queryKey: ["routine", params.id] });
-      router.back();
+      router.push(`/${params.id}`, {
+        onTransitionReady: pageSlideBackAnimation,
+      });
     },
   });
 
@@ -97,6 +100,7 @@ export default function Page({
 
   return (
     <PageTemplate
+      backUrl={`/${params.id}`}
       title={task?.name || "Tasks"}
       actions={
         task

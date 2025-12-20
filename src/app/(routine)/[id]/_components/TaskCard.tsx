@@ -11,7 +11,11 @@ import { generateCardDescription } from "@/lib/utils";
 import { useModal } from "@/providers/ModelProvider";
 import { TaskWithStatus } from "@/types/entities";
 import { useRouter } from "next/navigation";
-import { CHECKBOX_ANIMATION_CLASSES } from "@/lib/animations";
+import {
+  CHECKBOX_ANIMATION_CLASSES,
+  pageSlideAnimation,
+} from "@/lib/animations";
+import { useTransitionRouter } from "next-view-transitions";
 
 const TaskCard = ({
   task,
@@ -22,9 +26,10 @@ const TaskCard = ({
   showStartDate?: boolean;
   date: Date;
 }) => {
-  const { openModal, closeModal } = useModal();
+  const { closeModal } = useModal();
   const queryClient = useQueryClient();
   const router = useRouter();
+  const tRouter = useTransitionRouter();
 
   const { mutateAsync: moveTask } = useMutation({
     mutationFn: async (body: {
@@ -145,7 +150,9 @@ const TaskCard = ({
     <Card
       key={task.id}
       className={`${
-        task.type == TaskType.checkpoint ? "bg-transparent my-0" : "my-2"
+        task.type == TaskType.checkpoint
+          ? "bg-transparent my-0"
+          : "my-2 has-[.task-card-action:active]:scale-95 transition-transform"
       } ${task.id == "" ? "opacity-50" : ""}`}
       draggable
       onDragStart={handleDragStart}
@@ -169,8 +176,12 @@ const TaskCard = ({
               />
             ) : null}
             <div
-              onClick={() => router.push(`/${task.routine_id}/${task.id}`)}
-              className="w-full py-2"
+              onClick={() =>
+                tRouter.push(`/${task.routine_id}/${task.id}`, {
+                  onTransitionReady: pageSlideAnimation,
+                })
+              }
+              className="w-full py-2 task-card-action"
             >
               <p>{task.name}</p>
               <p className="text-muted-foreground text-xs">

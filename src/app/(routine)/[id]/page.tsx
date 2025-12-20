@@ -22,7 +22,8 @@ import { z } from "zod";
 import { createRoutine } from "@/services/routines";
 import AllTasks from "./_components/AllTasks";
 import { toast } from "@/hooks/use-toast";
-import router from "next/router";
+import { useTransitionRouter } from "next-view-transitions";
+import { pageSlideBackAnimation } from "@/lib/animations";
 import { Routine } from "@prisma/client";
 
 export default function Page({ params }: { params: { id: string } }) {
@@ -30,6 +31,7 @@ export default function Page({ params }: { params: { id: string } }) {
   const { selectedDate } = useStore((state) => state);
   const { openModal, closeModal } = useModal();
   const queryClient = useQueryClient();
+  const router = useTransitionRouter();
   const { data: routine, isFetching } = useQuery({
     queryKey: ["routine", routineId, selectedDate],
     queryFn: async () => {
@@ -85,7 +87,9 @@ export default function Page({ params }: { params: { id: string } }) {
         queryKey: ["routines"],
       });
       queryClient.invalidateQueries({ queryKey: ["routine", routineId] });
-      router.push("/");
+      router.push("/", {
+        onTransitionReady: pageSlideBackAnimation,
+      });
     },
   });
 
@@ -111,6 +115,7 @@ export default function Page({ params }: { params: { id: string } }) {
 
   return (
     <PageTemplate
+      backUrl="/"
       title={routine?.name || "Routine"}
       actions={
         routine

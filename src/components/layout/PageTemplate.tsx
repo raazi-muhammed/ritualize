@@ -3,9 +3,10 @@
 import { ReactNode, isValidElement, Fragment } from "react";
 import { Button } from "../ui/button";
 import { ChevronLeft } from "lucide-react";
-import { useRouter } from "next/navigation";
 import Heading from "./Heading";
 import { IconType } from "react-icons/lib";
+import { useTransitionRouter } from "next-view-transitions";
+import { pageSlideBackAnimation } from "@/lib/animations";
 
 type ActionType =
   | {
@@ -20,18 +21,31 @@ const PageTemplate = ({
   title,
   actions,
   hideBack,
+  backUrl,
 }: {
   children: ReactNode;
   title: string;
   actions?: ActionType[];
   hideBack?: boolean;
+  backUrl?: string;
 }) => {
-  const router = useRouter();
+  const tRouter = useTransitionRouter();
   return (
     <main className="px-5 container-xl py-4">
       <header className="flex justify-between gap-3">
         {!hideBack ? (
-          <Button onClick={() => router.back()} variant="ghost">
+          <Button
+            onClick={() => {
+              if (backUrl) {
+                tRouter.push(backUrl, {
+                  onTransitionReady: pageSlideBackAnimation,
+                });
+              } else {
+                tRouter.back();
+              }
+            }}
+            variant="ghost"
+          >
             <ChevronLeft />
           </Button>
         ) : (
