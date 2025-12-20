@@ -14,6 +14,8 @@ function RoutinePage({ routine }: { routine: RoutineWithTasks }) {
   const [running, setRunning] = useState(false);
   const { selectedDate } = useStore();
 
+  if (!selectedDate) return null;
+
   if (running) {
     return (
       <StartComponent

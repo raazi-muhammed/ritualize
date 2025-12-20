@@ -13,44 +13,44 @@ interface StoreState {
   // Add your state properties here
   routines: RoutineWithTasks[];
   isSyncing: boolean;
-  selectedDate: Date;
+  selectedDate: Date | null;
   setSelectedDate: (date: Date) => void;
   setIsSyncing: (isSyncing: boolean) => void;
   setRoutines: (routines: RoutineWithTasks[]) => void;
   getRoutine: (routineId: string) => RoutineWithTasks | null;
   createRoutine: (
-    routine: Omit<Routine, "id" | "user_id">,
+    routine: Omit<Routine, "id" | "user_id">
   ) => Promise<RoutineWithTasks>;
   updateRoutine: (
     id: string,
-    routine: Partial<Omit<Routine, "id" | "user_id">>,
+    routine: Partial<Omit<Routine, "id" | "user_id">>
   ) => Promise<RoutineWithTasks>;
   deleteRoutine: (id: string) => Promise<void>;
   addTaskToRoutine: (
     routineId: string,
-    task: Omit<Task, "id" | "order" | "routine_id">,
+    task: Omit<Task, "id" | "order" | "routine_id">
   ) => Promise<TaskWithStatus>;
   updateTaskStatus: (
     routineId: string,
     taskId: string,
-    status: CompletionStatus,
+    status: CompletionStatus
   ) => Promise<TaskWithStatus>;
   handleUncheckAllTasks: (routineId: string) => Promise<void>;
   deleteTask: (routineId: string, taskId: string) => Promise<void>;
   updateTask: (
     routineId: string,
     taskId: string,
-    task: Partial<Omit<Task, "id" | "order" | "routine_id">>,
+    task: Partial<Omit<Task, "id" | "order" | "routine_id">>
   ) => Promise<TaskWithStatus>;
   moveTask: (
     routineId: string,
-    body: { taskToMoveId: string; moveToTaskId: string },
+    body: { taskToMoveId: string; moveToTaskId: string }
   ) => Promise<TaskWithStatus>;
   getTask: (routineId: string, taskId: string) => Promise<TaskWithCompletions>;
   deleteTaskCompletion: (
     routineId: string,
     taskId: string,
-    completionId: string,
+    completionId: string
   ) => Promise<void>;
 }
 
@@ -62,7 +62,7 @@ export const useStore = create<StoreState>()(
         // Initial state
         routines: [],
         isSyncing: false,
-        selectedDate: new Date(),
+        selectedDate: null,
         setSelectedDate: (date: Date) => {
           set({ selectedDate: date });
           initializeRoutines();
@@ -89,7 +89,7 @@ export const useStore = create<StoreState>()(
         },
         updateRoutine: async (
           id: string,
-          routine: Partial<Omit<Routine, "id" | "user_id">>,
+          routine: Partial<Omit<Routine, "id" | "user_id">>
         ) => {
           const response = await fetch(`/api/routines/${id}`, {
             method: "PUT",
@@ -109,7 +109,7 @@ export const useStore = create<StoreState>()(
         },
         addTaskToRoutine: async (
           routineId: string,
-          task: Omit<Task, "id" | "order" | "routine_id">,
+          task: Omit<Task, "id" | "order" | "routine_id">
         ) => {
           const response = await fetch(`/api/routines/${routineId}/tasks`, {
             method: "POST",
@@ -123,7 +123,7 @@ export const useStore = create<StoreState>()(
         updateTaskStatus: async (
           routineId: string,
           taskId: string,
-          status: CompletionStatus,
+          status: CompletionStatus
         ) => {
           // optimistic updates
           set({
@@ -132,10 +132,10 @@ export const useStore = create<StoreState>()(
                 ? {
                     ...r,
                     tasks: r.tasks.map((t) =>
-                      t.id === taskId ? { ...t, status: status } : t,
+                      t.id === taskId ? { ...t, status: status } : t
                     ),
                   }
-                : r,
+                : r
             ),
           });
 
@@ -143,8 +143,11 @@ export const useStore = create<StoreState>()(
             `/api/routines/${routineId}/tasks/${taskId}`,
             {
               method: "PATCH",
-              body: JSON.stringify({ status, date: get().selectedDate }),
-            },
+              body: JSON.stringify({
+                status,
+                date: get().selectedDate ?? new Date(),
+              }),
+            }
           );
           if (!response.ok) throw new Error("Failed to update task status");
           const updated: TaskWithStatus = await response.json();
@@ -160,7 +163,7 @@ export const useStore = create<StoreState>()(
                     ...r,
                     tasks: r.tasks.map((t) => ({ ...t, status: "skipped" })),
                   }
-                : r,
+                : r
             ),
           });
 
@@ -176,14 +179,14 @@ export const useStore = create<StoreState>()(
             routines: get().routines.map((r) =>
               r.id === routineId
                 ? { ...r, tasks: r.tasks.filter((t) => t.id !== taskId) }
-                : r,
+                : r
             ),
           });
           const response = await fetch(
             `/api/routines/${routineId}/tasks/${taskId}`,
             {
               method: "DELETE",
-            },
+            }
           );
           if (!response.ok) throw new Error("Failed to delete task");
           initializeRoutines();
@@ -191,7 +194,7 @@ export const useStore = create<StoreState>()(
         updateTask: async (
           routineId: string,
           taskId: string,
-          task: Partial<Omit<Task, "id" | "order" | "routine_id">>,
+          task: Partial<Omit<Task, "id" | "order" | "routine_id">>
         ) => {
           // optimistic updates
           set({
@@ -200,10 +203,10 @@ export const useStore = create<StoreState>()(
                 ? {
                     ...r,
                     tasks: r.tasks.map((t) =>
-                      t.id === taskId ? { ...t, ...task } : t,
+                      t.id === taskId ? { ...t, ...task } : t
                     ),
                   }
-                : r,
+                : r
             ),
           });
 
@@ -212,7 +215,7 @@ export const useStore = create<StoreState>()(
             {
               method: "PUT",
               body: JSON.stringify(task),
-            },
+            }
           );
           if (!response.ok) throw new Error("Failed to update task");
           const updated: TaskWithStatus = await response.json();
@@ -221,7 +224,7 @@ export const useStore = create<StoreState>()(
         },
         moveTask: async (
           routineId: string,
-          body: { taskToMoveId: string; moveToTaskId: string },
+          body: { taskToMoveId: string; moveToTaskId: string }
         ) => {
           // optimistic updates
           const moveToTask = get()
@@ -244,11 +247,11 @@ export const useStore = create<StoreState>()(
                           : {
                               ...t,
                               order: t.order > t.order ? t.order : t.order + 1,
-                            },
+                            }
                       )
                       .toSorted((a, b) => a.order - b.order),
                   }
-                : r,
+                : r
             ),
           });
 
@@ -257,7 +260,7 @@ export const useStore = create<StoreState>()(
             {
               method: "POST",
               body: JSON.stringify(body),
-            },
+            }
           );
           if (!response.ok) throw new Error("Failed to move task");
           const updated: TaskWithStatus = await response.json();
@@ -266,7 +269,7 @@ export const useStore = create<StoreState>()(
         },
         getTask: async (routineId: string, taskId: string) => {
           const response = await fetch(
-            `/api/routines/${routineId}/tasks/${taskId}`,
+            `/api/routines/${routineId}/tasks/${taskId}`
           );
           if (!response.ok) throw new Error("Failed to get task");
           const task: TaskWithCompletions = await response.json();
@@ -275,13 +278,13 @@ export const useStore = create<StoreState>()(
         deleteTaskCompletion: async (
           routineId: string,
           taskId: string,
-          completionId: string,
+          completionId: string
         ) => {
           const response = await fetch(
             `/api/routines/${routineId}/tasks/${taskId}/complitions/${completionId}`,
             {
               method: "DELETE",
-            },
+            }
           );
           if (!response.ok) throw new Error("Failed to delete task completion");
           initializeRoutines();
@@ -289,12 +292,15 @@ export const useStore = create<StoreState>()(
       }),
       {
         name: "routine-storage", // Name for localStorage key
-      },
+        partialize: (state) => ({
+          routines: state.routines,
+        }),
+      }
     ),
     {
       name: "RoutineStore", // Name for Redux DevTools
-    },
-  ),
+    }
+  )
 );
 /**
  * Fetch routines from the API and initialize the store.
@@ -308,9 +314,8 @@ async function _initializeRoutines() {
 
   try {
     useStore.getState().setIsSyncing(true);
-    const response = await fetch(
-      `/api/routines?date=${useStore.getState().selectedDate.toISOString()}`,
-    );
+    const date = useStore.getState().selectedDate ?? new Date();
+    const response = await fetch(`/api/routines?date=${date.toISOString()}`);
     if (!response.ok) throw new Error("Failed to fetch routines");
     const routines: RoutineWithTasks[] = await response.json();
     useStore.getState().setRoutines(routines);
