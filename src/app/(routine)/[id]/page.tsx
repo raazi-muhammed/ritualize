@@ -6,10 +6,28 @@ import RoutinePage from "./_components/RoutinePage";
 import InfoMessage from "@/components/message/InfoMessage";
 import { useStore } from "@/stores";
 import DateSelector from "@/app/_components/DateSelector";
+import { useQuery } from "@tanstack/react-query";
+import { RoutineWithTasks } from "@/types/entities";
+import LoadingIndicator from "@/components/layout/LoadingIndicator";
 
 export default function Page({ params }: { params: { id: string } }) {
   const routineId = params.id;
-  const routine = useStore((state) => state.getRoutine(routineId));
+  const { selectedDate } = useStore((state) => state);
+
+  const { data: routine, isFetching } = useQuery({
+    queryKey: ["routine", routineId, selectedDate],
+    queryFn: async () => {
+      const response = await fetch(
+        `/api/routines/${routineId}?date=${
+          selectedDate ? selectedDate.toISOString() : new Date().toISOString()
+        }`
+      );
+      if (!response.ok) return null;
+      return (await response.json()) as RoutineWithTasks;
+    },
+  });
+
+  if (isFetching && !routine) return <LoadingIndicator />;
 
   return (
     <>

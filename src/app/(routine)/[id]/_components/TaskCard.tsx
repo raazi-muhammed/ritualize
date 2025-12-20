@@ -10,8 +10,9 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Checkbox } from "@/components/ui/checkbox";
 
-import { CompletionStatus, Frequency, TaskType } from "@prisma/client";
+import { CompletionStatus, Frequency, Task, TaskType } from "@prisma/client";
 import { DragEvent } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { CircleEllipsis } from "lucide-react";
 import { formatDateForInput } from "@/lib/format";
 import TaskForm, { taskSchema } from "../(tasks)/_forms/TaskForm";
@@ -30,7 +31,7 @@ import {
 import { generateCardDescription } from "@/lib/utils";
 import { useModal } from "@/providers/ModelProvider";
 import { TaskWithStatus } from "@/types/entities";
-import { useStore } from "@/stores";
+
 import { useRouter } from "next/navigation";
 import { PRESSABLE_ANIMATION_CLASSES } from "@/lib/animations";
 
@@ -44,8 +45,87 @@ const TaskCard = ({
   date: Date;
 }) => {
   const { openModal, closeModal } = useModal();
-  const { deleteTask, updateTask, updateTaskStatus, moveTask } = useStore();
+  const queryClient = useQueryClient();
   const router = useRouter();
+
+  const { mutateAsync: moveTask } = useMutation({
+    mutationFn: async (body: {
+      taskToMoveId: string;
+      moveToTaskId: string;
+    }) => {
+      const response = await fetch(
+        `/api/routines/${task.routine_id}/tasks/move`,
+        {
+          method: "POST",
+          body: JSON.stringify(body),
+        }
+      );
+      if (!response.ok) throw new Error("Failed to move task");
+      return (await response.json()) as TaskWithStatus;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["routines"] });
+      queryClient.invalidateQueries({ queryKey: ["routine", task.routine_id] });
+    },
+  });
+
+  const { mutateAsync: updateTask } = useMutation({
+    mutationFn: async (
+      taskUpdate: Partial<Omit<Task, "id" | "order" | "routine_id">>
+    ) => {
+      const response = await fetch(
+        `/api/routines/${task.routine_id}/tasks/${task.id}`,
+        {
+          method: "PUT",
+          body: JSON.stringify(taskUpdate),
+        }
+      );
+      if (!response.ok) throw new Error("Failed to update task");
+      return (await response.json()) as TaskWithStatus;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["routines"] });
+      queryClient.invalidateQueries({ queryKey: ["routine", task.routine_id] });
+    },
+  });
+
+  const { mutateAsync: updateTaskStatus } = useMutation({
+    mutationFn: async (status: CompletionStatus) => {
+      const response = await fetch(
+        `/api/routines/${task.routine_id}/tasks/${task.id}`,
+        {
+          method: "PATCH",
+          body: JSON.stringify({
+            status,
+            date: date,
+          }),
+        }
+      );
+      if (!response.ok) throw new Error("Failed to update task status");
+      return (await response.json()) as TaskWithStatus;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["routines"] });
+      queryClient.invalidateQueries({ queryKey: ["routine", task.routine_id] });
+    },
+  });
+
+  const { mutateAsync: deleteTask } = useMutation({
+    mutationFn: async () => {
+      const response = await fetch(
+        `/api/routines/${task.routine_id}/tasks/${task.id}`,
+        {
+          method: "DELETE",
+        }
+      );
+      if (!response.ok) throw new Error("Failed to delete task");
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["routines"] });
+      queryClient.invalidateQueries({ queryKey: ["routine", task.routine_id] });
+      router.refresh(); // Optional, but invalidation should handle it
+    },
+  });
 
   const handleDragStart = (e: DragEvent<HTMLDivElement>) => {
     e.dataTransfer.setData("taskId", task.id);
@@ -53,7 +133,7 @@ const TaskCard = ({
 
   const handleDrop = async (e: DragEvent<HTMLDivElement>) => {
     const taskId = e.dataTransfer.getData("taskId");
-    moveTask(task.routine_id, {
+    moveTask({
       taskToMoveId: taskId,
       moveToTaskId: task.id,
     });
@@ -61,7 +141,7 @@ const TaskCard = ({
 
   function onSubmit(values: z.infer<typeof taskSchema>) {
     closeModal();
-    updateTask(task.routine_id, task.id, {
+    updateTask({
       name: values.name,
       duration: values.duration,
       frequency: values.frequency as Frequency,
@@ -74,7 +154,7 @@ const TaskCard = ({
   }
 
   function handleToggleCompletion(status: CompletionStatus) {
-    updateTaskStatus(task.routine_id, task.id, status);
+    updateTaskStatus(status);
   }
   function showCheckbox() {
     if (!task.id) return true; // If task is new, show checkbox
@@ -104,7 +184,7 @@ const TaskCard = ({
                   handleToggleCompletion(
                     checked
                       ? CompletionStatus.completed
-                      : CompletionStatus.skipped,
+                      : CompletionStatus.skipped
                   );
                 }}
                 className="mt-1"
@@ -179,7 +259,7 @@ const TaskCard = ({
                 <AlertDialogCancel>Cancel</AlertDialogCancel>
                 <AlertDialogAction
                   onClick={() => {
-                    deleteTask(task.routine_id, task.id);
+                    deleteTask();
                   }}
                 >
                   Continue

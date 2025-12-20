@@ -7,7 +7,7 @@ import Heading from "@/components/layout/Heading";
 import Link from "next/link";
 import { IoAddCircle as AddIcon } from "react-icons/io5";
 import { UserButton } from "@clerk/nextjs";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import LoadingIndicator from "@/components/layout/LoadingIndicator";
 import RoutineForm, { routineSchema } from "./_forms/RoutineForm";
 import { z } from "zod";
@@ -17,14 +17,35 @@ import InfoMessage from "@/components/message/InfoMessage";
 import { useStore } from "@/stores";
 import { useEffect } from "react";
 import DateSelector from "../_components/DateSelector";
+import { RoutineWithTasks } from "@/types/entities";
 
 export default function Home() {
+  const queryClient = useQueryClient();
   const { openModal, closeModal } = useModal();
-  const { routines, createRoutine, isSyncing, selectedDate, setSelectedDate } =
-    useStore((state) => state);
+  const { createRoutine, selectedDate, setSelectedDate } = useStore(
+    (state) => state
+  );
+
+  const { data: routines = [], isFetching } = useQuery({
+    queryKey: ["routines", selectedDate],
+    queryFn: async () => {
+      const response = await fetch(
+        `/api/routines?date=${
+          selectedDate ? selectedDate.toISOString() : new Date().toISOString()
+        }`
+      );
+      if (!response.ok) throw new Error("Failed to fetch routines");
+      return (await response.json()) as RoutineWithTasks[];
+    },
+  });
 
   const { mutateAsync } = useMutation({
     mutationFn: createRoutine,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["routines"],
+      });
+    },
   });
 
   function onSubmit(values: z.infer<typeof routineSchema>) {
@@ -38,7 +59,7 @@ export default function Home() {
 
   return (
     <main className="px-5 md:container py-4 min-h-screen bg-background">
-      {routines.length === 0 && isSyncing ? (
+      {routines.length === 0 && isFetching ? (
         <LoadingIndicator />
       ) : (
         <>

@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { ChevronLeft, CircleEllipsis } from "lucide-react";
 import { IoAddCircle as AddIcon } from "react-icons/io5";
-import { Frequency } from "@prisma/client";
+import { Frequency, Routine, Task } from "@prisma/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "@/components/ui/use-toast";
 import TaskForm, {
@@ -34,10 +34,10 @@ import { useRouter } from "next/navigation";
 import { useModal } from "@/providers/ModelProvider";
 import AllTasks from "./AllTasks";
 import { formatDateForInput } from "@/lib/format";
-import { RoutineWithTasks } from "@/types/entities";
-import { useStore } from "@/stores";
+import { RoutineWithTasks, TaskWithStatus } from "@/types/entities";
+// import { useStore } from "@/stores"; // Removed
 import { useTransitionRouter } from "next-view-transitions";
-import { pageSlideAnimation, pageSlideBackAnimation } from "@/lib/animations";
+import { pageSlideBackAnimation } from "@/lib/animations";
 
 const RoutineHeader = ({
   date,
@@ -50,16 +50,54 @@ const RoutineHeader = ({
   const router = useRouter();
   const tRouter = useTransitionRouter();
   const { openModal, closeModal } = useModal();
-  const {
-    updateRoutine,
-    deleteRoutine,
-    addTaskToRoutine,
-    handleUncheckAllTasks,
-  } = useStore();
+  // const { selectedDate } = useStore(); // Not needed if passed as prop
+
+  const { mutateAsync: addTaskToRoutine } = useMutation({
+    mutationFn: async (task: Omit<Task, "id" | "order" | "routine_id">) => {
+      const response = await fetch(`/api/routines/${routine.id}/tasks`, {
+        method: "POST",
+        body: JSON.stringify(task),
+      });
+      if (!response.ok) throw new Error("Failed to add task to routine");
+      return (await response.json()) as TaskWithStatus;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["routines"] });
+      queryClient.invalidateQueries({ queryKey: ["routine", routine.id] });
+    },
+  });
+
+  const { mutateAsync: updateRoutine } = useMutation({
+    mutationFn: async (values: Partial<Omit<Routine, "id" | "user_id">>) => {
+      const response = await fetch(`/api/routines/${routine.id}`, {
+        method: "PUT",
+        body: JSON.stringify(values),
+      });
+      if (!response.ok) throw new Error("Failed to update routine");
+      return (await response.json()) as RoutineWithTasks;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["routines"] });
+      queryClient.invalidateQueries({ queryKey: ["routine", routine.id] });
+    },
+  });
+
+  const { mutateAsync: uncheckAllTasks } = useMutation({
+    mutationFn: async () => {
+      const response = await fetch(`/api/routines/${routine.id}/tasks`, {
+        method: "DELETE",
+      });
+      if (!response.ok) throw new Error("Failed to uncheck all tasks");
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["routines"] });
+      queryClient.invalidateQueries({ queryKey: ["routine", routine.id] });
+    },
+  });
 
   function handleAddTaskSubmit(values: z.infer<typeof taskSchema>) {
     if (!values.createNew) closeModal();
-    addTaskToRoutine(routine.id, {
+    addTaskToRoutine({
       name: values.name,
       duration: values.duration,
       frequency: values.frequency as Frequency,
@@ -72,7 +110,12 @@ const RoutineHeader = ({
   }
 
   const { mutateAsync: handleDeleteRoutine } = useMutation({
-    mutationFn: () => deleteRoutine(routine.id),
+    mutationFn: async () => {
+      const response = await fetch(`/api/routines/${routine.id}`, {
+        method: "DELETE",
+      });
+      if (!response.ok) throw new Error("Failed to delete routine");
+    },
     onSuccess: () => {
       toast({
         description: `${routine?.name ?? "Routine"} deleted`,
@@ -80,13 +123,14 @@ const RoutineHeader = ({
       queryClient.invalidateQueries({
         queryKey: ["routines"],
       });
+      queryClient.invalidateQueries({ queryKey: ["routine", routine.id] });
       router.push("/");
     },
   });
 
   function handleEditRoutineSubmit(values: z.infer<typeof routineSchema>) {
     closeModal();
-    updateRoutine(routine.id, values);
+    updateRoutine(values);
   }
 
   return (
@@ -165,7 +209,7 @@ const RoutineHeader = ({
               </DropdownMenuItem>
               <DropdownMenuItem
                 onSelect={() => {
-                  handleUncheckAllTasks(routine.id);
+                  uncheckAllTasks();
                 }}
               >
                 Uncheck all

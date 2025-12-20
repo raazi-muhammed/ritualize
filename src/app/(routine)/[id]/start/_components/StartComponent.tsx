@@ -12,14 +12,13 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { motion } from "motion/react";
-import { useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { RoutineWithTasks, TaskWithStatus } from "@/types/entities";
 import InfoMessage from "@/components/message/InfoMessage";
-import { useStore } from "@/stores";
 
 function getStartFrom(
   tasks: TaskWithStatus[] | undefined,
-  startFrom?: number,
+  startFrom?: number
 ): number | null {
   if (!tasks) return null;
 
@@ -42,12 +41,54 @@ function StartComponent({
 }) {
   const { time, reset } = useStopwatch();
   const queryClient = useQueryClient();
-  const { updateTaskStatus, handleUncheckAllTasks } = useStore();
+
+  const { mutateAsync: updateTaskStatus } = useMutation({
+    mutationFn: async ({
+      taskId,
+      status,
+    }: {
+      taskId: string;
+      status: CompletionStatus;
+    }) => {
+      const response = await fetch(
+        `/api/routines/${routine.id}/tasks/${taskId}`,
+        {
+          method: "PATCH",
+          body: JSON.stringify({
+            status,
+            date: date,
+          }),
+        }
+      );
+      if (!response.ok) throw new Error("Failed to update task status");
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["routine", routine.id, date],
+      });
+      queryClient.invalidateQueries({ queryKey: ["routines"] });
+    },
+  });
+
+  const { mutateAsync: uncheckAllTasks } = useMutation({
+    mutationFn: async () => {
+      const response = await fetch(`/api/routines/${routine.id}/tasks`, {
+        method: "DELETE",
+      });
+      if (!response.ok) throw new Error("Failed to uncheck all tasks");
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["routine", routine.id, date],
+      });
+      queryClient.invalidateQueries({ queryKey: ["routines"] });
+    },
+  });
 
   const startFrom = getStartFrom(routine?.tasks);
 
   const [currentTaskIndex, setCurrentTaskIndex] = useState<number>(
-    startFrom || 0,
+    startFrom || 0
   );
 
   useEffect(() => {
@@ -58,20 +99,19 @@ function StartComponent({
     });
   }, [currentTaskIndex]);
 
-  function completedTask() {
-    updateTaskStatus(
-      routine.id,
-      routine?.tasks[currentTaskIndex].id,
-      CompletionStatus.completed,
-    );
+  async function completedTask() {
+    await updateTaskStatus({
+      taskId: routine?.tasks[currentTaskIndex].id,
+      status: CompletionStatus.completed,
+    });
+    // Invalidation in onSuccess
   }
 
-  function skipTask() {
-    updateTaskStatus(
-      routine.id,
-      routine?.tasks[currentTaskIndex].id,
-      CompletionStatus.skipped,
-    );
+  async function skipTask() {
+    await updateTaskStatus({
+      taskId: routine?.tasks[currentTaskIndex].id,
+      status: CompletionStatus.skipped,
+    });
   }
 
   function moveToNextPossibleTask() {
@@ -103,7 +143,7 @@ function StartComponent({
               variant="outline"
               onClick={() => {
                 setRunning(false);
-                handleUncheckAllTasks(routine.id);
+                uncheckAllTasks();
               }}
             >
               <CheckCheck className="-ms-2" />
@@ -208,23 +248,17 @@ function StartComponent({
               <Button
                 variant="ghost"
                 className="ms-auto w-fit"
-                onClick={() => {
+                onClick={async () => {
                   setRunning(false);
-                  skipTask();
-                  queryClient.invalidateQueries({
-                    queryKey: ["routine", routine.id, date],
-                  });
+                  await skipTask();
                 }}
               >
                 <SkipForward />
               </Button>
               <Button
-                onClick={() => {
+                onClick={async () => {
                   setRunning(false);
-                  completedTask();
-                  queryClient.invalidateQueries({
-                    queryKey: ["routine", routine.id, date],
-                  });
+                  await completedTask();
                 }}
               >
                 Done
@@ -237,10 +271,10 @@ function StartComponent({
                 <Button
                   variant="ghost"
                   className="ms-auto w-fit"
-                  onClick={() => {
+                  onClick={async () => {
                     moveToNextPossibleTask();
                     reset();
-                    skipTask();
+                    await skipTask();
                   }}
                 >
                   <SkipForward />
@@ -251,10 +285,10 @@ function StartComponent({
                   disabled={
                     currentTaskIndex >= (routine?.tasks.length || 0) - 1
                   }
-                  onClick={() => {
+                  onClick={async () => {
                     moveToNextPossibleTask();
                     reset();
-                    completedTask();
+                    await completedTask();
                   }}
                 >
                   Next
