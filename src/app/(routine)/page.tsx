@@ -54,7 +54,7 @@ export default function Home() {
 
   useEffect(() => {
     setSelectedDate(new Date());
-  }, []);
+  }, [setSelectedDate]);
 
   return (
     <PageTemplate
@@ -71,7 +71,7 @@ export default function Home() {
             });
           },
         },
-        <UserButton />,
+        <UserButton key="user-button" />,
       ]}
     >
       <ContentStateTemplate

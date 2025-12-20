@@ -1,8 +1,6 @@
 "use client";
 
-import Heading from "@/components/layout/Heading";
 import { IoPlayCircle as StartIcon } from "react-icons/io5";
-import RoutineHeader from "./RoutineHeader";
 import Tasks from "./Tasks";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -27,29 +25,21 @@ function RoutinePage({ routine }: { routine: RoutineWithTasks }) {
   }
 
   return (
-    <main className="px-5 container-xl py-4">
-      {!!routine && (
-        <>
-          <RoutineHeader date={selectedDate} routine={routine} />
-          <section className="my-4 bg-background">
-            <Heading>{routine.name}</Heading>
-          </section>
-          <section className="gap-4">
-            <Tasks date={selectedDate} routine={routine} />
-          </section>
-          <footer className="fixed bottom-20 left-0 flex w-[100vw] justify-center py-4">
-            <Button
-              size="lg"
-              className="w-fit px-5"
-              onClick={() => setRunning(true)}
-            >
-              <StartIcon size="1.3em" className="-ms-1 me-1" />
-              Start
-            </Button>
-          </footer>
-        </>
-      )}
-    </main>
+    <>
+      <section className="gap-4">
+        <Tasks date={selectedDate} routine={routine} />
+      </section>
+      <footer className="fixed bottom-20 left-0 flex w-[100vw] justify-center py-4">
+        <Button
+          size="lg"
+          className="w-fit px-5"
+          onClick={() => setRunning(true)}
+        >
+          <StartIcon size="1.3em" className="-ms-1 me-1" />
+          Start
+        </Button>
+      </footer>
+    </>
   );
 }
 

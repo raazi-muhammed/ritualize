@@ -10,7 +10,7 @@ import { IconType } from "react-icons/lib";
 type ActionType =
   | {
       label: string;
-      icon: IconType;
+      icon?: IconType;
       onClick: () => void;
     }
   | ReactNode;
@@ -48,11 +48,15 @@ const PageTemplate = ({
                 <Button
                   key={action.label}
                   onClick={action.onClick}
-                  size="icon"
+                  size={action.icon ? "icon" : "sm"}
                   variant="secondary"
                   className="my-auto"
                 >
-                  <action.icon className="size-6" />
+                  {action.icon ? (
+                    <action.icon className="size-5" />
+                  ) : (
+                    <p> {action.label}</p>
+                  )}
                 </Button>
               );
             }

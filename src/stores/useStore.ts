@@ -9,7 +9,7 @@ interface StoreState {
 export const useStore = create<StoreState>()(
   devtools(
     (set, get) => ({
-      selectedDate: null,
+      selectedDate: new Date(),
       setSelectedDate: (date: Date) => set({ selectedDate: date }),
     }),
     {
