@@ -11,7 +11,7 @@ import { generateCardDescription } from "@/lib/utils";
 import { useModal } from "@/providers/ModelProvider";
 import { TaskWithStatus } from "@/types/entities";
 import { useRouter } from "next/navigation";
-import { IoChevronForward } from "react-icons/io5";
+import { CHECKBOX_ANIMATION_CLASSES } from "@/lib/animations";
 
 const TaskCard = ({
   task,
@@ -152,9 +152,9 @@ const TaskCard = ({
       onDragOver={(e) => e.preventDefault()}
       onDrop={handleDrop}
     >
-      <CardContent className="flex justify-between p-4">
+      <CardContent className="flex justify-between p-0">
         {task.type == TaskType.task ? (
-          <section className="flex items-start gap-2">
+          <section className="flex items-start gap-0 w-full">
             {showCheckbox() ? (
               <Checkbox
                 checked={task.status === CompletionStatus.completed}
@@ -165,10 +165,13 @@ const TaskCard = ({
                       : CompletionStatus.skipped
                   );
                 }}
-                className="mt-1"
+                className={`m-3 ${CHECKBOX_ANIMATION_CLASSES}`}
               />
             ) : null}
-            <div>
+            <div
+              onClick={() => router.push(`/${task.routine_id}/${task.id}`)}
+              className="w-full py-2"
+            >
               <p>{task.name}</p>
               <p className="text-muted-foreground text-xs">
                 {`${task.duration} min • ${generateCardDescription(task, {
@@ -178,13 +181,13 @@ const TaskCard = ({
             </div>
           </section>
         ) : (
-          <section className="flex items-end gap-2">
+          <section
+            className="flex items-end gap-2"
+            onClick={() => router.push(`/${task.routine_id}/${task.id}`)}
+          >
             <p className="text-lg font-bold">{task.name}</p>
           </section>
         )}
-        <div onClick={() => router.push(`/${task.routine_id}/${task.id}`)}>
-          <IoChevronForward />
-        </div>
       </CardContent>
     </Card>
   );

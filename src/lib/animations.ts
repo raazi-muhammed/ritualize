@@ -9,7 +9,7 @@ export const pageSlideAnimation = () => {
       easing: "cubic-bezier(.2,.88,.27,.95)",
       fill: "forwards",
       pseudoElement: "::view-transition-old(root)",
-    },
+    }
   );
 
   document.documentElement.animate(
@@ -19,7 +19,7 @@ export const pageSlideAnimation = () => {
       easing: "cubic-bezier(.2,.88,.27,.95)",
       fill: "forwards",
       pseudoElement: "::view-transition-new(root)",
-    },
+    }
   );
 };
 
@@ -34,7 +34,7 @@ export const pageSlideBackAnimation = () => {
       easing: "cubic-bezier(.2,.88,.27,.95)",
       fill: "forwards",
       pseudoElement: "::view-transition-old(root)",
-    },
+    }
   );
 
   document.documentElement.animate(
@@ -44,8 +44,9 @@ export const pageSlideBackAnimation = () => {
       easing: "cubic-bezier(.2,.88,.27,.95)",
       fill: "forwards",
       pseudoElement: "::view-transition-new(root)",
-    },
+    }
   );
 };
 
 export const PRESSABLE_ANIMATION_CLASSES = `transition-transform active:scale-90 duration-200 ease-in-out`;
+export const CHECKBOX_ANIMATION_CLASSES = `transition-transform active:scale-75 duration-200 ease-in-out`;
