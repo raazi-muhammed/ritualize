@@ -7,7 +7,7 @@ export async function GET(request: Request) {
   const url = new URL(request.url);
 
   const date = new Date(
-    url.searchParams.get("date") || new Date().toISOString()
+    url.searchParams.get("date") || new Date().toISOString(),
   );
 
   const user = await getCurrentUser();

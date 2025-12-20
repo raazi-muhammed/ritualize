@@ -54,7 +54,7 @@ export const taskSchema = z
       message:
         "daysInFrequency must only contain numbers between 0 (Sunday) and 6 (Saturday).",
       path: ["daysInFrequency"],
-    }
+    },
   );
 
 function TaskForm({
@@ -214,7 +214,7 @@ function TaskForm({
                     variant={"outline"}
                     className={cn(
                       "w-full h-12 rounded-sm justify-start text-left font-normal",
-                      !field.value && "text-muted-foreground"
+                      !field.value && "text-muted-foreground",
                     )}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
@@ -251,7 +251,7 @@ function TaskForm({
                   onValueChange={(value) => {
                     form.setValue(
                       "daysInFrequency",
-                      value.map((a) => parseInt(a))
+                      value.map((a) => parseInt(a)),
                     );
                   }}
                 >

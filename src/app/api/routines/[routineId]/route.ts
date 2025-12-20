@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 
 export async function PUT(
   request: Request,
-  { params }: { params: { routineId: string } }
+  { params }: { params: { routineId: string } },
 ) {
   const { routineId } = params;
   const body = await request.json();
@@ -23,7 +23,7 @@ export async function PUT(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { routineId: string } }
+  { params }: { params: { routineId: string } },
 ) {
   const { routineId } = params;
   const user = await getCurrentUser();

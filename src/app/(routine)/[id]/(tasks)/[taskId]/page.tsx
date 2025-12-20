@@ -68,7 +68,7 @@ export default function Page({
                       await deleteTaskCompletion(
                         params.id,
                         params.taskId,
-                        completion.id
+                        completion.id,
                       );
                       fetchTask();
                     }}

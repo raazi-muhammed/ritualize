@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 
 export async function GET(
   request: Request,
-  { params }: { params: { routineId: string; taskId: string } }
+  { params }: { params: { routineId: string; taskId: string } },
 ) {
   const { routineId, taskId } = params;
   const user = await getCurrentUser();
@@ -23,7 +23,7 @@ export async function GET(
 
 export async function PATCH(
   request: Request,
-  { params }: { params: { routineId: string; taskId: string } }
+  { params }: { params: { routineId: string; taskId: string } },
 ) {
   const { taskId } = params;
   const body = await request.json();
@@ -54,7 +54,7 @@ export async function PATCH(
 
 export async function PUT(
   request: Request,
-  { params }: { params: { routineId: string; taskId: string } }
+  { params }: { params: { routineId: string; taskId: string } },
 ) {
   const { routineId, taskId } = params;
   const user = await getCurrentUser();
@@ -73,7 +73,7 @@ export async function PUT(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { routineId: string; taskId: string } }
+  { params }: { params: { routineId: string; taskId: string } },
 ) {
   const { routineId, taskId } = params;
   const user = await getCurrentUser();

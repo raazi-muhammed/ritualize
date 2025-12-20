@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 
 export async function POST(
   request: Request,
-  { params }: { params: { routineId: string } }
+  { params }: { params: { routineId: string } },
 ) {
   const { routineId } = params;
   const body = await request.json();
@@ -19,7 +19,7 @@ export async function POST(
   if (!moveToTask) {
     return NextResponse.json(
       { error: "Move to task not found" },
-      { status: 404 }
+      { status: 404 },
     );
   }
 

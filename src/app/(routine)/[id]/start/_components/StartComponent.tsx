@@ -19,7 +19,7 @@ import { useStore } from "@/stores";
 
 function getStartFrom(
   tasks: TaskWithStatus[] | undefined,
-  startFrom?: number
+  startFrom?: number,
 ): number | null {
   if (!tasks) return null;
 
@@ -47,7 +47,7 @@ function StartComponent({
   const startFrom = getStartFrom(routine?.tasks);
 
   const [currentTaskIndex, setCurrentTaskIndex] = useState<number>(
-    startFrom || 0
+    startFrom || 0,
   );
 
   useEffect(() => {
@@ -62,7 +62,7 @@ function StartComponent({
     updateTaskStatus(
       routine.id,
       routine?.tasks[currentTaskIndex].id,
-      CompletionStatus.completed
+      CompletionStatus.completed,
     );
   }
 
@@ -70,7 +70,7 @@ function StartComponent({
     updateTaskStatus(
       routine.id,
       routine?.tasks[currentTaskIndex].id,
-      CompletionStatus.skipped
+      CompletionStatus.skipped,
     );
   }
 

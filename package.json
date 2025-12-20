@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "prisma:generate": "prisma generate"
+    "prisma:generate": "prisma generate",
+    "prettier": "prettier --write ."
   },
   "dependencies": {
     "@clerk/nextjs": "^6.12.2",
@@ -37,6 +38,7 @@
     "next-pwa": "^5.6.0",
     "next-themes": "^0.3.0",
     "next-view-transitions": "^0.3.5",
+    "prettier": "^3.7.4",
     "react": "^18",
     "react-day-picker": "^8.10.1",
     "react-dom": "^18",

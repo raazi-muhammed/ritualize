@@ -104,7 +104,7 @@ const TaskCard = ({
                   handleToggleCompletion(
                     checked
                       ? CompletionStatus.completed
-                      : CompletionStatus.skipped
+                      : CompletionStatus.skipped,
                   );
                 }}
                 className="mt-1"

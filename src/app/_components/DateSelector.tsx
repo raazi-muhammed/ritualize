@@ -28,7 +28,7 @@ export default function DateSelector() {
             variant={"outline"}
             className={cn(
               "w-fit justify-start text-left font-normal",
-              !selectedDate && "text-muted-foreground"
+              !selectedDate && "text-muted-foreground",
             )}
           >
             <CalendarIcon className="mr-2 h-4 w-4" />
