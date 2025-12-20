@@ -1,39 +1,17 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Checkbox } from "@/components/ui/checkbox";
-
 import { CompletionStatus, Frequency, Task, TaskType } from "@prisma/client";
 import { DragEvent } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { CircleEllipsis } from "lucide-react";
-import { formatDateForInput } from "@/lib/format";
-import TaskForm, { taskSchema } from "../(tasks)/_forms/TaskForm";
+import { taskSchema } from "../(tasks)/_forms/TaskForm";
 import { z } from "zod";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
 import { generateCardDescription } from "@/lib/utils";
 import { useModal } from "@/providers/ModelProvider";
 import { TaskWithStatus } from "@/types/entities";
-
 import { useRouter } from "next/navigation";
-import { PRESSABLE_ANIMATION_CLASSES } from "@/lib/animations";
+import { IoChevronForward } from "react-icons/io5";
 
 const TaskCard = ({
   task,
@@ -204,70 +182,9 @@ const TaskCard = ({
             <p className="text-lg font-bold">{task.name}</p>
           </section>
         )}
-        <AlertDialog>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant={"ghost"} size="icon" className="my-auto">
-                <CircleEllipsis size={18} />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem
-                onSelect={() => {
-                  router.push(`/${task.routine_id}/${task.id}`);
-                }}
-              >
-                View
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onSelect={() => {
-                  openModal({
-                    title: "Edit Task",
-                    content: (
-                      <TaskForm
-                        hideCreateNew
-                        onSubmit={onSubmit}
-                        defaultValues={{
-                          duration: task.duration,
-                          frequency: task.frequency,
-                          name: task.name,
-                          everyFrequency: task.every_frequency,
-                          startDate: formatDateForInput(task.start_date),
-                          daysInFrequency: task.days_in_frequency,
-                          type: task.type,
-                        }}
-                      />
-                    ),
-                  });
-                }}
-              >
-                Edit
-              </DropdownMenuItem>
-              <AlertDialogTrigger className="w-full">
-                <DropdownMenuItem>Delete</DropdownMenuItem>
-              </AlertDialogTrigger>
-            </DropdownMenuContent>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  This action cannot be undone. This will permanently delete
-                  your account and remove your data from our servers.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction
-                  onClick={() => {
-                    deleteTask();
-                  }}
-                >
-                  Continue
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </DropdownMenu>
-        </AlertDialog>
+        <div onClick={() => router.push(`/${task.routine_id}/${task.id}`)}>
+          <IoChevronForward />
+        </div>
       </CardContent>
     </Card>
   );

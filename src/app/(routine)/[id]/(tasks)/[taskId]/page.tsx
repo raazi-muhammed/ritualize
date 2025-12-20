@@ -9,11 +9,17 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { formatDate } from "@/lib/format";
-import { TaskWithCompletions } from "@/types/entities";
+import { formatDate, formatDateForInput } from "@/lib/format";
+import { TaskWithCompletions, TaskWithStatus } from "@/types/entities";
 import { deleteTaskCompletion, getTask } from "@/services/routines";
 import ContentStateTemplate from "@/components/layout/ContentStateTemplate";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { IoTrash } from "react-icons/io5";
+import TaskForm, { taskSchema } from "../_forms/TaskForm";
+import { useModal } from "@/providers/ModelProvider";
+import { z } from "zod";
+import { Frequency, Task } from "@prisma/client";
+import { useRouter } from "next/navigation";
 
 export default function Page({
   params,
@@ -21,6 +27,8 @@ export default function Page({
   params: { taskId: string; id: string };
 }) {
   const queryClient = useQueryClient();
+  const router = useRouter();
+  const { openModal, closeModal } = useModal();
   const { data: task, isLoading } = useQuery({
     queryKey: ["task", params.id, params.taskId],
     queryFn: () => getTask(params.id, params.taskId),
@@ -36,8 +44,96 @@ export default function Page({
     },
   });
 
+  const { mutateAsync: updateTask } = useMutation({
+    mutationFn: async (
+      taskUpdate: Partial<Omit<Task, "id" | "order" | "routine_id">>
+    ) => {
+      const response = await fetch(
+        `/api/routines/${params.id}/tasks/${params.taskId}`,
+        {
+          method: "PUT",
+          body: JSON.stringify(taskUpdate),
+        }
+      );
+      if (!response.ok) throw new Error("Failed to update task");
+      return (await response.json()) as TaskWithStatus;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["routines"] });
+      queryClient.invalidateQueries({ queryKey: ["routine", params.id] });
+    },
+  });
+
+  const { mutateAsync: deleteTask } = useMutation({
+    mutationFn: async () => {
+      const response = await fetch(
+        `/api/routines/${params.id}/tasks/${params.taskId}`,
+        {
+          method: "DELETE",
+        }
+      );
+      if (!response.ok) throw new Error("Failed to delete task");
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["routines"] });
+      queryClient.invalidateQueries({ queryKey: ["routine", params.id] });
+      router.back();
+    },
+  });
+
+  function onSubmit(values: z.infer<typeof taskSchema>) {
+    closeModal();
+    updateTask({
+      name: values.name,
+      duration: values.duration,
+      frequency: values.frequency as Frequency,
+      every_frequency: values.everyFrequency,
+      days_in_frequency: values.daysInFrequency || [0],
+      start_date: new Date(values.startDate),
+      type: values.type,
+      end_date: null,
+    });
+  }
+
   return (
-    <PageTemplate title={task?.name || "Tasks"}>
+    <PageTemplate
+      title={task?.name || "Tasks"}
+      actions={
+        task
+          ? [
+              {
+                label: "Edit",
+                onClick: () => {
+                  openModal({
+                    title: "Edit Task",
+                    content: (
+                      <TaskForm
+                        hideCreateNew
+                        onSubmit={onSubmit}
+                        defaultValues={{
+                          duration: task.duration,
+                          frequency: task.frequency,
+                          name: task.name,
+                          everyFrequency: task.every_frequency,
+                          startDate: formatDateForInput(task.start_date),
+                          daysInFrequency: task.days_in_frequency,
+                          type: task.type,
+                        }}
+                      />
+                    ),
+                  });
+                },
+              },
+              {
+                label: "Delete",
+                onClick: () => {
+                  deleteTask();
+                },
+              },
+            ]
+          : []
+      }
+    >
       <ContentStateTemplate isLoading={isLoading}>
         {task && (
           <>
