@@ -2,8 +2,6 @@
 
 export const dynamic = "force-static";
 
-import { Button } from "@/components/ui/button";
-import Heading from "@/components/layout/Heading";
 import { IoAddCircle as AddIcon } from "react-icons/io5";
 import { UserButton } from "@clerk/nextjs";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -19,6 +17,8 @@ import DateSelector from "../_components/DateSelector";
 import { RoutineWithTasks } from "@/types/entities";
 import RoutineSkeleton from "./_components/RoutineSkeleton";
 import { createRoutine } from "@/services/routines";
+import PageTemplate from "@/components/layout/PageTemplate";
+import ContentStateTemplate from "@/components/layout/ContentStateTemplate";
 
 export default function Home() {
   const queryClient = useQueryClient();
@@ -57,52 +57,44 @@ export default function Home() {
   }, []);
 
   return (
-    <main className="px-5 md:container py-4 min-h-screen bg-background">
-      {isFetching ? (
-        <RoutineSkeleton />
-      ) : (
-        <>
-          <section className="flex justify-end gap-4">
-            <Button
-              size="sm"
-              variant="secondary"
-              onClick={() => {
-                openModal({
-                  title: "Add Routine",
-                  content: <RoutineForm onSubmit={onSubmit} />,
-                });
-              }}
-            >
-              <AddIcon className="-ms-1 me-1" />
-              Add
-            </Button>
-            <UserButton />
-          </section>
-          <Heading className="my-4">Routines</Heading>
-          <section className="flex flex-col gap-4 mb-12">
-            <section className="grid grid-cols-2 gap-4">
-              {routines
-                ?.filter((r) => r.is_favorite)
-                .map((routine) => (
-                  <RoutineCard
-                    key={routine.id}
-                    isList={true}
-                    routine={routine}
-                  />
-                ))}
-            </section>
+    <PageTemplate
+      title="Routines"
+      hideBack
+      actions={[
+        {
+          label: "Add",
+          icon: AddIcon,
+          onClick: () => {
+            openModal({
+              title: "Add Routine",
+              content: <RoutineForm onSubmit={onSubmit} />,
+            });
+          },
+        },
+        <UserButton />,
+      ]}
+    >
+      <ContentStateTemplate
+        isLoading={isFetching}
+        skeleton={<RoutineSkeleton />}
+      >
+        <section className="flex flex-col gap-4 mb-12">
+          <section className="grid grid-cols-2 gap-4">
             {routines
-              ?.filter((r) => !r.is_favorite)
+              ?.filter((r) => r.is_favorite)
               .map((routine) => (
-                <RoutineCard key={routine.id} routine={routine} />
+                <RoutineCard key={routine.id} isList={true} routine={routine} />
               ))}
-            {routines?.length === 0 && (
-              <InfoMessage message="No routines yet" />
-            )}
           </section>
-          <DateSelector />
-        </>
-      )}
-    </main>
+          {routines
+            ?.filter((r) => !r.is_favorite)
+            .map((routine) => (
+              <RoutineCard key={routine.id} routine={routine} />
+            ))}
+          {routines?.length === 0 && <InfoMessage message="No routines yet" />}
+        </section>
+        <DateSelector />
+      </ContentStateTemplate>
+    </PageTemplate>
   );
 }
