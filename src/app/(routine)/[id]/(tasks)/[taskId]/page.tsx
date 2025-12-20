@@ -21,6 +21,7 @@ import { z } from "zod";
 import { Frequency, Task } from "@prisma/client";
 import { useTransitionRouter } from "next-view-transitions";
 import { pageSlideBackAnimation } from "@/lib/animations";
+import { useSearchParams } from "next/navigation";
 
 export default function Page({
   params,
@@ -29,6 +30,8 @@ export default function Page({
 }) {
   const queryClient = useQueryClient();
   const router = useTransitionRouter();
+  const searchParams = useSearchParams();
+  const nameQueryParam = searchParams.get("name");
   const { openModal, closeModal } = useModal();
   const { data: task, isLoading } = useQuery({
     queryKey: ["task", params.id, params.taskId],
@@ -101,7 +104,7 @@ export default function Page({
   return (
     <PageTemplate
       backUrl={`/${params.id}`}
-      title={task?.name || "Tasks"}
+      title={task?.name || nameQueryParam || "Tasks"}
       actions={
         task
           ? [

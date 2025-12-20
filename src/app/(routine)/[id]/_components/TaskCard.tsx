@@ -177,9 +177,14 @@ const TaskCard = ({
             ) : null}
             <div
               onClick={() =>
-                tRouter.push(`/${task.routine_id}/${task.id}`, {
-                  onTransitionReady: pageSlideAnimation,
-                })
+                tRouter.push(
+                  `/${task.routine_id}/${task.id}?name=${encodeURIComponent(
+                    task.name
+                  )}`,
+                  {
+                    onTransitionReady: pageSlideAnimation,
+                  }
+                )
               }
               className="w-full py-2 task-card-action"
             >
@@ -194,7 +199,13 @@ const TaskCard = ({
         ) : (
           <section
             className="flex items-end gap-2"
-            onClick={() => router.push(`/${task.routine_id}/${task.id}`)}
+            onClick={() =>
+              router.push(
+                `/${task.routine_id}/${task.id}?name=${encodeURIComponent(
+                  task.name
+                )}`
+              )
+            }
           >
             <p className="text-lg font-bold">{task.name}</p>
           </section>

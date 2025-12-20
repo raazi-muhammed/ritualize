@@ -20,10 +20,10 @@ const RoutineCard = ({
 
   return (
     <Link
-      href={`/${routine.id}`}
+      href={`/${routine.id}?name=${encodeURIComponent(routine.name)}`}
       onClick={(e) => {
         e.preventDefault();
-        router.push(`/${routine.id}`, {
+        router.push(`/${routine.id}?name=${encodeURIComponent(routine.name)}`, {
           onTransitionReady: pageSlideAnimation,
         });
       }}

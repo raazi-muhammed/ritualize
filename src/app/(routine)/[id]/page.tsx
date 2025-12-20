@@ -10,12 +10,7 @@ import { RoutineWithTasks } from "@/types/entities";
 import RoutineSkeleton from "../_components/RoutineSkeleton";
 import PageTemplate from "@/components/layout/PageTemplate";
 import ContentStateTemplate from "@/components/layout/ContentStateTemplate";
-import {
-  IoAddCircle,
-  IoPencil,
-  IoPencilOutline,
-  IoTrash,
-} from "react-icons/io5";
+import { IoAddCircle, IoTrash } from "react-icons/io5";
 import { useModal } from "@/providers/ModelProvider";
 import RoutineForm, { routineSchema } from "../_forms/RoutineForm";
 import { z } from "zod";
@@ -23,11 +18,14 @@ import { createRoutine } from "@/services/routines";
 import AllTasks from "./_components/AllTasks";
 import { toast } from "@/hooks/use-toast";
 import { useTransitionRouter } from "next-view-transitions";
+import { useSearchParams } from "next/navigation";
 import { pageSlideBackAnimation } from "@/lib/animations";
 import { Routine } from "@prisma/client";
 
 export default function Page({ params }: { params: { id: string } }) {
   const routineId = params.id;
+  const searchParams = useSearchParams();
+  const nameQueryParam = searchParams.get("name");
   const { selectedDate } = useStore((state) => state);
   const { openModal, closeModal } = useModal();
   const queryClient = useQueryClient();
@@ -116,7 +114,7 @@ export default function Page({ params }: { params: { id: string } }) {
   return (
     <PageTemplate
       backUrl="/"
-      title={routine?.name || "Routine"}
+      title={routine?.name || nameQueryParam || "Routine"}
       actions={
         routine
           ? [
