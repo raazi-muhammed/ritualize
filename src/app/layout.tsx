@@ -9,7 +9,6 @@ import { dark } from "@clerk/themes";
 import { ModalProvider } from "@/providers/ModelProvider";
 import { AlertProvider } from "@/providers/AlertProvider";
 import { ViewTransitions } from "next-view-transitions";
-import Syncing from "./_provider/sycn";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -66,7 +65,7 @@ export default function RootLayout({
                       </div>
                     </SignedOut>
                     <SignedIn>
-                      <Syncing>{children}</Syncing>
+                      {children}
                       {model}
                     </SignedIn>
                     <Toaster />

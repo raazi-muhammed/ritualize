@@ -13,13 +13,13 @@ import { formatDate } from "@/lib/format";
 import { useStore } from "@/stores";
 import { TaskWithCompletions } from "@/types/entities";
 import { useEffect, useState } from "react";
+import { deleteTaskCompletion, getTask } from "@/services/routines";
 
 export default function Page({
   params,
 }: {
   params: { taskId: string; id: string };
 }) {
-  const { getTask, deleteTaskCompletion } = useStore();
   const [task, setTask] = useState<TaskWithCompletions | null>(null);
 
   const fetchTask = async () => {
@@ -68,7 +68,7 @@ export default function Page({
                       await deleteTaskCompletion(
                         params.id,
                         params.taskId,
-                        completion.id,
+                        completion.id
                       );
                       fetchTask();
                     }}

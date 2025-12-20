@@ -18,13 +18,12 @@ import { useEffect } from "react";
 import DateSelector from "../_components/DateSelector";
 import { RoutineWithTasks } from "@/types/entities";
 import RoutineSkeleton from "./_components/RoutineSkeleton";
+import { createRoutine } from "@/services/routines";
 
 export default function Home() {
   const queryClient = useQueryClient();
   const { openModal, closeModal } = useModal();
-  const { createRoutine, selectedDate, setSelectedDate } = useStore(
-    (state) => state
-  );
+  const { selectedDate, setSelectedDate } = useStore((state) => state);
 
   const { data: routines = [], isFetching } = useQuery({
     queryKey: ["routines", selectedDate],
