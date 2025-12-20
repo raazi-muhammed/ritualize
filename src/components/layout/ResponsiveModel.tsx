@@ -51,8 +51,8 @@ const ResponsiveModel = ({
   return (
     <Drawer open={open} onOpenChange={setOpen} preventScrollRestoration fixed>
       <DrawerContent className="h-[90vh] px-4 sm:px-12 rounded-xl bg-card border-none">
-        <DrawerHeader className="px-0">
-          <Heading>{title}</Heading>
+        <DrawerHeader className="px-0 py-2">
+          <Heading className="text-base font-normal">{title}</Heading>
         </DrawerHeader>
         <div className="h-[calc(100vh-4rem)] overflow-auto pb-12">
           {content}
