@@ -4,11 +4,10 @@ export const dynamic = "force-static";
 
 import { Button } from "@/components/ui/button";
 import Heading from "@/components/layout/Heading";
-import Link from "next/link";
 import { IoAddCircle as AddIcon } from "react-icons/io5";
 import { UserButton } from "@clerk/nextjs";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import LoadingIndicator from "@/components/layout/LoadingIndicator";
+
 import RoutineForm, { routineSchema } from "./_forms/RoutineForm";
 import { z } from "zod";
 import RoutineCard from "./[id]/_components/RoutineCard";
@@ -18,6 +17,7 @@ import { useStore } from "@/stores";
 import { useEffect } from "react";
 import DateSelector from "../_components/DateSelector";
 import { RoutineWithTasks } from "@/types/entities";
+import RoutineSkeleton from "./_components/RoutineSkeleton";
 
 export default function Home() {
   const queryClient = useQueryClient();
@@ -59,8 +59,8 @@ export default function Home() {
 
   return (
     <main className="px-5 md:container py-4 min-h-screen bg-background">
-      {routines.length === 0 && isFetching ? (
-        <LoadingIndicator />
+      {isFetching ? (
+        <RoutineSkeleton />
       ) : (
         <>
           <section className="flex justify-end gap-4">
