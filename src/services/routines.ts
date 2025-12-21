@@ -1,21 +1,5 @@
-import { Routine, Task } from "@prisma/client";
-import {
-  RoutineWithTasks,
-  TaskWithCompletions,
-  TaskWithStatus,
-} from "@/types/entities";
-
-export const createRoutine = async (
-  routine: Omit<Routine, "id" | "user_id">
-) => {
-  const response = await fetch("/api/routines", {
-    method: "POST",
-    body: JSON.stringify(routine),
-  });
-  if (!response.ok) throw new Error("Failed to create routine");
-  const created: RoutineWithTasks = await response.json();
-  return created;
-};
+import { Task } from "@prisma/client";
+import { TaskWithCompletions } from "@/types/entities";
 
 export const getTask = async (routineId: string, taskId: string) => {
   const response = await fetch(`/api/routines/${routineId}/tasks/${taskId}`);
