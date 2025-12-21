@@ -21,6 +21,7 @@ import { useTransitionRouter } from "next-view-transitions";
 import { useSearchParams } from "next/navigation";
 import { pageSlideBackAnimation } from "@/lib/animations";
 import { Routine } from "@prisma/client";
+import { formatDateForInput } from "@/lib/format";
 
 export default function Page({ params }: { params: { id: string } }) {
   const routineId = params.id;
@@ -30,8 +31,8 @@ export default function Page({ params }: { params: { id: string } }) {
   const { openModal, closeModal } = useModal();
   const queryClient = useQueryClient();
   const router = useTransitionRouter();
-  const { data: routine, isFetching } = useQuery({
-    queryKey: ["routine", routineId, selectedDate],
+  const { data: routine, isLoading } = useQuery({
+    queryKey: ["routine", routineId, formatDateForInput(selectedDate)],
     queryFn: async () => {
       const response = await fetch(
         `/api/routines/${routineId}?date=${
@@ -171,7 +172,7 @@ export default function Page({ params }: { params: { id: string } }) {
       }
     >
       <ContentStateTemplate
-        isLoading={isFetching}
+        isLoading={isLoading}
         skeleton={<RoutineSkeleton />}
       >
         {routine && <RoutinePage routine={routine} />}

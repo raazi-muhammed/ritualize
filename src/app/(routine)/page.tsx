@@ -19,14 +19,15 @@ import RoutineSkeleton from "./_components/RoutineSkeleton";
 import { createRoutine } from "@/services/routines";
 import PageTemplate from "@/components/layout/PageTemplate";
 import ContentStateTemplate from "@/components/layout/ContentStateTemplate";
+import { formatDateForInput } from "@/lib/format";
 
 export default function Home() {
   const queryClient = useQueryClient();
   const { openModal, closeModal } = useModal();
   const { selectedDate, setSelectedDate } = useStore((state) => state);
 
-  const { data: routines = [], isFetching } = useQuery({
-    queryKey: ["routines", selectedDate],
+  const { data: routines = [], isLoading } = useQuery({
+    queryKey: ["routines", formatDateForInput(selectedDate)],
     queryFn: async () => {
       const response = await fetch(
         `/api/routines?date=${
@@ -75,7 +76,7 @@ export default function Home() {
       ]}
     >
       <ContentStateTemplate
-        isLoading={isFetching}
+        isLoading={isLoading}
         skeleton={<RoutineSkeleton />}
       >
         <section className="flex flex-col gap-4 mb-12">
