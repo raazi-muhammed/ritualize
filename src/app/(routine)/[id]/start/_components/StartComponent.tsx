@@ -15,6 +15,7 @@ import { motion } from "motion/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { RoutineWithTasks, TaskWithStatus } from "@/types/entities";
 import InfoMessage from "@/components/message/InfoMessage";
+import { formatDateForInput } from "@/lib/format";
 
 function getStartFrom(
   tasks: TaskWithStatus[] | undefined,
@@ -64,7 +65,7 @@ function StartComponent({
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["routine", routine.id, date],
+        queryKey: ["routine", routine.id],
       });
       queryClient.invalidateQueries({ queryKey: ["routines"] });
     },
@@ -79,7 +80,7 @@ function StartComponent({
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["routine", routine.id, date],
+        queryKey: ["routine", routine.id],
       });
       queryClient.invalidateQueries({ queryKey: ["routines"] });
     },
