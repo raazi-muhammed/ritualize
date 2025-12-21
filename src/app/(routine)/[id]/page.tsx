@@ -30,7 +30,7 @@ export default function Page({ params }: { params: { id: string } }) {
   const { openModal, closeModal } = useModal();
   const queryClient = useQueryClient();
   const router = useTransitionRouter();
-  const { data: routine, isFetching } = useQuery({
+  const { data: routine, isLoading } = useQuery({
     queryKey: ["routine", routineId, selectedDate],
     queryFn: async () => {
       const response = await fetch(
@@ -171,7 +171,7 @@ export default function Page({ params }: { params: { id: string } }) {
       }
     >
       <ContentStateTemplate
-        isLoading={isFetching}
+        isLoading={isLoading}
         skeleton={<RoutineSkeleton />}
       >
         {routine && <RoutinePage routine={routine} />}
