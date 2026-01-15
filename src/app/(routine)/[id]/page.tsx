@@ -11,6 +11,10 @@ import ContentStateTemplate from "@/components/layout/ContentStateTemplate";
 import { IoAddCircle, IoTrash } from "react-icons/io5";
 import { useModal } from "@/providers/ModelProvider";
 import RoutineForm, { routineSchema } from "../_forms/RoutineForm";
+import TaskForm, {
+  DEFAULT_TASK_VALUES,
+  taskSchema,
+} from "./(tasks)/_forms/TaskForm";
 import { z } from "zod";
 import AllTasks from "./_components/AllTasks";
 import { toast } from "@/hooks/use-toast";
@@ -18,12 +22,14 @@ import { useTransitionRouter } from "next-view-transitions";
 import { useSearchParams } from "next/navigation";
 import { pageSlideBackAnimation } from "@/lib/animations";
 import {
-  useCreateRoutine,
   useDeleteRoutine,
   useGetRoutine,
   useUncheckAllTasks,
   useUpdateRoutine,
+  useCreateTask,
 } from "@/queries/routine.query";
+import { formatDateForInput } from "@/lib/format";
+import { Frequency } from "@prisma/client";
 
 export default function Page({ params }: { params: { id: string } }) {
   const routineId = params.id;
@@ -38,14 +44,23 @@ export default function Page({ params }: { params: { id: string } }) {
     selectedDate || undefined
   );
 
-  const { mutateAsync } = useCreateRoutine();
-
-  function onSubmit(values: z.infer<typeof routineSchema>) {
-    closeModal();
-    mutateAsync(values);
-  }
-
   const { mutateAsync: uncheckAllTasks } = useUncheckAllTasks(routineId);
+
+  const { mutateAsync: addTaskToRoutine } = useCreateTask(routineId);
+
+  function handleAddTaskSubmit(values: z.infer<typeof taskSchema>) {
+    if (!values.createNew) closeModal();
+    addTaskToRoutine({
+      name: values.name,
+      duration: values.duration,
+      frequency: values.frequency as Frequency,
+      every_frequency: values.everyFrequency,
+      days_in_frequency: values.daysInFrequency || [0],
+      start_date: new Date(values.startDate),
+      end_date: null,
+      type: values.type,
+    });
+  }
 
   const { mutateAsync: handleDeleteRoutine } = useDeleteRoutine({
     onSuccess: () => {
@@ -77,8 +92,18 @@ export default function Page({ params }: { params: { id: string } }) {
                 icon: IoAddCircle,
                 onClick: () => {
                   openModal({
-                    title: "Add Routine",
-                    content: <RoutineForm onSubmit={onSubmit} />,
+                    title: "Add Task",
+                    content: (
+                      <TaskForm
+                        onSubmit={handleAddTaskSubmit}
+                        defaultValues={{
+                          ...DEFAULT_TASK_VALUES,
+                          startDate: formatDateForInput(
+                            selectedDate || new Date()
+                          ),
+                        }}
+                      />
+                    ),
                   });
                 },
               },

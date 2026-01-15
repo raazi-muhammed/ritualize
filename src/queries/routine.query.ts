@@ -4,8 +4,8 @@ import {
   useQueryClient,
   UseMutationOptions,
 } from "@tanstack/react-query";
-import { RoutineWithTasks } from "@/types/entities";
-import { Routine } from "@prisma/client";
+import { RoutineWithTasks, TaskWithStatus } from "@/types/entities";
+import { Routine, Task } from "@prisma/client";
 import { formatDateForInput } from "@/lib/format";
 
 export const routineKeys = {
@@ -124,6 +124,32 @@ export const useUncheckAllTasks = (
         method: "DELETE",
       });
       if (!response.ok) throw new Error("Failed to uncheck all tasks");
+    },
+    ...options,
+    onSuccess: (...args) => {
+      queryClient.invalidateQueries({ queryKey: routineKeys.all });
+      options?.onSuccess?.(...args);
+    },
+  });
+};
+
+export const useCreateTask = (
+  routineId: string,
+  options?: UseMutationOptions<
+    TaskWithStatus,
+    Error,
+    Omit<Task, "id" | "order" | "routine_id">
+  >
+) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (task) => {
+      const response = await fetch(`/api/routines/${routineId}/tasks`, {
+        method: "POST",
+        body: JSON.stringify(task),
+      });
+      if (!response.ok) throw new Error("Failed to add task to routine");
+      return (await response.json()) as TaskWithStatus;
     },
     ...options,
     onSuccess: (...args) => {
