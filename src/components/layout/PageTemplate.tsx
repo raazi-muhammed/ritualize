@@ -15,6 +15,7 @@ export type ActionType =
       placement?: "left" | "right";
       disabled?: boolean;
       className?: string;
+      variant?: "default" | "destructive";
     }
   | ReactNode;
 

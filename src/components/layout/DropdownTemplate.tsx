@@ -9,6 +9,7 @@ import {
 import { isValidElement } from "react";
 import { Icon } from "../ui/icon-picker";
 import { ActionType } from "./PageTemplate";
+import { cn } from "@/lib/utils";
 
 const DropdownTemplate = ({ actions }: { actions: ActionType[] }) => {
   return (
@@ -29,7 +30,13 @@ const DropdownTemplate = ({ actions }: { actions: ActionType[] }) => {
           }
           if (action && typeof action === "object" && "label" in action) {
             return (
-              <DropdownMenuItem key={action.label} onClick={action.onClick}>
+              <DropdownMenuItem
+                key={action.label}
+                onClick={action.onClick}
+                className={cn(
+                  action.variant === "destructive" && "text-destructive"
+                )}
+              >
                 {action.icon && (
                   <Icon name={action.icon} className="mr-2 size-4" />
                 )}

@@ -146,6 +146,7 @@ export default function Page({ params }: { params: { id: string } }) {
               {
                 label: "Delete",
                 icon: "Trash",
+                variant: "destructive",
                 onClick: () => handleDeleteRoutine(routineId),
               },
             ]

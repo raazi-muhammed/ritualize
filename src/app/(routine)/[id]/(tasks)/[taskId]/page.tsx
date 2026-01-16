@@ -3,18 +3,11 @@
 import PageTemplate from "@/components/layout/PageTemplate";
 import { Calendar } from "@/components/ui/calendar";
 import { Card } from "@/components/ui/card";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { formatDate, formatDateForInput } from "@/lib/format";
-import { TaskWithCompletions, TaskWithStatus } from "@/types/entities";
+import { TaskWithStatus } from "@/types/entities";
 import { deleteTaskCompletion, getTask } from "@/services/routines";
 import ContentStateTemplate from "@/components/layout/ContentStateTemplate";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { IoTrash } from "react-icons/io5";
 import TaskForm, { taskSchema } from "../_forms/TaskForm";
 import { useModal } from "@/providers/ModelProvider";
 import { z } from "zod";
@@ -22,6 +15,7 @@ import { Task } from "@prisma/client";
 import { useTransitionRouter } from "next-view-transitions";
 import { pageSlideBackAnimation } from "@/lib/animations";
 import { useSearchParams } from "next/navigation";
+import DropdownTemplate from "@/components/layout/DropdownTemplate";
 
 export default function Page({
   params,
@@ -108,6 +102,7 @@ export default function Page({
           ? [
               {
                 label: "Edit",
+                icon: "Pencil",
                 onClick: () => {
                   openModal({
                     title: "Edit Task",
@@ -128,6 +123,8 @@ export default function Page({
               },
               {
                 label: "Delete",
+                icon: "Trash",
+                variant: "destructive",
                 onClick: () => {
                   deleteTask();
                 },
@@ -164,18 +161,18 @@ export default function Page({
                       <p className="text-lg">{formatDate(completion.date)}</p>
                       <p>{completion.status}</p>
                     </div>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger>...</DropdownMenuTrigger>
-                      <DropdownMenuContent>
-                        <DropdownMenuItem
-                          onClick={async () => {
+                    <DropdownTemplate
+                      actions={[
+                        {
+                          label: "Delete",
+                          icon: "Trash",
+                          variant: "destructive",
+                          onClick: async () => {
                             await deleteCompletion(completion.id);
-                          }}
-                        >
-                          Delete
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                          },
+                        },
+                      ]}
+                    />
                   </Card>
                 </li>
               ))}
