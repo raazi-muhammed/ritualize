@@ -27,6 +27,7 @@ type ActionType =
 
 import React from "react";
 import ButtonTemplate from "./ButtonTemplate";
+import { SIDEBAR_WIDTH } from "../ui/sidebar";
 
 function ActionButton({ action }: { action: ActionType }) {
   if (isValidElement(action)) {
@@ -146,7 +147,9 @@ const PageTemplate = ({
         </section>
       )}
       {children}
-      <footer className="fixed bottom-5 left-5 right-5 justify-between flex gap-2">
+      <footer
+        className={`fixed bottom-5 left-[calc(${SIDEBAR_WIDTH}+1.25rem)] right-5 justify-between flex gap-2`}
+      >
         <div className="flex gap-2">
           {bottomActions
             ?.filter(

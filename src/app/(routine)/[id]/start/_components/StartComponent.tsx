@@ -4,18 +4,12 @@ import Heading from "@/components/layout/Heading";
 import { Button } from "@/components/ui/button";
 import { useStopwatch } from "@/hooks/stop-watch";
 import { CompletionStatus, TaskType } from "@prisma/client";
-import {
-  CheckCheck,
-  ChevronLeft,
-  ChevronRight,
-  SkipForward,
-} from "lucide-react";
+import { CheckCheck, ChevronLeft } from "lucide-react";
 import { useEffect, useState } from "react";
 import { motion } from "motion/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { RoutineWithTasks, TaskWithStatus } from "@/types/entities";
 import InfoMessage from "@/components/message/InfoMessage";
-import { formatDateForInput } from "@/lib/format";
 import PageTemplate from "@/components/layout/PageTemplate";
 
 function getStartFrom(
@@ -163,7 +157,7 @@ function StartComponent({
 
   return (
     <PageTemplate
-      hideBack
+      title={routine?.name || "Routine"}
       bottomActions={[
         {
           label: "Prev",
@@ -211,76 +205,65 @@ function StartComponent({
             ]),
       ]}
     >
-      <main className="container relative flex h-[100svh] w-full flex-col justify-around">
-        <header className="fixed top-0 left-8 right-8 pt-8 z-10 bg-gradient-to-b from-40% from-background">
-          <section className="flex justify-between">
-            <div onClick={handleBack} className="flex gap-0">
-              <ChevronLeft size="1em" className="m-0 my-auto" />
-              <Heading className="my-auto mb-1 text-lg">{routine.name}</Heading>
-            </div>
-
-            <small className="my-auto font-mono">{time}</small>
-          </section>
-          <section className="flex gap-1">
-            {routine?.tasks.map((task, index) => (
-              <div
-                key={index}
-                className={`h-1 w-full rounded bg-white ${
-                  index >= currentTaskIndex ? "opacity-50" : "opacity-100"
-                }`}
-              ></div>
-            ))}
-          </section>
-        </header>
-        <section className="grid z-0">
-          <div className="h-[30vh]" />
+      <header>
+        <small className="my-auto font-mono">{time}</small>
+        <section className="flex gap-1">
           {routine?.tasks.map((task, index) => (
-            <motion.div
-              key={task.id}
-              className="scroll-mt-[20vh]"
-              id={currentTaskIndex == index ? "active-task" : "in-active-task"}
+            <div
+              key={index}
+              className={`h-1 w-full rounded bg-white ${
+                index >= currentTaskIndex ? "opacity-50" : "opacity-100"
+              }`}
+            ></div>
+          ))}
+        </section>
+      </header>
+      <section className="grid z-0">
+        <div className="h-[30vh]" />
+        {routine?.tasks.map((task, index) => (
+          <motion.div
+            key={task.id}
+            className="scroll-mt-[20vh]"
+            id={currentTaskIndex == index ? "active-task" : "in-active-task"}
+            initial={{
+              scale: 0.75,
+              originX: 0,
+              opacity: 0.1,
+            }}
+            animate={{
+              scale: currentTaskIndex == index ? 1 : 0.75,
+              originX: 0,
+              opacity: currentTaskIndex == index ? 1 : 0.25,
+            }}
+            transition={{
+              duration: 0.45,
+            }}
+            onClick={() => {
+              setCurrentTaskIndex(index);
+            }}
+          >
+            <Heading
+              className={task.type == TaskType.checkpoint ? "text-primary" : ""}
+            >
+              {task.name}
+            </Heading>
+            <motion.small
               initial={{
-                scale: 0.75,
-                originX: 0,
-                opacity: 0.1,
+                opacity: 0,
               }}
               animate={{
-                scale: currentTaskIndex == index ? 1 : 0.75,
-                originX: 0,
-                opacity: currentTaskIndex == index ? 1 : 0.25,
+                opacity: currentTaskIndex == index ? 1 : 0,
               }}
               transition={{
-                duration: 0.45,
-              }}
-              onClick={() => {
-                setCurrentTaskIndex(index);
+                duration: 0.75,
               }}
             >
-              <Heading
-                className={
-                  task.type == TaskType.checkpoint ? "text-primary" : ""
-                }
-              >
-                {task.name}
-              </Heading>
-              <motion.small
-                initial={{
-                  opacity: 0,
-                }}
-                animate={{
-                  opacity: currentTaskIndex == index ? 1 : 0,
-                }}
-                transition={{
-                  duration: 0.75,
-                }}
-              >
-                {routine?.tasks[currentTaskIndex].duration} minutes
-              </motion.small>
-            </motion.div>
-          ))}
-          <div className="flex h-[30vh]" />
-        </section>
-      </main>
+              {routine?.tasks[currentTaskIndex].duration} minutes
+            </motion.small>
+          </motion.div>
+        ))}
+        <div className="flex h-[30vh]" />
+      </section>
     </PageTemplate>
   );
 }

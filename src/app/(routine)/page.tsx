@@ -11,6 +11,7 @@ import PageTemplate from "@/components/layout/PageTemplate";
 import { useCreateRoutine } from "@/queries/routine.query";
 import RoutineList from "./_components/RoutineList";
 import DesktopPageTemplate from "@/components/layout/DesktopPageTemplate";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export default function Home() {
   const { openModal, closeModal } = useModal();
@@ -19,17 +20,19 @@ export default function Home() {
     closeModal();
     mutateAsync(values);
   }
+  const isMobile = useIsMobile();
 
-  return (
-    <DesktopPageTemplate>
-      <p>
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Tenetur
-        architecto quo consectetur mollitia cumque. Distinctio ut autem ducimus
-        quasi suscipit corrupti in esse, cum blanditiis. Eaque eligendi est
-        doloribus consectetur?
-      </p>
-    </DesktopPageTemplate>
-  );
+  if (!isMobile)
+    return (
+      <DesktopPageTemplate>
+        <p>
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Tenetur
+          architecto quo consectetur mollitia cumque. Distinctio ut autem
+          ducimus quasi suscipit corrupti in esse, cum blanditiis. Eaque
+          eligendi est doloribus consectetur?
+        </p>
+      </DesktopPageTemplate>
+    );
 
   return (
     <PageTemplate

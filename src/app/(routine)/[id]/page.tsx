@@ -83,95 +83,93 @@ export default function Page({ params }: { params: { id: string } }) {
   }
 
   return (
-    <DesktopPageTemplate>
-      <PageTemplate
-        backUrl="/"
-        title={routine?.name || nameQueryParam || "Routine"}
-        actions={
-          routine
-            ? [
-                {
-                  icon: "Plus",
-                  onClick: () => {
-                    openModal({
-                      title: "Add Task",
-                      content: (
-                        <TaskForm
-                          onSubmit={handleAddTaskSubmit}
-                          defaultValues={{
-                            ...DEFAULT_TASK_VALUES,
-                            startDate: formatDateForInput(
-                              selectedDate || new Date()
-                            ),
-                          }}
-                        />
-                      ),
-                    });
-                  },
+    <PageTemplate
+      backUrl="/"
+      title={routine?.name || nameQueryParam || "Routine"}
+      actions={
+        routine
+          ? [
+              {
+                icon: "Plus",
+                onClick: () => {
+                  openModal({
+                    title: "Add Task",
+                    content: (
+                      <TaskForm
+                        onSubmit={handleAddTaskSubmit}
+                        defaultValues={{
+                          ...DEFAULT_TASK_VALUES,
+                          startDate: formatDateForInput(
+                            selectedDate || new Date()
+                          ),
+                        }}
+                      />
+                    ),
+                  });
                 },
-                {
-                  label: "All Task",
-                  onClick: () => {
-                    openModal({
-                      title: "All tasks",
-                      content: <AllTasks showStartDate routine={routine} />,
-                    });
-                  },
+              },
+              {
+                label: "All Task",
+                onClick: () => {
+                  openModal({
+                    title: "All tasks",
+                    content: <AllTasks showStartDate routine={routine} />,
+                  });
                 },
-                {
-                  label: "Edit",
-                  icon: "Pencil",
-                  onClick: () => {
-                    openModal({
-                      title: "Edit Routine",
-                      content: (
-                        <RoutineForm
-                          onSubmit={handleEditRoutineSubmit}
-                          defaultValues={{
-                            name: routine.name,
-                            icon: routine.icon || "List",
-                            duration: routine.duration || undefined,
-                            is_favorite: routine.is_favorite,
-                          }}
-                        />
-                      ),
-                    });
-                  },
+              },
+              {
+                label: "Edit",
+                icon: "Pencil",
+                onClick: () => {
+                  openModal({
+                    title: "Edit Routine",
+                    content: (
+                      <RoutineForm
+                        onSubmit={handleEditRoutineSubmit}
+                        defaultValues={{
+                          name: routine.name,
+                          icon: routine.icon || "List",
+                          duration: routine.duration || undefined,
+                          is_favorite: routine.is_favorite,
+                        }}
+                      />
+                    ),
+                  });
                 },
-                {
-                  label: "Uncheck all",
-                  icon: "CheckCheck",
-                  onClick: () => uncheckAllTasks(),
-                },
-                {
-                  label: "Delete",
-                  icon: "Trash",
-                  onClick: () => handleDeleteRoutine(routineId),
-                },
-              ]
-            : []
-        }
-        bottomActions={[
-          {
-            label: "Start",
-            icon: "Play",
-            placement: "right",
-            onClick: () => {
-              router.push(`/${routine?.id}/start`, {
-                onTransitionReady: pageSlideAnimation,
-              });
-            },
+              },
+              {
+                label: "Uncheck all",
+                icon: "CheckCheck",
+                onClick: () => uncheckAllTasks(),
+              },
+              {
+                label: "Delete",
+                icon: "Trash",
+                onClick: () => handleDeleteRoutine(routineId),
+              },
+            ]
+          : []
+      }
+      bottomActions={[
+        {
+          label: "Start",
+          icon: "Play",
+          placement: "right",
+          onClick: () => {
+            router.push(`/${routine?.id}/start`, {
+              onTransitionReady: pageSlideAnimation,
+            });
           },
-        ]}
+        },
+      ]}
+    >
+      <DateSelector />
+      <ContentStateTemplate
+        isLoading={isLoading}
+        skeleton={<RoutineSkeleton />}
       >
-        <DateSelector />
-        <ContentStateTemplate
-          isLoading={isLoading}
-          skeleton={<RoutineSkeleton />}
-        >
-          {routine && <RoutinePage routine={routine} />}
-        </ContentStateTemplate>
-      </PageTemplate>
-    </DesktopPageTemplate>
+        {routine && <RoutinePage routine={routine} />}
+      </ContentStateTemplate>
+    </PageTemplate>
   );
 }
