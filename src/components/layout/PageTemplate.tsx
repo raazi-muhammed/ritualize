@@ -28,12 +28,14 @@ const PageTemplate = ({
   actions,
   hideBack,
   backUrl,
+  forceBack,
 }: {
   children: ReactNode;
-  title: string;
+  title?: string;
   actions?: ActionType[];
   hideBack?: boolean;
   backUrl?: string;
+  forceBack?: () => void;
 }) => {
   const tRouter = useTransitionRouter();
   return (
@@ -42,7 +44,9 @@ const PageTemplate = ({
         {!hideBack ? (
           <Button
             onClick={() => {
-              if (backUrl) {
+              if (forceBack) {
+                forceBack();
+              } else if (backUrl) {
                 tRouter.push(backUrl, {
                   onTransitionReady: pageSlideBackAnimation,
                 });
@@ -149,9 +153,11 @@ const PageTemplate = ({
           )}
         </div>
       </header>
-      <section className="my-4 bg-background">
-        <Heading>{title}</Heading>
-      </section>
+      {title && (
+        <section className="my-4 bg-background">
+          <Heading>{title}</Heading>
+        </section>
+      )}
       {children}
     </main>
   );

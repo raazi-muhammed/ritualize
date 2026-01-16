@@ -2,27 +2,17 @@
 
 import { IoPlayCircle as StartIcon } from "react-icons/io5";
 import Tasks from "./Tasks";
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import StartComponent from "../start/_components/StartComponent";
 import { RoutineWithTasks } from "@/types/entities";
 import { useStore } from "@/stores";
+import { useTransitionRouter } from "next-view-transitions";
+import { pageSlideAnimation } from "@/lib/animations";
 
 function RoutinePage({ routine }: { routine: RoutineWithTasks }) {
-  const [running, setRunning] = useState(false);
   const { selectedDate } = useStore();
+  const router = useTransitionRouter();
 
   if (!selectedDate) return null;
-
-  if (running) {
-    return (
-      <StartComponent
-        routine={routine}
-        setRunning={setRunning}
-        date={selectedDate}
-      />
-    );
-  }
 
   return (
     <>
@@ -33,7 +23,11 @@ function RoutinePage({ routine }: { routine: RoutineWithTasks }) {
         <Button
           size="lg"
           className="w-fit px-5"
-          onClick={() => setRunning(true)}
+          onClick={() => {
+            router.push(`/${routine.id}/start`, {
+              onTransitionReady: pageSlideAnimation,
+            });
+          }}
         >
           <StartIcon size="1.3em" className="-ms-1 me-1" />
           Start
