@@ -110,6 +110,7 @@ export default function Page({ params }: { params: { id: string } }) {
               },
               {
                 label: "All Task",
+                icon: "List",
                 onClick: () => {
                   openModal({
                     title: "All tasks",

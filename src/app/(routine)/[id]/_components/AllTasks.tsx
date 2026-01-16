@@ -1,3 +1,4 @@
+import { EmptyTemplate } from "@/components/layout/EmptyTemplate";
 import TaskCard from "./TaskCard";
 import { RoutineWithTasks, TaskWithStatus } from "@/types/entities";
 
@@ -13,7 +14,10 @@ const AllTasks = ({
   return (
     <section className="mb-16">
       {routine?.tasks.length === 0 && (
-        <p className="text-center text-muted-foreground mt-4">No tasks yet</p>
+        <EmptyTemplate
+          title="No tasks yet"
+          description="Please add some tasks to get started"
+        />
       )}
       {routine?.tasks?.map((task) => (
         <TaskCard

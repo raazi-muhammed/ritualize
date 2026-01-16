@@ -12,6 +12,7 @@ import { useCreateRoutine } from "@/queries/routine.query";
 import RoutineList from "./_components/RoutineList";
 import DesktopPageTemplate from "@/components/layout/DesktopPageTemplate";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { EmptyTemplate } from "@/components/layout/EmptyTemplate";
 
 export default function Home() {
   const { openModal, closeModal } = useModal();
@@ -25,12 +26,10 @@ export default function Home() {
   if (!isMobile)
     return (
       <DesktopPageTemplate>
-        <p>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Tenetur
-          architecto quo consectetur mollitia cumque. Distinctio ut autem
-          ducimus quasi suscipit corrupti in esse, cum blanditiis. Eaque
-          eligendi est doloribus consectetur?
-        </p>
+        <EmptyTemplate
+          title="No routine Selected"
+          description="Please select a routine to view its details"
+        />
       </DesktopPageTemplate>
     );
 

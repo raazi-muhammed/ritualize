@@ -1,5 +1,5 @@
+import { EmptyTemplate } from "@/components/layout/EmptyTemplate";
 import TaskCard from "./TaskCard";
-import InfoMessage from "@/components/message/InfoMessage";
 import { RoutineWithTasks } from "@/types/entities";
 
 const Tasks = ({
@@ -14,11 +14,17 @@ const Tasks = ({
   return (
     <section className="mb-36">
       {!routine ? (
-        <InfoMessage message="No tasks yet" />
+        <EmptyTemplate
+          title="No tasks yet"
+          description="Please add some tasks to get started"
+        />
       ) : (
         <>
           {routine?.tasks.length === 0 && (
-            <InfoMessage message="No tasks yet" />
+            <EmptyTemplate
+              title="No tasks yet"
+              description="Please add some tasks to get started"
+            />
           )}
           {routine?.tasks?.map((task) => (
             <TaskCard

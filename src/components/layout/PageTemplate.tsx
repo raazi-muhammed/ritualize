@@ -109,7 +109,7 @@ const PageTemplate = ({
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  {actions.slice(2).map((action, index) => {
+                  {actions.slice(1).map((action, index) => {
                     if (isValidElement(action)) {
                       return (
                         <DropdownMenuItem asChild key={index}>
@@ -152,7 +152,7 @@ const PageTemplate = ({
         </section>
       )}
       {children}
-      {bottomActions?.length && (
+      {bottomActions?.length ? (
         <footer
           className={cn(
             `fixed bottom-5 right-5 justify-between flex gap-2`,
@@ -194,7 +194,7 @@ const PageTemplate = ({
               ))}
           </div>
         </footer>
-      )}
+      ) : null}
     </main>
   );
 };

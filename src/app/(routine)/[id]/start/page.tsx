@@ -5,11 +5,9 @@ import StartComponent from "./_components/StartComponent";
 import { useGetRoutine } from "@/queries/routine.query";
 import ContentStateTemplate from "@/components/layout/ContentStateTemplate";
 import RoutineSkeleton from "../../_components/RoutineSkeleton";
-import InfoMessage from "@/components/message/InfoMessage";
-import { Button } from "@/components/ui/button";
-import { ChevronLeft } from "lucide-react";
 import { useTransitionRouter } from "next-view-transitions";
 import { pageSlideBackAnimation } from "@/lib/animations";
+import { EmptyTemplate } from "@/components/layout/EmptyTemplate";
 
 export default function Page({ params }: { params: { id: string } }) {
   const { selectedDate } = useStore();
@@ -21,20 +19,19 @@ export default function Page({ params }: { params: { id: string } }) {
 
   if (!selectedDate)
     return (
-      <InfoMessage
-        message="Please select a date first"
+      <EmptyTemplate
+        title="Date not selected"
+        description="Select a date for get start"
         actions={[
-          <Button
-            key="back"
-            onClick={() => {
+          {
+            label: "Back",
+            onClick: () => {
               router.push(`/${params.id}`, {
                 onTransitionReady: pageSlideBackAnimation,
               });
-            }}
-          >
-            <ChevronLeft className="mr-2 h-4 w-4" />
-            Back
-          </Button>,
+            },
+            icon: "ChevronLeft",
+          },
         ]}
       />
     );

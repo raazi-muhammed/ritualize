@@ -3,7 +3,6 @@
 export const dynamic = "force-static";
 
 import RoutineCard from "../[id]/_components/RoutineCard";
-import InfoMessage from "@/components/message/InfoMessage";
 import RoutineSkeleton from "../_components/RoutineSkeleton";
 import ContentStateTemplate from "@/components/layout/ContentStateTemplate";
 import {
@@ -13,6 +12,7 @@ import {
 } from "@/queries/routine.query";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
+import { EmptyTemplate } from "@/components/layout/EmptyTemplate";
 
 export default function RoutineList() {
   const { data: routines, isLoading } = useGetRoutines();
@@ -44,7 +44,12 @@ export default function RoutineList() {
           .map((routine) => (
             <RoutineCard key={routine.id} routine={routine} />
           ))}
-        {routines?.length === 0 && <InfoMessage message="No routines yet" />}
+        {routines?.length === 0 && (
+          <EmptyTemplate
+            title="No routines yet"
+            description="Create a routine to get started"
+          />
+        )}
       </section>
     </ContentStateTemplate>
   );
