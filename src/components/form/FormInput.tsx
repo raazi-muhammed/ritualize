@@ -5,6 +5,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { cn } from "@/lib/utils";
 
 function FormInput({
   children,
@@ -19,11 +20,12 @@ function FormInput({
 }) {
   return (
     <FormItem className="flex flex-col">
-      {!checkBox && <FormLabel>{label}</FormLabel>}
-      <FormControl className={controlClass}>{children}</FormControl>
-      {checkBox && (
-        <FormLabel className="ml-2 my-auto font-normal">{label}</FormLabel>
-      )}
+      <div className="flex flex-row rounded-xl bg-input-background justify-between min-h-12">
+        <FormLabel className="my-auto ps-4 text-nowrap">{label}</FormLabel>
+        <FormControl className={cn(controlClass, "my-auto")}>
+          {children}
+        </FormControl>
+      </div>
       <FormMessage />
     </FormItem>
   );

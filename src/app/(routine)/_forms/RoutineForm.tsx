@@ -13,6 +13,8 @@ import { DefaultValues, useForm } from "react-hook-form";
 import { z } from "zod";
 import { IconPicker } from "@/components/ui/icon-picker";
 import { routineSchema } from "./schema";
+import { Switch } from "@/components/ui/switch";
+import FormGroup from "@/components/form/FormGroup";
 
 function RoutineForm({
   onSubmit,
@@ -30,7 +32,6 @@ function RoutineForm({
   const form = useForm<z.infer<typeof routineSchema>>({
     resolver: zodResolver(routineSchema),
     defaultValues,
-    mode: "onTouched",
   });
 
   return (
@@ -42,46 +43,49 @@ function RoutineForm({
           render={({ field }) => (
             <FormInput label="Icon" controlClass="grid place-items-center">
               <IconPicker
-                className="mx-auto w-fit"
+                className="w-fit"
                 value={field.value as any}
                 onValueChange={field.onChange}
               />
             </FormInput>
           )}
         />
-        <FormField
-          control={form.control}
-          name="name"
-          render={({ field }) => (
-            <FormInput label="Name">
-              <Input {...field} autoFocus />
-            </FormInput>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="duration"
-          render={({ field }) => (
-            <FormInput label="Duration">
-              <Input
-                type="number"
-                {...field}
-                onChange={(e) =>
-                  field.onChange(parseFloat(e.target.value) || e.target.value)
-                }
-              />
-            </FormInput>
-          )}
-        />
-
+        <FormGroup>
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormInput label="Name">
+                <Input {...field} autoFocus className="text-right" />
+              </FormInput>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="duration"
+            render={({ field }) => (
+              <FormInput label="Duration">
+                <Input
+                  type="number"
+                  className="w-fit text-right"
+                  {...field}
+                  onChange={(e) =>
+                    field.onChange(parseFloat(e.target.value) || e.target.value)
+                  }
+                />
+              </FormInput>
+            )}
+          />
+        </FormGroup>
         <FormField
           control={form.control}
           name="is_favorite"
           render={({ field }) => (
             <FormInput label="Favorite" checkBox>
-              <Checkbox
+              <Switch
                 checked={field.value}
                 onCheckedChange={field.onChange}
+                className="me-2"
               />
             </FormInput>
           )}

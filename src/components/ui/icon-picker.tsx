@@ -61,10 +61,10 @@ const IconPicker = React.forwardRef<
       iconsList = ICON_BUTTONS,
       ...props
     },
-    ref,
+    ref
   ) => {
     const [selectedIcon, setSelectedIcon] = useState<IconName | undefined>(
-      defaultValue,
+      defaultValue
     );
     const [isOpen, setIsOpen] = useState(defaultOpen || false);
 
@@ -93,10 +93,10 @@ const IconPicker = React.forwardRef<
               ({ icon, alias }) =>
                 icon.toLowerCase().includes(search.toLowerCase().trim()) ||
                 (alias || []).some((alias) =>
-                  alias.toLowerCase().includes(search.toLowerCase().trim()),
-                ),
+                  alias.toLowerCase().includes(search.toLowerCase().trim())
+                )
             ),
-      [search, iconsList],
+      [search, iconsList]
     );
 
     useEffect(() => {
@@ -105,7 +105,7 @@ const IconPicker = React.forwardRef<
 
     const displayedIcons = useMemo(
       () => filteredIcons.slice(0, displayCount),
-      [filteredIcons, displayCount],
+      [filteredIcons, displayCount]
     );
 
     const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
@@ -123,10 +123,10 @@ const IconPicker = React.forwardRef<
       >
         <PopoverTrigger ref={ref} asChild {...props}>
           {children || (
-            <Button variant="secondary" className="size-24 rounded-full">
+            <Button variant="ghost" className="">
               {value || selectedIcon ? (
                 <>
-                  <Icon name={(value || selectedIcon)!} size="3rem" />
+                  <Icon name={(value || selectedIcon)!} size="1.25rem" />
                 </>
               ) : (
                 triggerPlaceholder
@@ -153,7 +153,7 @@ const IconPicker = React.forwardRef<
                   <TooltipTrigger
                     className={cn(
                       "p-2 rounded-md border hover:bg-foreground/10 transition",
-                      "flex items-center justify-center",
+                      "flex items-center justify-center"
                     )}
                     onClick={(e) => {
                       handleValueChange(icon);
@@ -179,7 +179,7 @@ const IconPicker = React.forwardRef<
         </PopoverContent>
       </Popover>
     );
-  },
+  }
 );
 IconPicker.displayName = "IconPicker";
 
@@ -191,7 +191,7 @@ const Icon = React.forwardRef<React.ComponentRef<LucideIcon>, IconProps>(
   ({ name, ...props }, ref) => {
     const LucideIcon = icons[name];
     return <LucideIcon ref={ref} {...props} />;
-  },
+  }
 );
 Icon.displayName = "Icon";
 
