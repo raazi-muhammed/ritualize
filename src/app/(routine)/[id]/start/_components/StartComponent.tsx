@@ -179,6 +179,7 @@ function StartComponent({
           ? [
               {
                 label: "Done",
+                placement: "right" as any,
                 icon: "Check" as IconName,
                 onClick: async () => {
                   handleBack();
@@ -189,6 +190,7 @@ function StartComponent({
           : [
               {
                 icon: "Forward" as IconName,
+                placement: "right" as any,
                 onClick: async () => {
                   moveToNextPossibleTask();
                   reset();
@@ -197,6 +199,7 @@ function StartComponent({
               },
               {
                 label: "Next",
+                placement: "right" as any,
                 icon: "ChevronRight" as IconName,
                 onClick: async () => {
                   moveToNextPossibleTask();

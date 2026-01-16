@@ -147,9 +147,39 @@ const PageTemplate = ({
       )}
       {children}
       <footer className="fixed bottom-5 left-5 right-5 justify-between flex gap-2">
-        {bottomActions?.map((action, index) => (
-          <ActionButton action={action} key={index} />
-        ))}
+        <div className="flex gap-2">
+          {bottomActions
+            ?.filter(
+              (a) =>
+                a &&
+                typeof a === "object" &&
+                "placement" in a &&
+                a.placement === "left"
+            )
+            ?.map((action, index) => (
+              <ActionButton action={action} key={index} />
+            ))}
+        </div>
+        <div className="flex gap-2">
+          {bottomActions
+            ?.filter((a) => a && typeof a === "object" && !("placement" in a))
+            ?.map((action, index) => (
+              <ActionButton action={action} key={index} />
+            ))}
+        </div>
+        <div className="flex gap-2">
+          {bottomActions
+            ?.filter(
+              (a) =>
+                a &&
+                typeof a === "object" &&
+                "placement" in a &&
+                a.placement === "right"
+            )
+            ?.map((action, index) => (
+              <ActionButton action={action} key={index} />
+            ))}
+        </div>
       </footer>
     </main>
   );
