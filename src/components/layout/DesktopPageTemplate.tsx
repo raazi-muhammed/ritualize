@@ -33,7 +33,7 @@ const DesktopPageTemplate = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <SidebarProvider>
-      <Sidebar>
+      <Sidebar variant="floating">
         <SidebarContent>
           <PageTemplate
             hideBack
