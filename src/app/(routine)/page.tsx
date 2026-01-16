@@ -3,49 +3,33 @@
 export const dynamic = "force-static";
 
 import { UserButton } from "@clerk/nextjs";
-
 import RoutineForm from "./_forms/RoutineForm";
 import { routineSchema } from "./_forms/schema";
 import { z } from "zod";
-import RoutineCard from "./[id]/_components/RoutineCard";
 import { useModal } from "@/providers/ModelProvider";
-import InfoMessage from "@/components/message/InfoMessage";
-import RoutineSkeleton from "./_components/RoutineSkeleton";
 import PageTemplate from "@/components/layout/PageTemplate";
-import ContentStateTemplate from "@/components/layout/ContentStateTemplate";
-import {
-  getRoutine,
-  routineKeys,
-  useCreateRoutine,
-  useGetRoutines,
-} from "@/queries/routine.query";
-import { useQueryClient } from "@tanstack/react-query";
-import { useEffect } from "react";
-import { PlusIcon } from "lucide-react";
+import { useCreateRoutine } from "@/queries/routine.query";
+import RoutineList from "./_components/RoutineList";
+import DesktopPageTemplate from "@/components/layout/DesktopPageTemplate";
 
 export default function Home() {
   const { openModal, closeModal } = useModal();
-
-  const { data: routines, isLoading } = useGetRoutines();
   const { mutateAsync } = useCreateRoutine();
-
-  const queryClient = useQueryClient();
-
-  useEffect(() => {
-    routines?.forEach((routine) => {
-      if (routine.is_favorite) {
-        queryClient.prefetchQuery({
-          queryKey: routineKeys.detail(routine.id, new Date()),
-          queryFn: () => getRoutine(routine.id, new Date()),
-        });
-      }
-    });
-  }, [routines, queryClient]);
-
   function onSubmit(values: z.infer<typeof routineSchema>) {
     closeModal();
     mutateAsync(values);
   }
+
+  return (
+    <DesktopPageTemplate>
+      <p>
+        Lorem ipsum dolor sit amet consectetur adipisicing elit. Tenetur
+        architecto quo consectetur mollitia cumque. Distinctio ut autem ducimus
+        quasi suscipit corrupti in esse, cum blanditiis. Eaque eligendi est
+        doloribus consectetur?
+      </p>
+    </DesktopPageTemplate>
+  );
 
   return (
     <PageTemplate
@@ -66,26 +50,7 @@ export default function Home() {
         },
       ]}
     >
-      <ContentStateTemplate
-        isLoading={isLoading}
-        skeleton={<RoutineSkeleton />}
-      >
-        <section className="flex flex-col gap-4 mb-12">
-          <section className="grid grid-cols-2 gap-4">
-            {routines
-              ?.filter((r) => r.is_favorite)
-              .map((routine) => (
-                <RoutineCard key={routine.id} isList={true} routine={routine} />
-              ))}
-          </section>
-          {routines
-            ?.filter((r) => !r.is_favorite)
-            .map((routine) => (
-              <RoutineCard key={routine.id} routine={routine} />
-            ))}
-          {routines?.length === 0 && <InfoMessage message="No routines yet" />}
-        </section>
-      </ContentStateTemplate>
+      <RoutineList />
     </PageTemplate>
   );
 }

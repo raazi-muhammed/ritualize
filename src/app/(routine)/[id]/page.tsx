@@ -8,14 +8,9 @@ import DateSelector from "@/app/_components/DateSelector";
 import RoutineSkeleton from "../_components/RoutineSkeleton";
 import PageTemplate from "@/components/layout/PageTemplate";
 import ContentStateTemplate from "@/components/layout/ContentStateTemplate";
-import { IoAddCircle, IoTrash } from "react-icons/io5";
 import { useModal } from "@/providers/ModelProvider";
 import { routineSchema } from "../_forms/schema";
 import nextDynamic from "next/dynamic";
-
-const RoutineForm = nextDynamic(() => import("../_forms/RoutineForm"), {
-  ssr: false,
-});
 import TaskForm, {
   DEFAULT_TASK_VALUES,
   taskSchema,
@@ -34,6 +29,11 @@ import {
   useCreateTask,
 } from "@/queries/routine.query";
 import { formatDateForInput } from "@/lib/format";
+import DesktopPageTemplate from "@/components/layout/DesktopPageTemplate";
+
+const RoutineForm = nextDynamic(() => import("../_forms/RoutineForm"), {
+  ssr: false,
+});
 
 export default function Page({ params }: { params: { id: string } }) {
   const routineId = params.id;
@@ -83,93 +83,95 @@ export default function Page({ params }: { params: { id: string } }) {
   }
 
   return (
-    <PageTemplate
-      backUrl="/"
-      title={routine?.name || nameQueryParam || "Routine"}
-      actions={
-        routine
-          ? [
-              {
-                icon: "Plus",
-                onClick: () => {
-                  openModal({
-                    title: "Add Task",
-                    content: (
-                      <TaskForm
-                        onSubmit={handleAddTaskSubmit}
-                        defaultValues={{
-                          ...DEFAULT_TASK_VALUES,
-                          startDate: formatDateForInput(
-                            selectedDate || new Date()
-                          ),
-                        }}
-                      />
-                    ),
-                  });
+    <DesktopPageTemplate>
+      <PageTemplate
+        backUrl="/"
+        title={routine?.name || nameQueryParam || "Routine"}
+        actions={
+          routine
+            ? [
+                {
+                  icon: "Plus",
+                  onClick: () => {
+                    openModal({
+                      title: "Add Task",
+                      content: (
+                        <TaskForm
+                          onSubmit={handleAddTaskSubmit}
+                          defaultValues={{
+                            ...DEFAULT_TASK_VALUES,
+                            startDate: formatDateForInput(
+                              selectedDate || new Date()
+                            ),
+                          }}
+                        />
+                      ),
+                    });
+                  },
                 },
-              },
-              {
-                label: "All Task",
-                onClick: () => {
-                  openModal({
-                    title: "All tasks",
-                    content: <AllTasks showStartDate routine={routine} />,
-                  });
+                {
+                  label: "All Task",
+                  onClick: () => {
+                    openModal({
+                      title: "All tasks",
+                      content: <AllTasks showStartDate routine={routine} />,
+                    });
+                  },
                 },
-              },
-              {
-                label: "Edit",
-                icon: "Pencil",
-                onClick: () => {
-                  openModal({
-                    title: "Edit Routine",
-                    content: (
-                      <RoutineForm
-                        onSubmit={handleEditRoutineSubmit}
-                        defaultValues={{
-                          name: routine.name,
-                          icon: routine.icon || "List",
-                          duration: routine.duration || undefined,
-                          is_favorite: routine.is_favorite,
-                        }}
-                      />
-                    ),
-                  });
+                {
+                  label: "Edit",
+                  icon: "Pencil",
+                  onClick: () => {
+                    openModal({
+                      title: "Edit Routine",
+                      content: (
+                        <RoutineForm
+                          onSubmit={handleEditRoutineSubmit}
+                          defaultValues={{
+                            name: routine.name,
+                            icon: routine.icon || "List",
+                            duration: routine.duration || undefined,
+                            is_favorite: routine.is_favorite,
+                          }}
+                        />
+                      ),
+                    });
+                  },
                 },
-              },
-              {
-                label: "Uncheck all",
-                icon: "CheckCheck",
-                onClick: () => uncheckAllTasks(),
-              },
-              {
-                label: "Delete",
-                icon: "Trash",
-                onClick: () => handleDeleteRoutine(routineId),
-              },
-            ]
-          : []
-      }
-      bottomActions={[
-        {
-          label: "Start",
-          icon: "Play",
-          placement: "right",
-          onClick: () => {
-            router.push(`/${routine?.id}/start`, {
-              onTransitionReady: pageSlideAnimation,
-            });
+                {
+                  label: "Uncheck all",
+                  icon: "CheckCheck",
+                  onClick: () => uncheckAllTasks(),
+                },
+                {
+                  label: "Delete",
+                  icon: "Trash",
+                  onClick: () => handleDeleteRoutine(routineId),
+                },
+              ]
+            : []
+        }
+        bottomActions={[
+          {
+            label: "Start",
+            icon: "Play",
+            placement: "right",
+            onClick: () => {
+              router.push(`/${routine?.id}/start`, {
+                onTransitionReady: pageSlideAnimation,
+              });
+            },
           },
-        },
-      ]}
-    >
-      <DateSelector />
-      <ContentStateTemplate
-        isLoading={isLoading}
-        skeleton={<RoutineSkeleton />}
+        ]}
       >
-        {routine && <RoutinePage routine={routine} />}
-      </ContentStateTemplate>
-    </PageTemplate>
+        <DateSelector />
+        <ContentStateTemplate
+          isLoading={isLoading}
+          skeleton={<RoutineSkeleton />}
+        >
+          {routine && <RoutinePage routine={routine} />}
+        </ContentStateTemplate>
+      </PageTemplate>
+    </DesktopPageTemplate>
   );
 }
