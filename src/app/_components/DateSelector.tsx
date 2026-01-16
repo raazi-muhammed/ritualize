@@ -20,7 +20,7 @@ export default function DateSelector() {
   if (!selectedDate) return null;
 
   return (
-    <section className="fixed bottom-12 right-12 flex mt-2 gap-2">
+    <section className="flex mb-4 gap-2">
       <Popover>
         <PopoverTrigger asChild>
           <Button
@@ -28,7 +28,7 @@ export default function DateSelector() {
             variant={"outline"}
             className={cn(
               "w-fit justify-start text-left font-normal",
-              !selectedDate && "text-muted-foreground",
+              !selectedDate && "text-muted-foreground"
             )}
           >
             <CalendarIcon className="mr-2 h-4 w-4" />

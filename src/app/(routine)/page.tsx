@@ -11,17 +11,36 @@ import { z } from "zod";
 import RoutineCard from "./[id]/_components/RoutineCard";
 import { useModal } from "@/providers/ModelProvider";
 import InfoMessage from "@/components/message/InfoMessage";
-import DateSelector from "../_components/DateSelector";
 import RoutineSkeleton from "./_components/RoutineSkeleton";
 import PageTemplate from "@/components/layout/PageTemplate";
 import ContentStateTemplate from "@/components/layout/ContentStateTemplate";
-import { useCreateRoutine, useGetRoutines } from "@/queries/routine.query";
+import {
+  getRoutine,
+  routineKeys,
+  useCreateRoutine,
+  useGetRoutines,
+} from "@/queries/routine.query";
+import { useQueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
 
 export default function Home() {
   const { openModal, closeModal } = useModal();
 
   const { data: routines, isLoading } = useGetRoutines();
   const { mutateAsync } = useCreateRoutine();
+
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    routines?.forEach((routine) => {
+      if (routine.is_favorite) {
+        queryClient.prefetchQuery({
+          queryKey: routineKeys.detail(routine.id, new Date()),
+          queryFn: () => getRoutine(routine.id, new Date()),
+        });
+      }
+    });
+  }, [routines, queryClient]);
 
   function onSubmit(values: z.infer<typeof routineSchema>) {
     closeModal();
@@ -65,7 +84,6 @@ export default function Home() {
             ))}
           {routines?.length === 0 && <InfoMessage message="No routines yet" />}
         </section>
-        <DateSelector />
       </ContentStateTemplate>
     </PageTemplate>
   );

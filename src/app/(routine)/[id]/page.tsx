@@ -150,12 +150,12 @@ export default function Page({ params }: { params: { id: string } }) {
           : []
       }
     >
+      <DateSelector />
       <ContentStateTemplate
         isLoading={isLoading}
         skeleton={<RoutineSkeleton />}
       >
         {routine && <RoutinePage routine={routine} />}
-        <DateSelector />
       </ContentStateTemplate>
     </PageTemplate>
   );

@@ -27,18 +27,20 @@ export const useGetRoutines = () => {
   });
 };
 
+export const getRoutine = async (id: string, date: Date) => {
+  const response = await fetch(
+    `/api/routines/${id}?date=${
+      date ? date.toISOString() : new Date().toISOString()
+    }`
+  );
+  if (!response.ok) throw new Error("Failed to fetch routine");
+  return (await response.json()) as RoutineWithTasks;
+};
+
 export const useGetRoutine = (id: string, date?: Date) => {
   return useQuery({
     queryKey: routineKeys.detail(id, date || new Date()),
-    queryFn: async () => {
-      const response = await fetch(
-        `/api/routines/${id}?date=${
-          date ? date.toISOString() : new Date().toISOString()
-        }`
-      );
-      if (!response.ok) throw new Error("Failed to fetch routine");
-      return (await response.json()) as RoutineWithTasks;
-    },
+    queryFn: () => getRoutine(id, date || new Date()),
     enabled: !!id,
   });
 };
