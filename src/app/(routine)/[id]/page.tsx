@@ -10,7 +10,12 @@ import PageTemplate from "@/components/layout/PageTemplate";
 import ContentStateTemplate from "@/components/layout/ContentStateTemplate";
 import { IoAddCircle, IoTrash } from "react-icons/io5";
 import { useModal } from "@/providers/ModelProvider";
-import RoutineForm, { routineSchema } from "../_forms/RoutineForm";
+import { routineSchema } from "../_forms/schema";
+import nextDynamic from "next/dynamic";
+
+const RoutineForm = nextDynamic(() => import("../_forms/RoutineForm"), {
+  ssr: false,
+});
 import TaskForm, {
   DEFAULT_TASK_VALUES,
   taskSchema,

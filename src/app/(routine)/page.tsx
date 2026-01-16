@@ -5,7 +5,8 @@ export const dynamic = "force-static";
 import { IoAddCircle as AddIcon } from "react-icons/io5";
 import { UserButton } from "@clerk/nextjs";
 
-import RoutineForm, { routineSchema } from "./_forms/RoutineForm";
+import RoutineForm from "./_forms/RoutineForm";
+import { routineSchema } from "./_forms/schema";
 import { z } from "zod";
 import RoutineCard from "./[id]/_components/RoutineCard";
 import { useModal } from "@/providers/ModelProvider";

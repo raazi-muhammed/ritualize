@@ -29,7 +29,8 @@ import TaskForm, {
   taskSchema,
 } from "../(tasks)/_forms/TaskForm";
 import { z } from "zod";
-import RoutineForm, { routineSchema } from "../../_forms/RoutineForm";
+import RoutineForm from "../../_forms/RoutineForm";
+import { routineSchema } from "../../_forms/schema";
 import { useRouter } from "next/navigation";
 import { useModal } from "@/providers/ModelProvider";
 import AllTasks from "./AllTasks";
