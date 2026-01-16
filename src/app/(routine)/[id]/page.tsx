@@ -90,7 +90,6 @@ export default function Page({ params }: { params: { id: string } }) {
         routine
           ? [
               {
-                label: "Add",
                 icon: "Plus",
                 onClick: () => {
                   openModal({
@@ -120,6 +119,7 @@ export default function Page({ params }: { params: { id: string } }) {
               },
               {
                 label: "Edit",
+                icon: "Pencil",
                 onClick: () => {
                   openModal({
                     title: "Edit Routine",
@@ -139,6 +139,7 @@ export default function Page({ params }: { params: { id: string } }) {
               },
               {
                 label: "Uncheck all",
+                icon: "CheckCheck",
                 onClick: () => uncheckAllTasks(),
               },
               {
@@ -152,6 +153,7 @@ export default function Page({ params }: { params: { id: string } }) {
       bottomActions={[
         {
           label: "Start",
+          icon: "Play",
           placement: "right",
           onClick: () => {
             router.push(`/${routine?.id}/start`, {

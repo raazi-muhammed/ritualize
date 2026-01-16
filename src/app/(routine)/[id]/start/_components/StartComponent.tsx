@@ -34,6 +34,7 @@ function getStartFrom(
 
 import { useTransitionRouter } from "next-view-transitions";
 import { pageSlideBackAnimation } from "@/lib/animations";
+import { IconName } from "@/components/ui/icon-picker";
 
 function StartComponent({
   routine,
@@ -167,6 +168,7 @@ function StartComponent({
         {
           label: "Prev",
           placement: "left",
+          icon: "ChevronLeft",
           disabled: currentTaskIndex <= 0,
           onClick: () => {
             setCurrentTaskIndex((cti) => --cti);
@@ -177,6 +179,7 @@ function StartComponent({
           ? [
               {
                 label: "Done",
+                icon: "Check" as IconName,
                 onClick: async () => {
                   handleBack();
                   await completedTask();
@@ -185,8 +188,7 @@ function StartComponent({
             ]
           : [
               {
-                label: "Skip",
-
+                icon: "Forward" as IconName,
                 onClick: async () => {
                   moveToNextPossibleTask();
                   reset();
@@ -195,6 +197,7 @@ function StartComponent({
               },
               {
                 label: "Next",
+                icon: "ChevronRight" as IconName,
                 onClick: async () => {
                   moveToNextPossibleTask();
                   reset();

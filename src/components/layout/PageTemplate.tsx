@@ -4,7 +4,6 @@ import { ReactNode, isValidElement, Fragment } from "react";
 import { Button } from "../ui/button";
 import { ChevronLeft, EllipsisVertical } from "lucide-react";
 import Heading from "./Heading";
-import { IconType } from "react-icons/lib";
 import { useTransitionRouter } from "next-view-transitions";
 import { pageSlideBackAnimation } from "@/lib/animations";
 import {
@@ -18,21 +17,37 @@ import { Icon, IconName } from "../ui/icon-picker";
 
 type ActionType =
   | {
-      label: string;
+      label?: string;
       icon?: IconName;
       onClick: () => void;
+      placement?: "left" | "right";
+      disabled?: boolean;
     }
   | ReactNode;
 
-type BottomActionType =
-  | {
-      label: string;
-      icon?: IconName;
-      onClick: () => void;
-      disabled?: boolean;
-      placement?: "left" | "right";
-    }
-  | ReactNode;
+import React from "react";
+import ButtonTemplate from "./ButtonTemplate";
+
+function ActionButton({ action }: { action: ActionType }) {
+  if (isValidElement(action)) {
+    return <Fragment key={action.key}>{action}</Fragment>;
+  }
+  if (action && typeof action === "object" && "onClick" in action) {
+    return (
+      <ButtonTemplate
+        label={action.label}
+        icon={action.icon}
+        onClick={action.onClick}
+        disabled={action.disabled}
+        className={cn(
+          action.placement === "right" && "ms-auto",
+          action.placement === "left" && "me-auto"
+        )}
+      />
+    );
+  }
+  return null;
+}
 
 const PageTemplate = ({
   children,
@@ -49,14 +64,14 @@ const PageTemplate = ({
   hideBack?: boolean;
   backUrl?: string;
   forceBack?: () => void;
-  bottomActions?: BottomActionType[];
+  bottomActions?: ActionType[];
 }) => {
   const tRouter = useTransitionRouter();
   return (
     <main className="px-5 container-xl py-4">
       <header className="flex justify-between gap-3">
         {!hideBack ? (
-          <Button
+          <ButtonTemplate
             onClick={() => {
               if (forceBack) {
                 forceBack();
@@ -69,40 +84,18 @@ const PageTemplate = ({
               }
             }}
             className="ps-0 pe-12"
-            variant="ghost"
-          >
-            <ChevronLeft />
-          </Button>
+            icon="ChevronLeft"
+          />
         ) : (
           <div />
         )}
 
         <div className="flex gap-2">
-          {actions && actions.length > 3 ? (
+          {actions && actions.length > 2 ? (
             <>
-              {actions.slice(0, 2).map((action, index) => {
-                if (isValidElement(action)) {
-                  return <Fragment key={index}>{action}</Fragment>;
-                }
-                if (action && typeof action === "object" && "label" in action) {
-                  return (
-                    <Button
-                      key={action.label}
-                      onClick={action.onClick}
-                      size={action.icon ? "icon" : "sm"}
-                      variant="secondary"
-                      className="my-auto"
-                    >
-                      {action.icon ? (
-                        <Icon name={action.icon} className="size-5" />
-                      ) : (
-                        <p> {action.label}</p>
-                      )}
-                    </Button>
-                  );
-                }
-                return null;
-              })}
+              {actions.slice(0, 1).map((action, index) => (
+                <ActionButton action={action} key={index} />
+              ))}
               <DropdownMenu modal={false}>
                 <DropdownMenuTrigger asChild>
                   <Button variant="secondary" size="icon" className="my-auto">
@@ -141,29 +134,9 @@ const PageTemplate = ({
               </DropdownMenu>
             </>
           ) : (
-            actions?.map((action, index) => {
-              if (isValidElement(action)) {
-                return <Fragment key={index}>{action}</Fragment>;
-              }
-              if (action && typeof action === "object" && "label" in action) {
-                return (
-                  <Button
-                    key={action.label}
-                    onClick={action.onClick}
-                    size={action.icon ? "icon" : "sm"}
-                    variant="secondary"
-                    className="my-auto"
-                  >
-                    {action.icon ? (
-                      <Icon name={action.icon} className="size-5" />
-                    ) : (
-                      <p> {action.label}</p>
-                    )}
-                  </Button>
-                );
-              }
-              return null;
-            })
+            actions?.map((action, index) => (
+              <ActionButton action={action} key={index} />
+            ))
           )}
         </div>
       </header>
@@ -173,35 +146,10 @@ const PageTemplate = ({
         </section>
       )}
       {children}
-      <footer className="fixed bottom-12 left-12 right-12 justify-between flex gap-2">
-        {bottomActions?.map((action, index) => {
-          if (isValidElement(action)) {
-            return <Fragment key={index}>{action}</Fragment>;
-          }
-          if (action && typeof action === "object" && "label" in action) {
-            return (
-              <Button
-                key={action.label}
-                disabled={action.disabled}
-                onClick={action.onClick}
-                size={action.icon ? "icon" : "sm"}
-                variant="secondary"
-                className={cn(
-                  "my-auto",
-                  action.placement === "right" && "ms-auto",
-                  action.placement === "left" && "me-auto"
-                )}
-              >
-                {action.icon ? (
-                  <Icon name={action.icon} className="size-5" />
-                ) : (
-                  <p> {action.label}</p>
-                )}
-              </Button>
-            );
-          }
-          return null;
-        })}
+      <footer className="fixed bottom-5 left-5 right-5 justify-between flex gap-2">
+        {bottomActions?.map((action, index) => (
+          <ActionButton action={action} key={index} />
+        ))}
       </footer>
     </main>
   );
