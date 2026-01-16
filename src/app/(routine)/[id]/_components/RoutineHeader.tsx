@@ -21,7 +21,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { ChevronLeft, CircleEllipsis } from "lucide-react";
 import { IoAddCircle as AddIcon } from "react-icons/io5";
-import { Frequency, Routine, Task } from "@prisma/client";
+import { Routine, Task } from "@prisma/client";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "@/components/ui/use-toast";
 import TaskForm, {
@@ -100,9 +100,7 @@ const RoutineHeader = ({
     addTaskToRoutine({
       name: values.name,
       duration: values.duration,
-      frequency: values.frequency as Frequency,
-      every_frequency: values.everyFrequency,
-      days_in_frequency: values.daysInFrequency || [0],
+
       start_date: new Date(values.startDate),
       end_date: null,
       type: values.type,
@@ -198,7 +196,6 @@ const RoutineHeader = ({
                           icon: routine.icon || "List",
                           duration: routine.duration || undefined,
                           is_favorite: routine.is_favorite,
-                          type: routine.type,
                         }}
                       />
                     ),

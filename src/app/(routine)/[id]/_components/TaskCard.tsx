@@ -2,7 +2,7 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import { CompletionStatus, Frequency, Task, TaskType } from "@prisma/client";
+import { CompletionStatus, Task, TaskType } from "@prisma/client";
 import { DragEvent } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { taskSchema } from "../(tasks)/_forms/TaskForm";
@@ -127,9 +127,7 @@ const TaskCard = ({
     updateTask({
       name: values.name,
       duration: values.duration,
-      frequency: values.frequency as Frequency,
-      every_frequency: values.everyFrequency,
-      days_in_frequency: values.daysInFrequency || [0],
+
       start_date: new Date(values.startDate),
       type: values.type,
       end_date: null,

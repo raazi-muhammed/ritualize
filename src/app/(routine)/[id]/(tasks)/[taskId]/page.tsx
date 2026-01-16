@@ -18,7 +18,7 @@ import { IoTrash } from "react-icons/io5";
 import TaskForm, { taskSchema } from "../_forms/TaskForm";
 import { useModal } from "@/providers/ModelProvider";
 import { z } from "zod";
-import { Frequency, Task } from "@prisma/client";
+import { Task } from "@prisma/client";
 import { useTransitionRouter } from "next-view-transitions";
 import { pageSlideBackAnimation } from "@/lib/animations";
 import { useSearchParams } from "next/navigation";
@@ -92,9 +92,7 @@ export default function Page({
     updateTask({
       name: values.name,
       duration: values.duration,
-      frequency: values.frequency as Frequency,
-      every_frequency: values.everyFrequency,
-      days_in_frequency: values.daysInFrequency || [0],
+
       start_date: new Date(values.startDate),
       type: values.type,
       end_date: null,
@@ -119,11 +117,8 @@ export default function Page({
                         onSubmit={onSubmit}
                         defaultValues={{
                           duration: task.duration,
-                          frequency: task.frequency,
                           name: task.name,
-                          everyFrequency: task.every_frequency,
                           startDate: formatDateForInput(task.start_date),
-                          daysInFrequency: task.days_in_frequency,
                           type: task.type,
                         }}
                       />

@@ -7,11 +7,7 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
-enum Frequency {
-    daily
-    weekly
-    monthly
-}
+
 
 enum CompletionStatus {
     completed
@@ -45,9 +41,7 @@ model Task {
     order             Int
     routine_id        String           @db.ObjectId
     routine           Routine          @relation(fields: [routine_id], references: [id])
-    frequency         Frequency        @default(daily)
-    every_frequency   Int              @default(1)
-    days_in_frequency Int[]            @default([])
+
     start_date        DateTime         @default(now())
     end_date          DateTime?
     completions       TaskCompletion[]
@@ -56,10 +50,7 @@ model Task {
     @@index([routine_id])
 }
 
-enum RoutineTypes {
-    recurring
-    sop
-}
+
 
 model Routine {
     id          String       @id @default(auto()) @map("_id") @db.ObjectId
@@ -69,7 +60,7 @@ model Routine {
     tasks       Task[]
     user_id     String // clerk user id
     is_favorite Boolean      @default(false)
-    type        RoutineTypes @default(recurring)
+
 
     @@index([user_id])
 }

@@ -29,7 +29,6 @@ import {
   useCreateTask,
 } from "@/queries/routine.query";
 import { formatDateForInput } from "@/lib/format";
-import { Frequency } from "@prisma/client";
 
 export default function Page({ params }: { params: { id: string } }) {
   const routineId = params.id;
@@ -53,9 +52,7 @@ export default function Page({ params }: { params: { id: string } }) {
     addTaskToRoutine({
       name: values.name,
       duration: values.duration,
-      frequency: values.frequency as Frequency,
-      every_frequency: values.everyFrequency,
-      days_in_frequency: values.daysInFrequency || [0],
+
       start_date: new Date(values.startDate),
       end_date: null,
       type: values.type,
@@ -129,7 +126,6 @@ export default function Page({ params }: { params: { id: string } }) {
                           icon: routine.icon || "List",
                           duration: routine.duration || undefined,
                           is_favorite: routine.is_favorite,
-                          type: routine.type,
                         }}
                       />
                     ),

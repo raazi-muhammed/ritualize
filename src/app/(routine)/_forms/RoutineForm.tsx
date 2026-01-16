@@ -7,7 +7,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Form, FormField } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { RoutineTypes } from "@prisma/client";
+
 import React, { useMemo } from "react";
 import { DefaultValues, useForm } from "react-hook-form";
 import { z } from "zod";
@@ -16,7 +16,7 @@ import { IconPicker } from "@/components/ui/icon-picker";
 export const routineSchema = z.object({
   name: z.string().min(1),
   duration: z.number().min(1),
-  type: z.enum([RoutineTypes.sop, RoutineTypes.recurring]),
+
   is_favorite: z.boolean(),
   icon: z.string(),
 });
@@ -26,7 +26,7 @@ function RoutineForm({
   defaultValues = {
     name: "",
     duration: 2,
-    type: RoutineTypes.recurring,
+
     is_favorite: false,
     icon: "List",
   },
@@ -39,13 +39,6 @@ function RoutineForm({
     defaultValues,
     mode: "onTouched",
   });
-
-  const typeItems = useMemo(() => {
-    return Object.values(RoutineTypes).map((v) => ({
-      label: v,
-      value: v,
-    }));
-  }, []);
 
   return (
     <Form {...form}>
@@ -87,20 +80,7 @@ function RoutineForm({
             </FormInput>
           )}
         />
-        <FormField
-          control={form.control}
-          name="type"
-          render={({ field }) => (
-            <FormInput label="Type">
-              <FormSelect
-                onValueChange={field.onChange}
-                defaultValue={field.value}
-                items={typeItems}
-                {...field}
-              />
-            </FormInput>
-          )}
-        />
+
         <FormField
           control={form.control}
           name="is_favorite"

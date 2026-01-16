@@ -53,9 +53,6 @@ const RoutineCard = ({
               <CardTitle className="flex justify-between text-base my-auto font-medium line-clamp-1">
                 {routine.name}
               </CardTitle>
-              <small className="text-xs text-muted-foreground">
-                {routine.type}
-              </small>
             </div>
           </div>
 

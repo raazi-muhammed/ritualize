@@ -1,6 +1,6 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Frequency, TaskType } from "@prisma/client";
+import { TaskType } from "@prisma/client";
 import React, { useEffect, useMemo, useState } from "react";
 import { DefaultValues, useForm } from "react-hook-form";
 import { z } from "zod";
@@ -27,46 +27,30 @@ import { format } from "date-fns";
 export const DEFAULT_TASK_VALUES = {
   name: "",
   duration: 2,
-  frequency: Frequency.daily,
+
   createNew: false,
   startDate: formatDateForInput(new Date()),
-  everyFrequency: 1,
-  daysInFrequency: [new Date().getDay()],
+
   type: TaskType.task,
 };
 
-export const taskSchema = z
-  .object({
-    name: z.string().min(1),
-    duration: z.number().min(1),
-    frequency: z.string().min(1),
-    createNew: z.boolean().optional().default(false),
-    everyFrequency: z.number().min(1),
-    daysInFrequency: z.array(z.number()).optional(),
-    startDate: z.string(),
-    type: z.nativeEnum(TaskType),
-  })
-  .refine(
-    (data) =>
-      !data.daysInFrequency ||
-      data.daysInFrequency.every((day) => day >= 0 && day <= 6),
-    {
-      message:
-        "daysInFrequency must only contain numbers between 0 (Sunday) and 6 (Saturday).",
-      path: ["daysInFrequency"],
-    },
-  );
+export const taskSchema = z.object({
+  name: z.string().min(1),
+  duration: z.number().min(1),
+  createNew: z.boolean().optional().default(false),
+  startDate: z.string(),
+  type: z.nativeEnum(TaskType),
+});
 
 function TaskForm({
   onSubmit,
   defaultValues = {
     name: "",
     duration: 2,
-    frequency: Frequency.daily,
+
     createNew: false,
     startDate: formatDateForInput(new Date()),
-    everyFrequency: 1,
-    daysInFrequency: [new Date().getDay()],
+
     type: TaskType.task,
   },
   hideCreateNew = false,
@@ -82,56 +66,6 @@ function TaskForm({
     defaultValues,
     mode: "onTouched",
   });
-
-  const [frequency, setFrequency] = useState(form.getValues("frequency"));
-
-  useEffect(() => {
-    // Update frequency state when the form value changes
-    const subscription = form.watch((value) => {
-      if (value.frequency) setFrequency(value.frequency);
-    });
-
-    // Cleanup subscription on unmount
-    return () => subscription.unsubscribe();
-  }, [form]);
-
-  const frequencyItems = useMemo(() => {
-    return Object.values(Frequency).map((v) => ({
-      label: v,
-      value: v,
-    }));
-  }, []);
-
-  const days = [
-    {
-      value: "0",
-      label: "S",
-    },
-    {
-      value: "1",
-      label: "M",
-    },
-    {
-      value: "2",
-      label: "T",
-    },
-    {
-      value: "3",
-      label: "W",
-    },
-    {
-      value: "4",
-      label: "T",
-    },
-    {
-      value: "5",
-      label: "F",
-    },
-    {
-      value: "6",
-      label: "S",
-    },
-  ];
 
   const typeItems = [
     {
@@ -173,35 +107,7 @@ function TaskForm({
             </FormInput>
           )}
         />
-        <FormField
-          control={form.control}
-          name="frequency"
-          render={({ field }) => (
-            <FormInput label="Frequency">
-              <FormSelect
-                onValueChange={field.onChange}
-                defaultValue={field.value}
-                items={frequencyItems}
-                {...field}
-              />
-            </FormInput>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="everyFrequency"
-          render={({ field }) => (
-            <FormInput label="Every">
-              <Input
-                type="number"
-                {...field}
-                onChange={(e) =>
-                  field.onChange(parseFloat(e.target.value) || e.target.value)
-                }
-              />
-            </FormInput>
-          )}
-        />
+
         <FormField
           control={form.control}
           name="startDate"
@@ -214,7 +120,7 @@ function TaskForm({
                     variant={"outline"}
                     className={cn(
                       "w-full h-12 rounded-sm justify-start text-left font-normal",
-                      !field.value && "text-muted-foreground",
+                      !field.value && "text-muted-foreground"
                     )}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
@@ -239,36 +145,7 @@ function TaskForm({
             </FormInput>
           )}
         />
-        {frequency === Frequency.weekly && (
-          <FormField
-            control={form.control}
-            name="daysInFrequency"
-            render={({ field }) => (
-              <FormInput label="Days in frequency">
-                <ToggleGroup
-                  type="multiple"
-                  value={field.value?.map((a) => String(a)) || []}
-                  onValueChange={(value) => {
-                    form.setValue(
-                      "daysInFrequency",
-                      value.map((a) => parseInt(a)),
-                    );
-                  }}
-                >
-                  {days.map((day) => (
-                    <ToggleGroupItem
-                      key={day.value}
-                      value={day.value}
-                      aria-label="Toggle bold"
-                    >
-                      {day.label}
-                    </ToggleGroupItem>
-                  ))}
-                </ToggleGroup>
-              </FormInput>
-            )}
-          />
-        )}
+
         {!hideCreateNew && (
           <FormField
             control={form.control}
