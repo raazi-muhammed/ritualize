@@ -2,7 +2,7 @@
 
 import { ReactNode, isValidElement, Fragment } from "react";
 import { Button } from "../ui/button";
-import { ChevronLeft, EllipsisVertical } from "lucide-react";
+import { EllipsisVertical } from "lucide-react";
 import Heading from "./Heading";
 import { useTransitionRouter } from "next-view-transitions";
 import { pageSlideBackAnimation } from "@/lib/animations";
@@ -22,12 +22,13 @@ type ActionType =
       onClick: () => void;
       placement?: "left" | "right";
       disabled?: boolean;
+      className?: string;
     }
   | ReactNode;
 
-import React from "react";
 import ButtonTemplate from "./ButtonTemplate";
 import { SIDEBAR_WIDTH } from "../ui/sidebar";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 function ActionButton({ action }: { action: ActionType }) {
   if (isValidElement(action)) {
@@ -42,7 +43,8 @@ function ActionButton({ action }: { action: ActionType }) {
         disabled={action.disabled}
         className={cn(
           action.placement === "right" && "ms-auto",
-          action.placement === "left" && "me-auto"
+          action.placement === "left" && "me-auto",
+          action.className
         )}
       />
     );
@@ -58,6 +60,7 @@ const PageTemplate = ({
   backUrl,
   forceBack,
   bottomActions,
+  isOnSidebar = false,
 }: {
   children: ReactNode;
   title?: string;
@@ -66,11 +69,13 @@ const PageTemplate = ({
   backUrl?: string;
   forceBack?: () => void;
   bottomActions?: ActionType[];
+  isOnSidebar?: boolean;
 }) => {
   const tRouter = useTransitionRouter();
+  const isMobile = useIsMobile();
   return (
     <main className="px-5 container-xl py-4">
-      <header className="flex justify-between gap-3">
+      <header className={cn(`flex justify-between gap-3 sticky top-5 pb-4`)}>
         {!hideBack ? (
           <ButtonTemplate
             onClick={() => {
@@ -142,48 +147,54 @@ const PageTemplate = ({
         </div>
       </header>
       {title && (
-        <section className="my-4 bg-background">
+        <section className="bg-background">
           <Heading>{title}</Heading>
         </section>
       )}
       {children}
-      <footer
-        className={`fixed bottom-5 left-[calc(${SIDEBAR_WIDTH}+1.25rem)] right-5 justify-between flex gap-2`}
-      >
-        <div className="flex gap-2">
-          {bottomActions
-            ?.filter(
-              (a) =>
-                a &&
-                typeof a === "object" &&
-                "placement" in a &&
-                a.placement === "left"
-            )
-            ?.map((action, index) => (
-              <ActionButton action={action} key={index} />
-            ))}
-        </div>
-        <div className="flex gap-2">
-          {bottomActions
-            ?.filter((a) => a && typeof a === "object" && !("placement" in a))
-            ?.map((action, index) => (
-              <ActionButton action={action} key={index} />
-            ))}
-        </div>
-        <div className="flex gap-2">
-          {bottomActions
-            ?.filter(
-              (a) =>
-                a &&
-                typeof a === "object" &&
-                "placement" in a &&
-                a.placement === "right"
-            )
-            ?.map((action, index) => (
-              <ActionButton action={action} key={index} />
-            ))}
-        </div>
-      </footer>
+      {bottomActions?.length && (
+        <footer
+          className={cn(
+            `fixed bottom-5 right-5 justify-between flex gap-2`,
+            isMobile ? "left-5" : "left-[calc(22rem+1.25rem)]",
+            isOnSidebar && "left-5 right-[calc(100vw-calc(22rem-1.25rem))]"
+          )}
+        >
+          <div className="flex gap-2">
+            {bottomActions
+              ?.filter(
+                (a) =>
+                  a &&
+                  typeof a === "object" &&
+                  "placement" in a &&
+                  a.placement === "left"
+              )
+              ?.map((action, index) => (
+                <ActionButton action={action} key={index} />
+              ))}
+          </div>
+          <div className="flex gap-2">
+            {bottomActions
+              ?.filter((a) => a && typeof a === "object" && !("placement" in a))
+              ?.map((action, index) => (
+                <ActionButton action={action} key={index} />
+              ))}
+          </div>
+          <div className="flex gap-2">
+            {bottomActions
+              ?.filter(
+                (a) =>
+                  a &&
+                  typeof a === "object" &&
+                  "placement" in a &&
+                  a.placement === "right"
+              )
+              ?.map((action, index) => (
+                <ActionButton action={action} key={index} />
+              ))}
+          </div>
+        </footer>
+      )}
     </main>
   );
 };
