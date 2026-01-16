@@ -64,6 +64,19 @@ export default function Home() {
         },
         <UserButton key="user-button" />,
       ]}
+      bottomActions={[
+        {
+          label: "Add",
+          icon: AddIcon,
+          onClick: () => {
+            openModal({
+              title: "Add Routine",
+              content: <RoutineForm onSubmit={onSubmit} />,
+            });
+          },
+          placement: "right",
+        },
+      ]}
     >
       <ContentStateTemplate
         isLoading={isLoading}

@@ -161,7 +161,50 @@ function StartComponent({
   }
 
   return (
-    <PageTemplate hideBack>
+    <PageTemplate
+      hideBack
+      bottomActions={[
+        {
+          label: "Prev",
+          placement: "left",
+          disabled: currentTaskIndex <= 0,
+          onClick: () => {
+            setCurrentTaskIndex((cti) => --cti);
+            reset();
+          },
+        },
+        ...(currentTaskIndex >= (routine?.tasks.length || 0) - 1
+          ? [
+              {
+                label: "Done",
+                onClick: async () => {
+                  handleBack();
+                  await completedTask();
+                },
+              },
+            ]
+          : [
+              {
+                label: "Skip",
+
+                onClick: async () => {
+                  moveToNextPossibleTask();
+                  reset();
+                  await skipTask();
+                },
+              },
+              {
+                label: "Next",
+                onClick: async () => {
+                  moveToNextPossibleTask();
+                  reset();
+                  await completedTask();
+                },
+                disabled: currentTaskIndex >= (routine?.tasks.length || 0) - 1,
+              },
+            ]),
+      ]}
+    >
       <main className="container relative flex h-[100svh] w-full flex-col justify-around">
         <header className="fixed top-0 left-8 right-8 pt-8 z-10 bg-gradient-to-b from-40% from-background">
           <section className="flex justify-between">
@@ -231,85 +274,6 @@ function StartComponent({
           ))}
           <div className="flex h-[30vh]" />
         </section>
-        <footer className="fixed bottom-0 left-0 right-0 container z-10 bg-gradient-to-t from-40% from-background pb-8 pt-28">
-          <section className="flex justify-between">
-            <div className="grid gap-1">
-              <Button
-                className="me-auto w-fit"
-                variant="secondary"
-                disabled={currentTaskIndex <= 0}
-                onClick={() => {
-                  setCurrentTaskIndex((cti) => --cti);
-                  reset();
-                }}
-              >
-                <ChevronLeft className="-ms-2" />
-                Prev
-              </Button>
-              <small className="text-start text-muted-foreground">
-                {routine?.tasks?.[currentTaskIndex - 1]?.name}
-              </small>
-            </div>
-
-            {currentTaskIndex >= (routine?.tasks.length || 0) - 1 ? (
-              <div className="flex gap-2">
-                <Button
-                  variant="ghost"
-                  className="ms-auto w-fit"
-                  onClick={async () => {
-                    handleBack();
-                    await skipTask();
-                  }}
-                >
-                  <SkipForward />
-                </Button>
-                <Button
-                  onClick={async () => {
-                    handleBack();
-                    await completedTask();
-                  }}
-                >
-                  Done
-                  <ChevronRight className="-me-2" />
-                </Button>
-              </div>
-            ) : (
-              <div className="grid gap-1">
-                <div className="flex gap-2">
-                  <Button
-                    variant="ghost"
-                    className="ms-auto w-fit"
-                    onClick={async () => {
-                      moveToNextPossibleTask();
-                      reset();
-                      await skipTask();
-                    }}
-                  >
-                    <SkipForward />
-                  </Button>
-                  <Button
-                    variant="secondary"
-                    className="ms-auto w-fit"
-                    disabled={
-                      currentTaskIndex >= (routine?.tasks.length || 0) - 1
-                    }
-                    onClick={async () => {
-                      moveToNextPossibleTask();
-                      reset();
-                      await completedTask();
-                    }}
-                  >
-                    Next
-                    <ChevronRight className="-me-2" />
-                  </Button>
-                </div>
-                <small className="text-end text-muted-foreground">
-                  {routine?.tasks?.[currentTaskIndex + 1]?.name}
-                </small>
-              </div>
-            )}
-          </section>
-        </footer>
       </main>
     </PageTemplate>
   );

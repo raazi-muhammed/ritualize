@@ -25,7 +25,7 @@ import AllTasks from "./_components/AllTasks";
 import { toast } from "@/hooks/use-toast";
 import { useTransitionRouter } from "next-view-transitions";
 import { useSearchParams } from "next/navigation";
-import { pageSlideBackAnimation } from "@/lib/animations";
+import { pageSlideAnimation, pageSlideBackAnimation } from "@/lib/animations";
 import {
   useDeleteRoutine,
   useGetRoutine,
@@ -149,6 +149,17 @@ export default function Page({ params }: { params: { id: string } }) {
             ]
           : []
       }
+      bottomActions={[
+        {
+          label: "Start",
+          placement: "right",
+          onClick: () => {
+            router.push(`/${routine?.id}/start`, {
+              onTransitionReady: pageSlideAnimation,
+            });
+          },
+        },
+      ]}
     >
       <DateSelector />
       <ContentStateTemplate

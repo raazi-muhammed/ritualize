@@ -13,12 +13,23 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
+import { cn } from "@/lib/utils";
 
 type ActionType =
   | {
       label: string;
       icon?: IconType;
       onClick: () => void;
+    }
+  | ReactNode;
+
+type BottomActionType =
+  | {
+      label: string;
+      icon?: IconType;
+      onClick: () => void;
+      disabled?: boolean;
+      placement?: "left" | "right";
     }
   | ReactNode;
 
@@ -29,6 +40,7 @@ const PageTemplate = ({
   hideBack,
   backUrl,
   forceBack,
+  bottomActions,
 }: {
   children: ReactNode;
   title?: string;
@@ -36,6 +48,7 @@ const PageTemplate = ({
   hideBack?: boolean;
   backUrl?: string;
   forceBack?: () => void;
+  bottomActions?: BottomActionType[];
 }) => {
   const tRouter = useTransitionRouter();
   return (
@@ -159,6 +172,36 @@ const PageTemplate = ({
         </section>
       )}
       {children}
+      <footer className="fixed bottom-12 left-12 right-12 justify-between flex gap-2">
+        {bottomActions?.map((action, index) => {
+          if (isValidElement(action)) {
+            return <Fragment key={index}>{action}</Fragment>;
+          }
+          if (action && typeof action === "object" && "label" in action) {
+            return (
+              <Button
+                key={action.label}
+                disabled={action.disabled}
+                onClick={action.onClick}
+                size={action.icon ? "icon" : "sm"}
+                variant="secondary"
+                className={cn(
+                  "my-auto",
+                  action.placement === "right" && "ms-auto",
+                  action.placement === "left" && "me-auto"
+                )}
+              >
+                {action.icon ? (
+                  <action.icon className="size-5" />
+                ) : (
+                  <p> {action.label}</p>
+                )}
+              </Button>
+            );
+          }
+          return null;
+        })}
+      </footer>
     </main>
   );
 };
