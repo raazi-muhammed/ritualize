@@ -2,7 +2,6 @@
 
 export const dynamic = "force-static";
 
-import { IoAddCircle as AddIcon } from "react-icons/io5";
 import { UserButton } from "@clerk/nextjs";
 
 import RoutineForm from "./_forms/RoutineForm";
@@ -22,6 +21,7 @@ import {
 } from "@/queries/routine.query";
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
+import { PlusIcon } from "lucide-react";
 
 export default function Home() {
   const { openModal, closeModal } = useModal();
@@ -51,23 +51,11 @@ export default function Home() {
     <PageTemplate
       title="Routines"
       hideBack
-      actions={[
-        {
-          label: "Add",
-          icon: AddIcon,
-          onClick: () => {
-            openModal({
-              title: "Add Routine",
-              content: <RoutineForm onSubmit={onSubmit} />,
-            });
-          },
-        },
-        <UserButton key="user-button" />,
-      ]}
+      actions={[<UserButton key="user-button" />]}
       bottomActions={[
         {
           label: "Add",
-          icon: AddIcon,
+          icon: "Plus",
           onClick: () => {
             openModal({
               title: "Add Routine",

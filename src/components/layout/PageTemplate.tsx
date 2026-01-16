@@ -14,11 +14,12 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { cn } from "@/lib/utils";
+import { Icon, IconName } from "../ui/icon-picker";
 
 type ActionType =
   | {
       label: string;
-      icon?: IconType;
+      icon?: IconName;
       onClick: () => void;
     }
   | ReactNode;
@@ -26,7 +27,7 @@ type ActionType =
 type BottomActionType =
   | {
       label: string;
-      icon?: IconType;
+      icon?: IconName;
       onClick: () => void;
       disabled?: boolean;
       placement?: "left" | "right";
@@ -93,7 +94,7 @@ const PageTemplate = ({
                       className="my-auto"
                     >
                       {action.icon ? (
-                        <action.icon className="size-5" />
+                        <Icon name={action.icon} className="size-5" />
                       ) : (
                         <p> {action.label}</p>
                       )}
@@ -128,7 +129,7 @@ const PageTemplate = ({
                           onClick={action.onClick}
                         >
                           {action.icon && (
-                            <action.icon className="mr-2 size-4" />
+                            <Icon name={action.icon} className="mr-2 size-4" />
                           )}
                           <span>{action.label}</span>
                         </DropdownMenuItem>
@@ -154,7 +155,7 @@ const PageTemplate = ({
                     className="my-auto"
                   >
                     {action.icon ? (
-                      <action.icon className="size-5" />
+                      <Icon name={action.icon} className="size-5" />
                     ) : (
                       <p> {action.label}</p>
                     )}
@@ -192,7 +193,7 @@ const PageTemplate = ({
                 )}
               >
                 {action.icon ? (
-                  <action.icon className="size-5" />
+                  <Icon name={action.icon} className="size-5" />
                 ) : (
                   <p> {action.label}</p>
                 )}

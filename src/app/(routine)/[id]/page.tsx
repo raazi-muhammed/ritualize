@@ -91,7 +91,7 @@ export default function Page({ params }: { params: { id: string } }) {
           ? [
               {
                 label: "Add",
-                icon: IoAddCircle,
+                icon: "Plus",
                 onClick: () => {
                   openModal({
                     title: "Add Task",
@@ -143,7 +143,7 @@ export default function Page({ params }: { params: { id: string } }) {
               },
               {
                 label: "Delete",
-                icon: IoTrash,
+                icon: "Trash",
                 onClick: () => handleDeleteRoutine(routineId),
               },
             ]
