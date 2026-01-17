@@ -51,6 +51,52 @@ function ActionButton({ action }: { action: ActionType }) {
   return null;
 }
 
+const StickyTitle = ({
+  title,
+  triggerRef,
+}: {
+  title: string;
+  triggerRef: React.RefObject<HTMLDivElement>;
+}) => {
+  const [showSmallTitle, setShowSmallTitle] = useState(false);
+
+  useEffect(() => {
+    if (!triggerRef.current) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setShowSmallTitle(!entry.isIntersecting);
+      },
+      {
+        threshold: 0,
+        rootMargin: "-60px 0px 0px 0px",
+      }
+    );
+
+    observer.observe(triggerRef.current);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [triggerRef]);
+
+  return (
+    <div
+      className={cn(
+        "absolute left-1/2 -translate-x-1/2 transition-all duration-300 pointer-events-none will-change-[opacity,transform]",
+        showSmallTitle ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"
+      )}
+    >
+      <h3
+        style={{ fontFamily: "Funnel Display" }}
+        className="font-bold text-lg"
+      >
+        {title}
+      </h3>
+    </div>
+  );
+};
+
 const PageTemplate = ({
   children,
   title,
@@ -73,27 +119,6 @@ const PageTemplate = ({
   const tRouter = useTransitionRouter();
   const isMobile = useIsMobile();
   const titleRef = useRef<HTMLDivElement>(null);
-  const [showSmallTitle, setShowSmallTitle] = useState(false);
-
-  useEffect(() => {
-    if (!titleRef.current) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        setShowSmallTitle(!entry.isIntersecting);
-      },
-      {
-        threshold: 0,
-        rootMargin: "-60px 0px 0px 0px", // Adjust based on header height to trigger slightly before/after
-      }
-    );
-
-    observer.observe(titleRef.current);
-
-    return () => {
-      observer.disconnect();
-    };
-  }, []);
 
   return (
     <main className="px-5 container-xl py-4">
@@ -115,7 +140,7 @@ const PageTemplate = ({
                 tRouter.back();
               }
             }}
-            className="ps-0 pe-12 transition-all" // Added transition-all to ensure smooth layout if needed, though z-index handles overlap
+            className="ps-0 pe-12 transition-all"
             icon="ChevronLeft"
           />
         ) : (
@@ -123,21 +148,7 @@ const PageTemplate = ({
         )}
 
         {/* Small Sticky Title */}
-        <div
-          className={cn(
-            "absolute left-1/2 -translate-x-1/2 transition-all duration-300 pointer-events-none",
-            showSmallTitle
-              ? "opacity-100 translate-y-0"
-              : "opacity-0 translate-y-2"
-          )}
-        >
-          <h3
-            style={{ fontFamily: "Funnel Display" }}
-            className="font-bold text-lg"
-          >
-            {title}
-          </h3>
-        </div>
+        {title && <StickyTitle title={title} triggerRef={titleRef} />}
 
         <div className="flex gap-2 relative z-10">
           {" "}
