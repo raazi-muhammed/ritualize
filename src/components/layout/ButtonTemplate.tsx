@@ -8,16 +8,23 @@ interface ActionType {
   onClick: () => void;
   disabled?: boolean;
   className?: string;
+  variant?: "default" | "secondary" | "destructive" | "secondaryNoOutline";
 }
 
-function ButtonTemplate({ label, icon, onClick, disabled }: ActionType) {
+function ButtonTemplate({
+  label,
+  icon,
+  onClick,
+  disabled,
+  variant,
+}: ActionType) {
   return (
     <Button
       key={label}
       disabled={disabled}
       onClick={onClick}
       size={icon && !label ? "icon" : "default"}
-      variant="secondary"
+      variant={variant || "secondary"}
       className={cn("my-auto gap-2", icon && label && "ps-3")}
     >
       {icon && <Icon name={icon} className="size-5" />}{" "}

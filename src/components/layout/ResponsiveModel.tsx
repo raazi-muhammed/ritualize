@@ -3,6 +3,7 @@
 import React, { ReactNode } from "react";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogHeader,
   DialogTrigger,
@@ -10,11 +11,14 @@ import {
 import { useMediaQuery } from "@/hooks/use-media-query";
 import {
   Drawer,
+  DrawerClose,
   DrawerContent,
   DrawerHeader,
   DrawerTrigger,
 } from "@/components/ui/drawer";
 import Heading from "./Heading";
+import { X } from "lucide-react";
+import ButtonTemplate from "./ButtonTemplate";
 
 const ResponsiveModel = ({
   children,
@@ -38,10 +42,17 @@ const ResponsiveModel = ({
           onInteractOutside={(e) => {
             e.preventDefault();
           }}
-          className="max-h-[calc(100vh-10rem)] overflow-auto sm:rounded-5xl bg-popover border-none shadow-sm"
+          className="max-h-[calc(100vh-10rem)] overflow-auto sm:rounded-5xl bg-popover border-none shadow-sm p-3 pt-1"
         >
-          <DialogHeader>
-            <Heading className="text-2xl">{title}</Heading>
+          <DialogHeader className="flex flex-row justify-between items-center">
+            <Heading className="text-2xl mt-2 ms-3">{title}</Heading>
+            <DialogClose className="mb-auto mt-0">
+              <ButtonTemplate
+                icon="X"
+                onClick={() => {}}
+                variant="secondaryNoOutline"
+              />
+            </DialogClose>
           </DialogHeader>
           {content}
         </DialogContent>
@@ -50,9 +61,16 @@ const ResponsiveModel = ({
     );
   return (
     <Drawer open={open} onOpenChange={setOpen} preventScrollRestoration fixed>
-      <DrawerContent className="h-[90vh] px-4 sm:px-12 rounded-4xl bg-popover border-none">
-        <DrawerHeader className="px-0 py-2">
-          <Heading className="text-base font-normal">{title}</Heading>
+      <DrawerContent className="h-[95vh] px-4 sm:px-12 rounded-4xl bg-popover border-none">
+        <DrawerHeader className="px-0 py-2 flex flex-row justify-between items-center">
+          <Heading className="text-2xl text-start ms-3">{title}</Heading>
+          <DrawerClose>
+            <ButtonTemplate
+              icon="X"
+              onClick={() => {}}
+              variant="secondaryNoOutline"
+            />
+          </DrawerClose>
         </DrawerHeader>
         <div className="h-[calc(100vh-4rem)] overflow-auto pb-12">
           {content}
