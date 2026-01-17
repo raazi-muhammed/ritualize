@@ -47,8 +47,6 @@ export default function Home() {
             },
           }}
         />,
-      ]}
-      bottomActions={[
         {
           label: "Export",
           icon: "Download",
@@ -68,6 +66,8 @@ export default function Home() {
           },
           placement: "left",
         },
+      ]}
+      bottomActions={[
         {
           label: "Add",
           icon: "Plus",

@@ -15,6 +15,7 @@ import { useCreateRoutine } from "@/queries/routine.query";
 import { routineSchema } from "@/app/(routine)/_forms/schema";
 import { z } from "zod";
 import dynamic from "next/dynamic";
+import ImportRoutineForm from "@/app/(routine)/_forms/ImportRoutineForm";
 
 const RoutineForm = dynamic(
   () => import("@/app/(routine)/_forms/RoutineForm"),
@@ -47,6 +48,25 @@ const DesktopPageTemplate = ({ children }: { children: React.ReactNode }) => {
                   },
                 }}
               />,
+              {
+                label: "Export",
+                icon: "Download",
+                onClick: () => {
+                  window.location.href = `/api/export`;
+                },
+                placement: "left",
+              },
+              {
+                label: "Import",
+                icon: "Upload",
+                onClick: () => {
+                  openModal({
+                    title: "Import Routine",
+                    content: <ImportRoutineForm onSubmit={closeModal} />,
+                  });
+                },
+                placement: "left",
+              },
             ]}
             bottomActions={[
               {
