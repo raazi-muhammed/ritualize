@@ -3,7 +3,7 @@
 import Heading from "@/components/layout/Heading";
 import { useStopwatch } from "@/hooks/stop-watch";
 import { CompletionStatus, TaskType } from "@prisma/client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, ReactNode } from "react";
 import { motion } from "motion/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { RoutineWithTasks, TaskWithStatus } from "@/types/entities";
@@ -27,6 +27,61 @@ import { useTransitionRouter } from "next-view-transitions";
 import { pageSlideBackAnimation } from "@/lib/animations";
 import { IconName } from "@/components/ui/icon-picker";
 import { EmptyTemplate } from "@/components/layout/EmptyTemplate";
+
+function SegmentedCircularProgress({
+  total,
+  current,
+}: {
+  total: number;
+  current: number;
+}) {
+  const radius = 18;
+  const stroke = 18;
+  const normalizedRadius = radius - stroke / 2;
+  const circumference = normalizedRadius * 2 * Math.PI;
+  const gap = 0;
+  const segmentLength = (circumference - total * gap) / total;
+
+  const safeSegmentLength = Math.max(segmentLength, 0);
+  const safeGap = segmentLength > 0 ? gap : 0;
+
+  const activeDashArray =
+    Array.from({ length: current })
+      .map(() => `${safeSegmentLength} ${safeGap}`)
+      .join(" ") + ` 0 ${circumference}`;
+
+  return (
+    <div className="relative flex items-center justify-center outline rounded-full outline-1 outline-secondary-border">
+      <svg
+        height={radius * 2}
+        width={radius * 2}
+        className="-rotate-90 transform"
+      >
+        <circle
+          stroke="currentColor"
+          strokeWidth={stroke}
+          fill="transparent"
+          r={normalizedRadius}
+          cx={radius}
+          cy={radius}
+          strokeDasharray={`${safeSegmentLength} ${safeGap}`}
+          className="text-secondary"
+        />
+        <circle
+          stroke="currentColor"
+          strokeWidth={stroke}
+          fill="transparent"
+          r={normalizedRadius}
+          cx={radius}
+          cy={radius}
+          strokeDasharray={activeDashArray}
+          strokeLinecap="butt"
+          className="text-primary transition-all duration-300"
+        />
+      </svg>
+    </div>
+  );
+}
 
 function StartComponent({
   routine,
@@ -129,6 +184,15 @@ function StartComponent({
   return (
     <PageTemplate
       title={routine?.name || "Routine"}
+      actions={[
+        <div className="w-fit flex items-center gap-2" key="progress">
+          <small className="text-base">{time}</small>
+          <SegmentedCircularProgress
+            total={routine?.tasks.length || 0}
+            current={currentTaskIndex}
+          />
+        </div>,
+      ]}
       bottomActions={
         !showUncheckAll
           ? [
@@ -198,19 +262,6 @@ function StartComponent({
         />
       ) : (
         <>
-          <header className="sticky top-16 border">
-            <small className="my-auto font-mono">{time}</small>
-            <section className="flex gap-1">
-              {routine?.tasks.map((_, index) => (
-                <div
-                  key={index}
-                  className={`h-1 w-full rounded bg-white ${
-                    index >= currentTaskIndex ? "opacity-50" : "opacity-100"
-                  }`}
-                ></div>
-              ))}
-            </section>
-          </header>
           <section className="grid z-0">
             <div className="h-[30vh]" />
             {routine?.tasks.map((task, index) => (
