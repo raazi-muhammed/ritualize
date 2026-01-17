@@ -160,3 +160,24 @@ export const useCreateTask = (
     },
   });
 };
+
+export const useImportRoutine = (
+  options?: UseMutationOptions<RoutineWithTasks, Error, FormData>
+) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (formData) => {
+      const response = await fetch("/api/routines/import", {
+        method: "POST",
+        body: formData,
+      });
+      if (!response.ok) throw new Error("Failed to import routine");
+      return (await response.json()) as RoutineWithTasks;
+    },
+    ...options,
+    onSuccess: (...args) => {
+      queryClient.invalidateQueries({ queryKey: routineKeys.all });
+      options?.onSuccess?.(...args);
+    },
+  });
+};

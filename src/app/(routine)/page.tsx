@@ -4,6 +4,7 @@ export const dynamic = "force-static";
 
 import { UserButton } from "@clerk/nextjs";
 import RoutineForm from "./_forms/RoutineForm";
+import ImportRoutineForm from "./_forms/ImportRoutineForm";
 import { routineSchema } from "./_forms/schema";
 import { z } from "zod";
 import { useModal } from "@/providers/ModelProvider";
@@ -48,6 +49,25 @@ export default function Home() {
         />,
       ]}
       bottomActions={[
+        {
+          label: "Export",
+          icon: "Download",
+          onClick: () => {
+            window.location.href = `/api/export`;
+          },
+          placement: "left",
+        },
+        {
+          label: "Import",
+          icon: "Upload",
+          onClick: () => {
+            openModal({
+              title: "Import Routine",
+              content: <ImportRoutineForm onSubmit={closeModal} />,
+            });
+          },
+          placement: "left",
+        },
         {
           label: "Add",
           icon: "Plus",
