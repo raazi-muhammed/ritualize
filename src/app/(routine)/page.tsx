@@ -37,7 +37,16 @@ export default function Home() {
     <PageTemplate
       title="Routines"
       hideBack
-      actions={[<UserButton key="user-button" />]}
+      actions={[
+        <UserButton
+          key="user-button"
+          appearance={{
+            elements: {
+              userButtonAvatarBox: "h-9 w-9",
+            },
+          }}
+        />,
+      ]}
       bottomActions={[
         {
           label: "Add",

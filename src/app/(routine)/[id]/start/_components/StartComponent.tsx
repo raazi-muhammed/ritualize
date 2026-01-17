@@ -198,7 +198,7 @@ function StartComponent({
         />
       ) : (
         <>
-          <header>
+          <header className="sticky top-16 border">
             <small className="my-auto font-mono">{time}</small>
             <section className="flex gap-1">
               {routine?.tasks.map((_, index) => (

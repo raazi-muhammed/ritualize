@@ -38,7 +38,16 @@ const DesktopPageTemplate = ({ children }: { children: React.ReactNode }) => {
           <PageTemplate
             hideBack
             isOnSidebar
-            actions={[<UserButton key="user-button" />]}
+            actions={[
+              <UserButton
+                key="user-button"
+                appearance={{
+                  elements: {
+                    userButtonAvatarBox: "h-8 w-8",
+                  },
+                }}
+              />,
+            ]}
             bottomActions={[
               {
                 label: "Add",
