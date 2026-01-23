@@ -4,11 +4,15 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:convex": "npx convex dev",
     "build": "next build",
+    "build:prod": "next build",
     "start": "next start",
     "lint": "next lint",
     "prettier": "prettier --write .",
-    "analyze": "cross-env ANALYZE=true next build"
+    "analyze": "cross-env ANALYZE=true next build",
+    "deploy:convex": "CONVEX_DEPLOYMENT=prod:rugged-skunk-771 npx convex deploy",
+    "deploy:convex:dev": "npx convex deploy"
   },
   "dependencies": {
     "@convex-dev/auth": "^0.0.90",
