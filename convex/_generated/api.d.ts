@@ -9,7 +9,10 @@
  */
 
 import type * as auth from "../auth.js";
+import type * as completions from "../completions.js";
 import type * as http from "../http.js";
+import type * as routines from "../routines.js";
+import type * as tasks from "../tasks.js";
 
 import type {
   ApiFromModules,
@@ -19,7 +22,10 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   auth: typeof auth;
+  completions: typeof completions;
   http: typeof http;
+  routines: typeof routines;
+  tasks: typeof tasks;
 }>;
 
 /**

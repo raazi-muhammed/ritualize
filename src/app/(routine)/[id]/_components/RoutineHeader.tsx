@@ -21,8 +21,12 @@ import {
 } from "@/components/ui/alert-dialog";
 import { ChevronLeft, CircleEllipsis } from "lucide-react";
 import { IoAddCircle as AddIcon } from "react-icons/io5";
-import { Routine, Task } from "@prisma/client";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  useCreateTask,
+  useDeleteRoutine,
+  useUncheckAllTasks,
+  useUpdateRoutine,
+} from "@/queries/routine.query";
 import { toast } from "@/components/ui/use-toast";
 import TaskForm, {
   DEFAULT_TASK_VALUES,
@@ -35,8 +39,7 @@ import { useRouter } from "next/navigation";
 import { useModal } from "@/providers/ModelProvider";
 import AllTasks from "./AllTasks";
 import { formatDateForInput } from "@/lib/format";
-import { RoutineWithTasks, TaskWithStatus } from "@/types/entities";
-// import { useStore } from "@/stores"; // Removed
+import { RoutineWithTasks } from "@/types/entities";
 import { useTransitionRouter } from "next-view-transitions";
 import { pageSlideBackAnimation } from "@/lib/animations";
 
@@ -47,52 +50,19 @@ const RoutineHeader = ({
   date: Date;
   routine: RoutineWithTasks;
 }) => {
-  const queryClient = useQueryClient();
   const router = useRouter();
   const tRouter = useTransitionRouter();
   const { openModal, closeModal } = useModal();
-  // const { selectedDate } = useStore(); // Not needed if passed as prop
 
-  const { mutateAsync: addTaskToRoutine } = useMutation({
-    mutationFn: async (task: Omit<Task, "id" | "order" | "routine_id">) => {
-      const response = await fetch(`/api/routines/${routine.id}/tasks`, {
-        method: "POST",
-        body: JSON.stringify(task),
-      });
-      if (!response.ok) throw new Error("Failed to add task to routine");
-      return (await response.json()) as TaskWithStatus;
-    },
+  const { mutateAsync: addTaskToRoutine } = useCreateTask(routine._id);
+  const { mutateAsync: updateRoutine } = useUpdateRoutine(routine._id);
+  const { mutateAsync: uncheckAllTasks } = useUncheckAllTasks(routine._id);
+  const { mutateAsync: deleteRoutine } = useDeleteRoutine({
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["routines"] });
-      queryClient.invalidateQueries({ queryKey: ["routine", routine.id] });
-    },
-  });
-
-  const { mutateAsync: updateRoutine } = useMutation({
-    mutationFn: async (values: Partial<Omit<Routine, "id" | "user_id">>) => {
-      const response = await fetch(`/api/routines/${routine.id}`, {
-        method: "PUT",
-        body: JSON.stringify(values),
+      toast({
+        description: `${routine?.name ?? "Routine"} deleted`,
       });
-      if (!response.ok) throw new Error("Failed to update routine");
-      return (await response.json()) as RoutineWithTasks;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["routines"] });
-      queryClient.invalidateQueries({ queryKey: ["routine", routine.id] });
-    },
-  });
-
-  const { mutateAsync: uncheckAllTasks } = useMutation({
-    mutationFn: async () => {
-      const response = await fetch(`/api/routines/${routine.id}/tasks`, {
-        method: "DELETE",
-      });
-      if (!response.ok) throw new Error("Failed to uncheck all tasks");
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["routines"] });
-      queryClient.invalidateQueries({ queryKey: ["routine", routine.id] });
+      router.push("/");
     },
   });
 
@@ -101,31 +71,9 @@ const RoutineHeader = ({
     addTaskToRoutine({
       name: values.name,
       duration: values.duration,
-
-      start_date: new Date(values.startDate),
-      end_date: null,
       type: values.type,
     });
   }
-
-  const { mutateAsync: handleDeleteRoutine } = useMutation({
-    mutationFn: async () => {
-      const response = await fetch(`/api/routines/${routine.id}`, {
-        method: "DELETE",
-      });
-      if (!response.ok) throw new Error("Failed to delete routine");
-    },
-    onSuccess: () => {
-      toast({
-        description: `${routine?.name ?? "Routine"} deleted`,
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["routines"],
-      });
-      queryClient.invalidateQueries({ queryKey: ["routine", routine.id] });
-      router.push("/");
-    },
-  });
 
   function handleEditRoutineSubmit(values: z.infer<typeof routineSchema>) {
     closeModal();
@@ -196,7 +144,7 @@ const RoutineHeader = ({
                           name: routine.name,
                           icon: routine.icon || "List",
                           duration: routine.duration || undefined,
-                          is_favorite: routine.is_favorite,
+                          isFavorite: routine.isFavorite,
                         }}
                       />
                     ),
@@ -229,7 +177,7 @@ const RoutineHeader = ({
               <AlertDialogCancel>Cancel</AlertDialogCancel>
               <AlertDialogAction
                 onClick={() => {
-                  handleDeleteRoutine();
+                  deleteRoutine(routine._id);
                 }}
               >
                 Continue

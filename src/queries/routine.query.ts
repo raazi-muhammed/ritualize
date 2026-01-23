@@ -1,183 +1,216 @@
+import { useMutation, useQuery } from "convex/react";
+import { api } from "../../convex/_generated/api";
+import { Id, Doc } from "../../convex/_generated/dataModel";
 import {
-  useMutation,
-  useQuery,
-  useQueryClient,
-  UseMutationOptions,
-} from "@tanstack/react-query";
-import { RoutineWithTasks, TaskWithStatus } from "@/types/entities";
-import { Routine, Task } from "@prisma/client";
+  RoutineWithTasks,
+  TaskWithStatus,
+  Routine,
+  Task,
+  CompletionStatus,
+} from "@/types/entities";
 import { formatDateForInput } from "@/lib/format";
 
-export const routineKeys = {
-  all: ["routines"] as const,
-  lists: () => [...routineKeys.all, "list"] as const,
-  details: () => [...routineKeys.all, "detail"] as const,
-  detail: (id: string, date: Date) =>
-    [...routineKeys.details(), id, formatDateForInput(date)] as const,
-};
-
 export const useGetRoutines = () => {
-  return useQuery({
-    queryKey: routineKeys.lists(),
-    queryFn: async () => {
-      const response = await fetch(`/api/routines`);
-      if (!response.ok) throw new Error("Failed to fetch routines");
-      return (await response.json()) as RoutineWithTasks[];
-    },
-  });
+  const data = useQuery(api.routines.getMany);
+  return {
+    data: data as RoutineWithTasks[] | undefined,
+    isLoading: data === undefined,
+  };
 };
 
-export const getRoutine = async (id: string, date: Date) => {
-  const response = await fetch(
-    `/api/routines/${id}?date=${
-      date ? date.toISOString() : new Date().toISOString()
-    }`
-  );
-  if (!response.ok) throw new Error("Failed to fetch routine");
-  return (await response.json()) as RoutineWithTasks;
+export const useGetTask = (id: string) => {
+  const data = useQuery(api.tasks.getWithCompletions, {
+    id: id as Id<"tasks">,
+  });
+  return {
+    data: data as
+      | (Task & { completions: Doc<"taskCompletions">[] })
+      | null
+      | undefined,
+    isLoading: data === undefined,
+  };
 };
 
 export const useGetRoutine = (id: string, date?: Date) => {
-  return useQuery({
-    queryKey: routineKeys.detail(id, date || new Date()),
-    queryFn: () => getRoutine(id, date || new Date()),
-    enabled: !!id,
+  const data = useQuery(api.routines.get, {
+    id: id as Id<"routines">,
+    date: formatDateForInput(date || new Date()),
   });
+  return {
+    data: data as RoutineWithTasks | null | undefined,
+    isLoading: data === undefined,
+  };
 };
 
-export const useCreateRoutine = (
-  options?: UseMutationOptions<
-    RoutineWithTasks,
-    Error,
-    Omit<Routine, "id" | "user_id">
-  >
-) => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: async (routine) => {
-      const response = await fetch("/api/routines", {
-        method: "POST",
-        body: JSON.stringify(routine),
-      });
-      if (!response.ok) throw new Error("Failed to create routine");
-      return (await response.json()) as RoutineWithTasks;
-    },
-    ...options,
-    onSuccess: (...args) => {
-      queryClient.invalidateQueries({ queryKey: routineKeys.all });
-      options?.onSuccess?.(...args);
-    },
-  });
+export const useCreateRoutine = (options?: {
+  onSuccess?: (id: string) => void;
+}) => {
+  const createRoutine = useMutation(api.routines.create);
+
+  const mutate = async (
+    routine: Omit<Routine, "_id" | "_creationTime" | "userId">,
+  ) => {
+    const id = await createRoutine({
+      name: routine.name,
+      icon: routine.icon,
+      isFavorite: routine.isFavorite,
+    });
+    options?.onSuccess?.(id);
+    return id;
+  };
+
+  return { mutate, mutateAsync: mutate };
 };
 
 export const useUpdateRoutine = (
   id: string,
-  options?: UseMutationOptions<
-    RoutineWithTasks,
-    Error,
-    Partial<Omit<Routine, "id" | "user_id">>
-  >
+  options?: { onSuccess?: () => void },
 ) => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: async (routine) => {
-      const response = await fetch(`/api/routines/${id}`, {
-        method: "PUT",
-        body: JSON.stringify(routine),
-      });
-      if (!response.ok) throw new Error("Failed to update routine");
-      return (await response.json()) as RoutineWithTasks;
-    },
-    ...options,
-    onSuccess: (...args) => {
-      queryClient.invalidateQueries({ queryKey: routineKeys.all });
-      options?.onSuccess?.(...args);
-    },
-  });
+  const updateRoutine = useMutation(api.routines.update);
+
+  const mutate = async (
+    routine: Partial<Omit<Routine, "_id" | "_creationTime" | "userId">>,
+  ) => {
+    await updateRoutine({
+      id: id as Id<"routines">,
+      ...routine,
+    });
+    options?.onSuccess?.();
+  };
+
+  return { mutate, mutateAsync: mutate };
 };
 
-export const useDeleteRoutine = (
-  options?: UseMutationOptions<void, Error, string>
-) => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: async (id) => {
-      const response = await fetch(`/api/routines/${id}`, {
-        method: "DELETE",
-      });
-      if (!response.ok) throw new Error("Failed to delete routine");
-    },
-    ...options,
-    onSuccess: (...args) => {
-      queryClient.invalidateQueries({ queryKey: routineKeys.all });
-      options?.onSuccess?.(...args);
-    },
-  });
+export const useDeleteRoutine = (options?: { onSuccess?: () => void }) => {
+  const deleteRoutine = useMutation(api.routines.remove);
+
+  const mutate = async (id: string) => {
+    await deleteRoutine({ id: id as Id<"routines"> });
+    options?.onSuccess?.();
+  };
+
+  return { mutate, mutateAsync: mutate };
 };
 
 export const useUncheckAllTasks = (
   id: string,
-  options?: UseMutationOptions<void, Error, void>
+  options?: { onSuccess?: () => void },
 ) => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: async () => {
-      const response = await fetch(`/api/routines/${id}/tasks`, {
-        method: "DELETE",
-      });
-      if (!response.ok) throw new Error("Failed to uncheck all tasks");
-    },
-    ...options,
-    onSuccess: (...args) => {
-      queryClient.invalidateQueries({ queryKey: routineKeys.all });
-      options?.onSuccess?.(...args);
-    },
-  });
+  const removeCompletions = useMutation(api.completions.removeAllForRoutine);
+
+  const mutate = async () => {
+    await removeCompletions({ routineId: id as Id<"routines"> });
+    options?.onSuccess?.();
+  };
+
+  return { mutate, mutateAsync: mutate };
 };
 
 export const useCreateTask = (
   routineId: string,
-  options?: UseMutationOptions<
-    TaskWithStatus,
-    Error,
-    Omit<Task, "id" | "order" | "routine_id">
-  >
+  options?: { onSuccess?: (id: string) => void },
 ) => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: async (task) => {
-      const response = await fetch(`/api/routines/${routineId}/tasks`, {
-        method: "POST",
-        body: JSON.stringify(task),
-      });
-      if (!response.ok) throw new Error("Failed to add task to routine");
-      return (await response.json()) as TaskWithStatus;
-    },
-    ...options,
-    onSuccess: (...args) => {
-      queryClient.invalidateQueries({ queryKey: routineKeys.all });
-      options?.onSuccess?.(...args);
-    },
-  });
+  const createTask = useMutation(api.tasks.create);
+
+  const mutate = async (
+    task: Omit<
+      Task,
+      "_id" | "_creationTime" | "order" | "routineId" | "startDate" | "endDate"
+    >,
+  ) => {
+    const id = await createTask({
+      routineId: routineId as Id<"routines">,
+      name: task.name,
+      duration: task.duration,
+      type: task.type,
+    });
+    options?.onSuccess?.(id);
+    return id;
+  };
+
+  return { mutate, mutateAsync: mutate };
 };
 
-export const useImportRoutine = (
-  options?: UseMutationOptions<RoutineWithTasks, Error, FormData>
+export const useUpdateTask = (
+  id: string,
+  options?: { onSuccess?: () => void },
 ) => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: async (formData) => {
-      const response = await fetch("/api/routines/import", {
-        method: "POST",
-        body: formData,
-      });
-      if (!response.ok) throw new Error("Failed to import routine");
-      return (await response.json()) as RoutineWithTasks;
+  const updateTask = useMutation(api.tasks.update);
+
+  const mutate = async (
+    task: Partial<Omit<Task, "_id" | "_creationTime" | "routineId">>,
+  ) => {
+    await updateTask({
+      id: id as Id<"tasks">,
+      ...task,
+    });
+    options?.onSuccess?.();
+  };
+
+  return { mutate, mutateAsync: mutate };
+};
+
+export const useUpdateTaskStatus = (options?: { onSuccess?: () => void }) => {
+  const toggleCompletion = useMutation(api.completions.toggle);
+
+  const mutate = async (
+    taskId: string,
+    status: CompletionStatus,
+    date: Date,
+  ) => {
+    await toggleCompletion({
+      taskId: taskId as Id<"tasks">,
+      date: formatDateForInput(date),
+      status,
+    });
+    options?.onSuccess?.();
+  };
+
+  return { mutate, mutateAsync: mutate };
+};
+
+export const useDeleteCompletion = (options?: { onSuccess?: () => void }) => {
+  const deleteCompletion = useMutation(api.completions.remove);
+
+  const mutate = async (id: string) => {
+    await deleteCompletion({ id: id as Id<"taskCompletions"> });
+    options?.onSuccess?.();
+  };
+
+  return { mutate, mutateAsync: mutate };
+};
+
+export const useDeleteTask = (options?: { onSuccess?: () => void }) => {
+  const deleteTask = useMutation(api.tasks.remove);
+
+  const mutate = async (id: string) => {
+    await deleteTask({ id: id as Id<"tasks"> });
+    options?.onSuccess?.();
+  };
+
+  return { mutate, mutateAsync: mutate };
+};
+
+export const useReorderTasks = (options?: { onSuccess?: () => void }) => {
+  const reorder = useMutation(api.tasks.reorder);
+
+  const mutate = async (taskIds: string[]) => {
+    await reorder({ taskIds: taskIds as Id<"tasks">[] });
+    options?.onSuccess?.();
+  };
+
+  return { mutate, mutateAsync: mutate };
+};
+
+// TODO: useImportRoutine migration would require a custom Convex action for handling FormData
+// For now, let's keep it commented out or as a placeholder
+export const useImportRoutine = (options?: { onSuccess?: () => void }) => {
+  return {
+    mutate: async (formData: FormData) => {
+      console.warn("Import Routine migration pending (requires Convex Action)");
     },
-    ...options,
-    onSuccess: (...args) => {
-      queryClient.invalidateQueries({ queryKey: routineKeys.all });
-      options?.onSuccess?.(...args);
+    mutateAsync: async (formData: FormData) => {
+      console.warn("Import Routine migration pending (requires Convex Action)");
     },
-  });
+  };
 };

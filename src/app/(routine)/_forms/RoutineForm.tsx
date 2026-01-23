@@ -22,7 +22,7 @@ function RoutineForm({
     name: "",
     duration: 2,
 
-    is_favorite: false,
+    isFavorite: false,
     icon: "List",
   },
 }: {
@@ -79,7 +79,7 @@ function RoutineForm({
         </FormGroup>
         <FormField
           control={form.control}
-          name="is_favorite"
+          name="isFavorite"
           render={({ field }) => (
             <FormInput label="Favorite" checkBox>
               <Switch

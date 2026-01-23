@@ -2,16 +2,23 @@
 
 import Heading from "@/components/layout/Heading";
 import { useStopwatch } from "@/hooks/stop-watch";
-import { CompletionStatus, TaskType } from "@prisma/client";
 import { useEffect, useState, ReactNode } from "react";
 import { motion } from "motion/react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { RoutineWithTasks, TaskWithStatus } from "@/types/entities";
+import {
+  RoutineWithTasks,
+  TaskWithStatus,
+  CompletionStatus,
+  TaskType,
+} from "@/types/entities";
 import PageTemplate from "@/components/layout/PageTemplate";
+import {
+  useUncheckAllTasks,
+  useUpdateTaskStatus,
+} from "@/queries/routine.query";
 
 function getStartFrom(
   tasks: TaskWithStatus[] | undefined,
-  startFrom?: number
+  startFrom?: number,
 ): number | null {
   if (!tasks) return null;
 
@@ -91,62 +98,21 @@ function StartComponent({
   date: Date;
 }) {
   const { time, reset } = useStopwatch();
-  const queryClient = useQueryClient();
   const router = useTransitionRouter();
 
   const handleBack = () => {
-    router.push(`/${routine.id}`, {
+    router.push(`/${routine._id}`, {
       onTransitionReady: pageSlideBackAnimation,
     });
   };
 
-  const { mutateAsync: updateTaskStatus } = useMutation({
-    mutationFn: async ({
-      taskId,
-      status,
-    }: {
-      taskId: string;
-      status: CompletionStatus;
-    }) => {
-      const response = await fetch(
-        `/api/routines/${routine.id}/tasks/${taskId}`,
-        {
-          method: "PATCH",
-          body: JSON.stringify({
-            status,
-            date: date,
-          }),
-        }
-      );
-      if (!response.ok) throw new Error("Failed to update task status");
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["routine", routine.id],
-      });
-      queryClient.invalidateQueries({ queryKey: ["routines"] });
-    },
-  });
-
-  const { mutateAsync: uncheckAllTasks } = useMutation({
-    mutationFn: async () => {
-      const response = await fetch(`/api/routines/${routine.id}/tasks`, {
-        method: "DELETE",
-      });
-      if (!response.ok) throw new Error("Failed to uncheck all tasks");
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["routine", routine.id],
-      });
-      queryClient.invalidateQueries({ queryKey: ["routines"] });
-    },
-  });
+  const { mutateAsync: uncheckAllTasks } = useUncheckAllTasks(routine._id);
+  const { mutateAsync: updateTaskStatus } = useUpdateTaskStatus();
 
   const startFrom = getStartFrom(routine?.tasks);
 
   const [currentTaskIndex, setCurrentTaskIndex] = useState<number>(
-    startFrom || 0
+    startFrom || 0,
   );
 
   useEffect(() => {
@@ -158,22 +124,23 @@ function StartComponent({
   }, [currentTaskIndex]);
 
   async function completedTask() {
-    await updateTaskStatus({
-      taskId: routine?.tasks[currentTaskIndex].id,
-      status: CompletionStatus.completed,
-    });
-    // Invalidation in onSuccess
+    await updateTaskStatus(
+      routine?.tasks[currentTaskIndex]._id,
+      CompletionStatus.completed,
+      date,
+    );
   }
 
   async function skipTask() {
-    await updateTaskStatus({
-      taskId: routine?.tasks[currentTaskIndex].id,
-      status: CompletionStatus.skipped,
-    });
+    await updateTaskStatus(
+      routine?.tasks[currentTaskIndex]._id,
+      CompletionStatus.skipped,
+      date,
+    );
   }
 
   function moveToNextPossibleTask() {
-    setCurrentTaskIndex((cti) => {
+    setCurrentTaskIndex((cti: number) => {
       const startFrom = getStartFrom(routine?.tasks, cti + 1);
       if (startFrom === null) handleBack();
       return startFrom || 0;
@@ -202,7 +169,7 @@ function StartComponent({
                 icon: "ChevronLeft",
                 disabled: currentTaskIndex <= 0,
                 onClick: () => {
-                  setCurrentTaskIndex((cti) => --cti);
+                  setCurrentTaskIndex((cti: number) => --cti);
                   reset();
                 },
               },
@@ -266,7 +233,7 @@ function StartComponent({
             <div className="h-[30vh]" />
             {routine?.tasks.map((task, index) => (
               <motion.div
-                key={task.id}
+                key={task._id}
                 className="scroll-mt-[20vh]"
                 id={
                   currentTaskIndex == index ? "active-task" : "in-active-task"

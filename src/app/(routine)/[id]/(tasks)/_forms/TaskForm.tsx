@@ -1,6 +1,6 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { TaskType } from "@prisma/client";
+import { TaskType } from "@/types/entities";
 import { DefaultValues, useForm } from "react-hook-form";
 import { z } from "zod";
 import FormInput from "@/components/form/FormInput";
@@ -38,7 +38,7 @@ export const taskSchema = z.object({
   duration: z.number().min(1),
   createNew: z.boolean().optional().default(false),
   startDate: z.string(),
-  type: z.nativeEnum(TaskType),
+  type: z.enum(["task", "checkpoint"]),
 });
 
 function TaskForm({
@@ -121,7 +121,7 @@ function TaskForm({
                       variant={"outline"}
                       className={cn(
                         "w-fit h-12 rounded-sm justify-start text-left font-normal bg-input-background border-none hover:bg-input-background",
-                        !field.value && "text-muted-foreground"
+                        !field.value && "text-muted-foreground",
                       )}
                     >
                       <CalendarIcon className="mr-2 h-4 w-4" />

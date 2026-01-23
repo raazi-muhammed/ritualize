@@ -1,7 +1,7 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { formatDate } from "./format";
-import { Task } from "@prisma/client";
+import { Task } from "@/types/entities";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -31,5 +31,5 @@ type Options = {
 };
 
 export const generateCardDescription = (task: Task, options: Options) => {
-  return `${options?.showStartDate ? `from ${formatDate(task.start_date)}` : ""}`;
+  return `${options?.showStartDate ? `from ${formatDate(new Date(task.startDate))}` : ""}`;
 };

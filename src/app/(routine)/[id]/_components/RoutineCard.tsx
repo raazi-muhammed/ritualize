@@ -4,7 +4,7 @@ import {
   pageSlideAnimation,
   PRESSABLE_ANIMATION_CLASSES,
 } from "@/lib/animations";
-import { Routine } from "@prisma/client";
+import { Routine } from "@/types/entities";
 import { Heart } from "lucide-react";
 import { useTransitionRouter } from "next-view-transitions";
 import Link from "next/link";
@@ -20,17 +20,20 @@ const RoutineCard = ({
 
   return (
     <Link
-      href={`/${routine.id}?name=${encodeURIComponent(routine.name)}`}
+      href={`/${routine._id}?name=${encodeURIComponent(routine.name)}`}
       onClick={(e) => {
         e.preventDefault();
-        router.push(`/${routine.id}?name=${encodeURIComponent(routine.name)}`, {
-          onTransitionReady: pageSlideAnimation,
-        });
+        router.push(
+          `/${routine._id}?name=${encodeURIComponent(routine.name)}`,
+          {
+            onTransitionReady: pageSlideAnimation,
+          },
+        );
       }}
     >
       <Card
         className={`${PRESSABLE_ANIMATION_CLASSES} relative -z-0 overflow-hidden p-2 transition-transform active:scale-90 duration-200 ease-in-out ${
-          routine?.id ?? "opacity-50 pointer-events-none"
+          routine?._id ?? "opacity-50 pointer-events-none"
         }`}
       >
         <CardHeader className="z-10 p-2 flex justify-between flex-row">
@@ -56,7 +59,7 @@ const RoutineCard = ({
             </div>
           </div>
 
-          {routine.is_favorite ? (
+          {routine.isFavorite ? (
             <Heart className="fill-primary text-primary" size={18} />
           ) : (
             <Heart className="text-secondary" size={18} />

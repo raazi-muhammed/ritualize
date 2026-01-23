@@ -2,7 +2,6 @@ import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
-import ReactQueryProvider from "@/providers/ReactQueryProvider";
 import { Toaster } from "@/components/ui/toaster";
 import { ConvexAuthNextjsServerProvider } from "@convex-dev/auth/nextjs/server";
 import ConvexClientProvider from "@/providers/ConvexClientProvider";
@@ -55,20 +54,18 @@ export default function RootLayout({
           </head>
           <body className={inter.className}>
             <ConvexClientProvider>
-              <ReactQueryProvider>
-                <ThemeProvider
-                  attribute="class"
-                  forcedTheme="dark"
-                  defaultTheme="dark"
-                >
-                  <AlertProvider>
-                    <ModalProvider>
-                      <AuthWrapper model={model}>{children}</AuthWrapper>
-                      <Toaster />
-                    </ModalProvider>
-                  </AlertProvider>
-                </ThemeProvider>
-              </ReactQueryProvider>
+              <ThemeProvider
+                attribute="class"
+                forcedTheme="dark"
+                defaultTheme="dark"
+              >
+                <AlertProvider>
+                  <ModalProvider>
+                    <AuthWrapper model={model}>{children}</AuthWrapper>
+                    <Toaster />
+                  </ModalProvider>
+                </AlertProvider>
+              </ThemeProvider>
             </ConvexClientProvider>
           </body>
         </html>

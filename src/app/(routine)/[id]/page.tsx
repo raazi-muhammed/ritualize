@@ -45,7 +45,7 @@ export default function Page({ params }: { params: { id: string } }) {
 
   const { data: routine, isLoading } = useGetRoutine(
     routineId,
-    selectedDate || undefined
+    selectedDate || undefined,
   );
 
   const { mutateAsync: uncheckAllTasks } = useUncheckAllTasks(routineId);
@@ -57,9 +57,6 @@ export default function Page({ params }: { params: { id: string } }) {
     addTaskToRoutine({
       name: values.name,
       duration: values.duration,
-
-      start_date: new Date(values.startDate),
-      end_date: null,
       type: values.type,
     });
   }
@@ -100,7 +97,7 @@ export default function Page({ params }: { params: { id: string } }) {
                         defaultValues={{
                           ...DEFAULT_TASK_VALUES,
                           startDate: formatDateForInput(
-                            selectedDate || new Date()
+                            selectedDate || new Date(),
                           ),
                         }}
                       />
@@ -131,7 +128,7 @@ export default function Page({ params }: { params: { id: string } }) {
                           name: routine.name,
                           icon: routine.icon || "List",
                           duration: routine.duration || undefined,
-                          is_favorite: routine.is_favorite,
+                          isFavorite: routine.isFavorite,
                         }}
                       />
                     ),
@@ -158,7 +155,7 @@ export default function Page({ params }: { params: { id: string } }) {
           icon: "Play",
           placement: "right",
           onClick: () => {
-            router.push(`/${routine?.id}/start`, {
+            router.push(`/${routine?._id}/start`, {
               onTransitionReady: pageSlideAnimation,
             });
           },
