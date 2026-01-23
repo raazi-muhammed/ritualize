@@ -154,3 +154,69 @@ export const remove = mutation({
     await ctx.db.delete(args.id);
   },
 });
+
+export const bulkImport = mutation({
+  args: {
+    data: v.array(
+      v.object({
+        routineName: v.string(),
+        routineIcon: v.string(),
+        routineDuration: v.number(),
+        isFavorite: v.boolean(),
+        tasks: v.array(
+          v.object({
+            name: v.string(),
+            duration: v.number(),
+            order: v.number(),
+            type: v.union(v.literal("task"), v.literal("checkpoint")),
+            completions: v.array(
+              v.object({
+                date: v.string(),
+                status: v.union(
+                  v.literal("completed"),
+                  v.literal("skipped"),
+                  v.literal("failed"),
+                ),
+                notes: v.optional(v.string()),
+              }),
+            ),
+          }),
+        ),
+      }),
+    ),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) throw new Error("Not authenticated");
+
+    for (const item of args.data) {
+      const routineId = await ctx.db.insert("routines", {
+        name: item.routineName,
+        icon: item.routineIcon,
+        duration: item.routineDuration,
+        isFavorite: item.isFavorite,
+        userId,
+      });
+
+      for (const t of item.tasks) {
+        const taskId = await ctx.db.insert("tasks", {
+          name: t.name,
+          duration: t.duration,
+          order: t.order,
+          type: t.type,
+          routineId,
+          startDate: Date.now(),
+        });
+
+        for (const c of t.completions) {
+          await ctx.db.insert("taskCompletions", {
+            taskId,
+            date: c.date,
+            status: c.status,
+            notes: c.notes,
+          });
+        }
+      }
+    }
+  },
+});

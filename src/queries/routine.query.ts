@@ -9,6 +9,7 @@ import {
   CompletionStatus,
 } from "@/types/entities";
 import { formatDateForInput } from "@/lib/format";
+import { useState } from "react";
 
 export const useGetRoutines = () => {
   const data = useQuery(api.routines.getMany);
@@ -202,15 +203,75 @@ export const useReorderTasks = (options?: { onSuccess?: () => void }) => {
   return { mutate, mutateAsync: mutate };
 };
 
-// TODO: useImportRoutine migration would require a custom Convex action for handling FormData
-// For now, let's keep it commented out or as a placeholder
+import Papa from "papaparse";
+
 export const useImportRoutine = (options?: { onSuccess?: () => void }) => {
-  return {
-    mutate: async (formData: FormData) => {
-      console.warn("Import Routine migration pending (requires Convex Action)");
-    },
-    mutateAsync: async (formData: FormData) => {
-      console.warn("Import Routine migration pending (requires Convex Action)");
-    },
+  const bulkImport = useMutation(api.routines.bulkImport);
+  const [isPending, setIsPending] = useState(false);
+
+  const mutate = async (formData: FormData) => {
+    const file = formData.get("file") as File;
+    if (!file) return;
+
+    setIsPending(true);
+    try {
+      const text = await file.text();
+      const result = Papa.parse(text, { header: true });
+      const rows = result.data as any[];
+
+      const routinesMap = new Map<string, any>();
+
+      rows.forEach((row) => {
+        const routineName = row["Routine Name"];
+        if (!routineName) return;
+
+        if (!routinesMap.has(routineName)) {
+          routinesMap.set(routineName, {
+            routineName,
+            routineIcon: row["Routine Icon"] || "List",
+            routineDuration: parseInt(row["Routine Duration"]) || 0,
+            isFavorite: row["Is Favorite"] === "true",
+            tasks: [],
+          });
+        }
+
+        const routine = routinesMap.get(routineName);
+        const taskName = row["Task Name"];
+        if (taskName) {
+          let task = routine.tasks.find((t: any) => t.name === taskName);
+          if (!task) {
+            task = {
+              name: taskName,
+              duration: parseInt(row["Task Duration"]) || 0,
+              order: parseInt(row["Task Order"]) || 0,
+              type: row["Task Type"] === "checkpoint" ? "checkpoint" : "task",
+              completions: [],
+            };
+            routine.tasks.push(task);
+          }
+
+          const completionDate = row["Completion Date"];
+          if (completionDate) {
+            task.completions.push({
+              date: completionDate.split("T")[0],
+              status:
+                row["Completion Status"] === "completed"
+                  ? "completed"
+                  : row["Completion Status"] === "skipped"
+                    ? "skipped"
+                    : "failed",
+              notes: row["Completion Notes"],
+            });
+          }
+        }
+      });
+
+      await bulkImport({ data: Array.from(routinesMap.values()) });
+      options?.onSuccess?.();
+    } finally {
+      setIsPending(false);
+    }
   };
+
+  return { mutate, mutateAsync: mutate, isPending };
 };
