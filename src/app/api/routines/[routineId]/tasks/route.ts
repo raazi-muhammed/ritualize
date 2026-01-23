@@ -1,10 +1,10 @@
-import { getCurrentUser } from "@/lib/clerk";
+import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
 export async function POST(
   request: Request,
-  { params }: { params: { routineId: string } },
+  { params }: { params: { routineId: string } }
 ) {
   const { routineId } = params;
   const body = await request.json();
@@ -31,7 +31,7 @@ export async function POST(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { routineId: string } },
+  { params }: { params: { routineId: string } }
 ) {
   const { routineId } = params;
   const user = await getCurrentUser();

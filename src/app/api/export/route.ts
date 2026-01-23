@@ -1,4 +1,4 @@
-import { getCurrentUser } from "@/lib/clerk";
+import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { stringify } from "csv-stringify/sync";

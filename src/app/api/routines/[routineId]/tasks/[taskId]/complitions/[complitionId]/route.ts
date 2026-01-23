@@ -1,4 +1,4 @@
-import { getCurrentUser } from "@/lib/clerk";
+import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
@@ -6,7 +6,7 @@ export async function DELETE(
   request: Request,
   {
     params,
-  }: { params: { routineId: string; taskId: string; complitionId: string } },
+  }: { params: { routineId: string; taskId: string; complitionId: string } }
 ) {
   const user = await getCurrentUser();
   const { routineId, taskId, complitionId } = params;
@@ -38,7 +38,7 @@ export async function DELETE(
   if (!complition) {
     return NextResponse.json(
       { message: "Complition not found" },
-      { status: 404 },
+      { status: 404 }
     );
   }
 

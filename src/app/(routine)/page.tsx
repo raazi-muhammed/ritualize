@@ -2,7 +2,7 @@
 
 export const dynamic = "force-static";
 
-import { UserButton } from "@clerk/nextjs";
+import { UserMenu } from "@/components/auth/UserMenu";
 import RoutineForm from "./_forms/RoutineForm";
 import ImportRoutineForm from "./_forms/ImportRoutineForm";
 import { routineSchema } from "./_forms/schema";
@@ -39,14 +39,7 @@ export default function Home() {
       title="Routines"
       hideBack
       actions={[
-        <UserButton
-          key="user-button"
-          appearance={{
-            elements: {
-              userButtonAvatarBox: "h-9 w-9",
-            },
-          }}
-        />,
+        <UserMenu key="user-button" />,
         {
           label: "Export",
           icon: "Download",

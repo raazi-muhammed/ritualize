@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/sidebar";
 import React from "react";
 import PageTemplate from "./PageTemplate";
-import { UserButton } from "@clerk/nextjs";
+import { UserMenu } from "@/components/auth/UserMenu";
 import { useModal } from "@/providers/ModelProvider";
 import { useCreateRoutine } from "@/queries/routine.query";
 import { routineSchema } from "@/app/(routine)/_forms/schema";
@@ -40,14 +40,7 @@ const DesktopPageTemplate = ({ children }: { children: React.ReactNode }) => {
             hideBack
             isOnSidebar
             actions={[
-              <UserButton
-                key="user-button"
-                appearance={{
-                  elements: {
-                    userButtonAvatarBox: "h-8 w-8",
-                  },
-                }}
-              />,
+              <UserMenu key="user-button" />,
               {
                 label: "Export",
                 icon: "Download",
