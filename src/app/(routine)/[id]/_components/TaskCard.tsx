@@ -23,10 +23,12 @@ import { useTransitionRouter } from "next-view-transitions";
 
 const TaskCard = ({
   task,
+  tasks,
   showStartDate = false,
   date,
 }: {
   task: TaskWithStatus;
+  tasks: TaskWithStatus[];
   showStartDate?: boolean;
   date: Date;
 }) => {
@@ -44,10 +46,21 @@ const TaskCard = ({
   };
 
   const handleDrop = async (e: DragEvent<HTMLDivElement>) => {
-    // Note: reorder logic might need refinement depending on how the parent provides the new list
-    // For now, let's keep it simple or placeholder
+    e.preventDefault();
     const draggedTaskId = e.dataTransfer.getData("taskId");
-    console.warn("Reorder logic needs full task list");
+    if (!draggedTaskId || draggedTaskId === task._id) return;
+
+    const taskIds = tasks.map((t) => t._id);
+    const fromIndex = taskIds.indexOf(draggedTaskId as any);
+    const toIndex = taskIds.indexOf(task._id);
+
+    if (fromIndex === -1 || toIndex === -1) return;
+
+    const newIds = [...taskIds];
+    const [movedId] = newIds.splice(fromIndex, 1);
+    newIds.splice(toIndex, 0, movedId);
+
+    reorderTasks(newIds);
   };
 
   function onSubmit(values: z.infer<typeof taskSchema>) {

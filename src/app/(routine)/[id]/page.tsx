@@ -111,7 +111,13 @@ export default function Page({ params }: { params: { id: string } }) {
                 onClick: () => {
                   openModal({
                     title: "All tasks",
-                    content: <AllTasks showStartDate routine={routine} />,
+                    content: (
+                      <AllTasks
+                        showStartDate
+                        routineId={routineId}
+                        date={selectedDate || new Date()}
+                      />
+                    ),
                   });
                 },
               },

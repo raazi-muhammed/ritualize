@@ -28,8 +28,9 @@ const Tasks = ({
           )}
           {routine?.tasks?.map((task) => (
             <TaskCard
-              key={task.id}
+              key={task._id}
               task={task}
+              tasks={routine.tasks}
               showStartDate={showStartDate}
               date={date ?? new Date()}
             />
