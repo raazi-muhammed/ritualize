@@ -13,6 +13,7 @@ import type * as completions from "../completions.js";
 import type * as http from "../http.js";
 import type * as routines from "../routines.js";
 import type * as tasks from "../tasks.js";
+import type * as users from "../users.js";
 
 import type {
   ApiFromModules,
@@ -26,6 +27,7 @@ declare const fullApi: ApiFromModules<{
   http: typeof http;
   routines: typeof routines;
   tasks: typeof tasks;
+  users: typeof users;
 }>;
 
 /**
