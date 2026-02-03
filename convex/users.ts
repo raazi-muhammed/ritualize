@@ -1,25 +1,15 @@
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
-import { getAuthUserId } from "@convex-dev/auth/server";
+import { auth } from "./auth";
 
 export const getMe = query({
   args: {},
   handler: async (ctx) => {
-    try {
-      const userId = await getAuthUserId(ctx);
-      if (!userId) {
-        return null;
-      }
-      const user = await ctx.db.get(userId);
-      if (!user) {
-        console.warn(`User document not found for ID: ${userId}`);
-        return null;
-      }
-      return user;
-    } catch (error) {
-      console.error("Error in users:getMe:", error);
-      throw new Error("Internal server error in getMe");
+    const userId = await auth.getUserId(ctx);
+    if (!userId) {
+      return null;
     }
+    return await ctx.db.get(userId);
   },
 });
 
@@ -28,7 +18,7 @@ export const updateName = mutation({
     name: v.string(),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
+    const userId = await auth.getUserId(ctx);
     if (!userId) {
       throw new Error("Not authenticated");
     }
@@ -39,7 +29,7 @@ export const updateName = mutation({
 export const generateUploadUrl = mutation({
   args: {},
   handler: async (ctx) => {
-    const userId = await getAuthUserId(ctx);
+    const userId = await auth.getUserId(ctx);
     if (!userId) {
       throw new Error("Not authenticated");
     }
@@ -52,7 +42,7 @@ export const updateImage = mutation({
     storageId: v.id("_storage"),
   },
   handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
+    const userId = await auth.getUserId(ctx);
     if (!userId) {
       throw new Error("Not authenticated");
     }
