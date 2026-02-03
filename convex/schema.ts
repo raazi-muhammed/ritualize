@@ -35,7 +35,7 @@ export default defineSchema({
     status: v.union(
       v.literal("completed"),
       v.literal("skipped"),
-      v.literal("failed")
+      v.literal("failed"),
     ),
     notes: v.optional(v.string()),
   }).index("by_task_date", ["taskId", "date"]),
