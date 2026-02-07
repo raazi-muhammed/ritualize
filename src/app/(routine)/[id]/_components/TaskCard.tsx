@@ -2,7 +2,7 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import { DragEvent } from "react";
+import { DragEvent, useEffect, useState } from "react";
 import {
   useDeleteTask,
   useUpdateTask,
@@ -80,10 +80,17 @@ const TaskCard = ({
   const { closeModal } = useModal();
   const router = useRouter();
   const tRouter = useTransitionRouter();
+  const [localStatus, setLocalStatus] = useState<CompletionStatus | undefined>(
+    task.status,
+  );
 
   const { mutateAsync: updateTask } = useUpdateTask(task._id);
   const { mutateAsync: updateTaskStatus } = useUpdateTaskStatus();
   const { mutateAsync: deleteTask } = useDeleteTask();
+
+  useEffect(() => {
+    setLocalStatus(task.status);
+  }, [task.status]);
 
   const handleDragStart = (e: DragEvent<HTMLDivElement>) => {
     e.dataTransfer.setData("taskId", task._id);
@@ -103,12 +110,18 @@ const TaskCard = ({
     });
   }
 
-  function handleToggleCompletion(status: CompletionStatus) {
-    updateTaskStatus(task._id, status, date);
+  async function handleToggleCompletion(status: CompletionStatus) {
+    const previousStatus = localStatus;
+    setLocalStatus(status);
+    try {
+      await updateTaskStatus(task._id, status, date);
+    } catch {
+      setLocalStatus(previousStatus);
+    }
   }
   function showCheckbox() {
     if (!task._id) return true; // If task is new, show checkbox
-    if (task?.status) return true; // If task is completed, show checkbox
+    if (localStatus) return true; // If task is completed, show checkbox
 
     return false;
   }
@@ -137,9 +150,9 @@ const TaskCard = ({
           <section className="flex items-start gap-0 w-full">
             {showCheckbox() ? (
               <Checkbox
-                checked={task.status === CompletionStatus.completed}
+                checked={localStatus === CompletionStatus.completed}
                 onCheckedChange={(checked) => {
-                  handleToggleCompletion(
+                  void handleToggleCompletion(
                     checked
                       ? CompletionStatus.completed
                       : CompletionStatus.skipped,
