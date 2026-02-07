@@ -119,12 +119,33 @@ const PageTemplate = ({
   const tRouter = useTransitionRouter();
   const isMobile = useIsMobile();
   const titleRef = useRef<HTMLDivElement>(null);
+  const [isHeaderElevated, setIsHeaderElevated] = useState(false);
+  const allowHeaderFx = !isOnSidebar;
+
+  useEffect(() => {
+    if (!allowHeaderFx) {
+      setIsHeaderElevated(false);
+      return;
+    }
+
+    const onScroll = () => {
+      setIsHeaderElevated(window.scrollY > 4);
+    };
+
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [allowHeaderFx, isMobile]);
 
   return (
     <main className="px-5 container-xl py-4">
       <header
         className={cn(
-          `flex justify-between items-center gap-3 sticky top-5 pb-4 z-50`
+          "relative flex justify-between items-center gap-3 sticky pb-4 z-50 transition-colors transition-shadow duration-200",
+          isMobile ? "top-0 pt-4 rounded-2xl -mx-2 px-2" : "top-0 pt-4",
+          allowHeaderFx &&
+            isHeaderElevated &&
+            "overflow-hidden before:content-[''] before:absolute before:inset-0 before:-z-20 before:backdrop-blur-sm before:[mask-image:linear-gradient(to_bottom,rgba(0,0,0,1),rgba(0,0,0,0))] after:content-[''] after:absolute after:inset-0 after:-z-10 after:bg-gradient-to-b after:from-background/90 after:via-background/50 after:to-transparent"
         )}
       >
         {!hideBack ? (
