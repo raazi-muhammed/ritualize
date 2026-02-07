@@ -18,6 +18,7 @@ import { useTransitionRouter } from "next-view-transitions";
 import { pageSlideBackAnimation } from "@/lib/animations";
 import { useSearchParams } from "next/navigation";
 import DropdownTemplate from "@/components/layout/DropdownTemplate";
+import { EmptyTemplate } from "@/components/layout/EmptyTemplate";
 
 export default function Page({
   params,
@@ -114,32 +115,39 @@ export default function Page({
             />
 
             <p className="text-xl font-bold mt-4 ps-2">Records</p>
-            <ul className="space-y-2">
-              {task.completions.map((completion) => (
-                <li key={completion._id}>
-                  <Card className="py-2 px-4 flex justify-between items-center">
-                    <div>
-                      <p className="text-lg">
-                        {formatDate(new Date(completion.date))}
-                      </p>
-                      <p>{completion.status}</p>
-                    </div>
-                    <DropdownTemplate
-                      actions={[
-                        {
-                          label: "Delete",
-                          icon: "Trash",
-                          variant: "destructive",
-                          onClick: async () => {
-                            await deleteCompletion(completion._id);
+            {task.completions.length === 0 ? (
+              <EmptyTemplate
+                title="No records yet"
+                description="Complete this task to start building a record history."
+              />
+            ) : (
+              <ul className="space-y-2">
+                {task.completions.map((completion) => (
+                  <li key={completion._id}>
+                    <Card className="py-2 px-4 flex justify-between items-center">
+                      <div>
+                        <p className="text-lg">
+                          {formatDate(new Date(completion.date))}
+                        </p>
+                        <p>{completion.status}</p>
+                      </div>
+                      <DropdownTemplate
+                        actions={[
+                          {
+                            label: "Delete",
+                            icon: "Trash",
+                            variant: "destructive",
+                            onClick: async () => {
+                              await deleteCompletion(completion._id);
+                            },
                           },
-                        },
-                      ]}
-                    />
-                  </Card>
-                </li>
-              ))}
-            </ul>
+                        ]}
+                      />
+                    </Card>
+                  </li>
+                ))}
+              </ul>
+            )}
           </>
         )}
       </ContentStateTemplate>
