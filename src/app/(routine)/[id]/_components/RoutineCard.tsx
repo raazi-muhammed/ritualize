@@ -58,12 +58,6 @@ const RoutineCard = ({
               </CardTitle>
             </div>
           </div>
-
-          {routine.isFavorite ? (
-            <Heart className="fill-primary text-primary" size={18} />
-          ) : (
-            <Heart className="text-secondary" size={18} />
-          )}
         </CardHeader>
       </Card>
     </Link>

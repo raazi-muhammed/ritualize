@@ -18,13 +18,20 @@ export default function RoutineList() {
           {routines
             ?.filter((r) => r.isFavorite)
             .map((routine) => (
-              <RoutineCard key={routine._id} isList={true} routine={routine} />
+              <RoutineCard
+                key={routine._id}
+                isList={true}
+                routine={routine}
+              />
             ))}
         </section>
         {routines
           ?.filter((r) => !r.isFavorite)
           .map((routine) => (
-            <RoutineCard key={routine._id} routine={routine} />
+            <RoutineCard
+              key={routine._id}
+              routine={routine}
+            />
           ))}
         {routines?.length === 0 && (
           <EmptyTemplate
