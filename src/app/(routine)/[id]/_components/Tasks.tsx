@@ -3,6 +3,7 @@ import { Fragment, useMemo, useRef, useState } from "react";
 import TaskCard, { TaskCardPreview } from "./TaskCard";
 import { RoutineWithTasks } from "@/types/entities";
 import { useReorderTasks } from "@/queries/routine.query";
+import { Id } from "../../../../../convex/_generated/dataModel";
 
 const END_DROP_ID = "__end__";
 
@@ -15,9 +16,11 @@ const Tasks = ({
   date: Date;
   routine: RoutineWithTasks;
 }) => {
-  const [activeTaskId, setActiveTaskId] = useState<string | null>(null);
-  const [overTaskId, setOverTaskId] = useState<string | null>(null);
-  const activeTaskIdRef = useRef<string | null>(null);
+  const [activeTaskId, setActiveTaskId] = useState<Id<"tasks"> | null>(null);
+  const [overTaskId, setOverTaskId] = useState<Id<"tasks"> | string | null>(
+    null,
+  );
+  const activeTaskIdRef = useRef<Id<"tasks"> | null>(null);
   const dropHandledRef = useRef(false);
   const dragEndTimeoutRef = useRef<number | null>(null);
   const { mutateAsync: reorderTasks } = useReorderTasks();
@@ -32,7 +35,7 @@ const Tasks = ({
     return map;
   }, [routine?.tasks]);
 
-  const getCheckpointBlockIds = (checkpointId: string) => {
+  const getCheckpointBlockIds = (checkpointId: Id<"tasks">) => {
     const startIndex = taskIds.indexOf(checkpointId);
     if (startIndex === -1) return [];
     let endIndex = taskIds.length;
@@ -78,7 +81,7 @@ const Tasks = ({
     activeTaskId ||
     "";
 
-  const buildReorderedIds = (fromId: string, toId: string) => {
+  const buildReorderedIds = (fromId: Id<"tasks">, toId: Id<"tasks">) => {
     const fromIndex = taskIds.indexOf(fromId);
     const toIndex = taskIds.indexOf(toId);
     if (fromIndex === -1 || toIndex === -1) return null;
@@ -112,7 +115,7 @@ const Tasks = ({
     e.stopPropagation();
     dropHandledRef.current = true;
     cancelDragEndCleanup();
-    const draggedTaskId = getDraggedTaskId(e);
+    const draggedTaskId = getDraggedTaskId(e) as Id<"tasks">;
     if (!draggedTaskId) return;
     const fromIndex = taskIds.indexOf(draggedTaskId);
     if (fromIndex === -1) return;
@@ -142,9 +145,9 @@ const Tasks = ({
       await handleDropToEnd(e);
       return;
     }
-    const draggedTaskId = getDraggedTaskId(e);
+    const draggedTaskId = getDraggedTaskId(e) as Id<"tasks">;
     if (!draggedTaskId) return;
-    const newIds = buildReorderedIds(draggedTaskId, overTaskId);
+    const newIds = buildReorderedIds(draggedTaskId, overTaskId as Id<"tasks">);
     if (!newIds) return;
     await reorderTasks(newIds);
     clearDragState();

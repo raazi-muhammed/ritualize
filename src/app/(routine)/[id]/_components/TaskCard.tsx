@@ -19,6 +19,7 @@ import {
   pageSlideAnimation,
 } from "@/lib/animations";
 import { useTransitionRouter } from "next-view-transitions";
+import { Id } from "../../../../../convex/_generated/dataModel";
 
 export const TaskCardPreview = ({
   task,
@@ -72,8 +73,8 @@ const TaskCard = ({
   task: TaskWithStatus;
   showStartDate?: boolean;
   date: Date;
-  onDragStartId?: (taskId: string) => void;
-  onDragOverId?: (taskId: string) => void;
+  onDragStartId?: (taskId: Id<"tasks">) => void;
+  onDragOverId?: (taskId: Id<"tasks">) => void;
   onDragEnd?: () => void;
   isHidden?: boolean;
 }) => {
@@ -99,7 +100,6 @@ const TaskCard = ({
     // Delay state updates to avoid canceling the native drag.
     setTimeout(() => onDragStartId?.(task._id), 0);
   };
-
 
   function onSubmit(values: z.infer<typeof taskSchema>) {
     closeModal();

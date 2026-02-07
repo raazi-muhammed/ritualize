@@ -30,7 +30,6 @@ const AllTasks = ({
         <TaskCard
           key={task._id}
           task={task as TaskWithStatus}
-          tasks={routine.tasks}
           showStartDate={showStartDate}
           date={date}
         />
