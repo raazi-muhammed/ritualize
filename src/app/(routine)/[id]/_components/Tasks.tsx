@@ -4,6 +4,8 @@ import TaskCard, { TaskCardPreview } from "./TaskCard";
 import { RoutineWithTasks } from "@/types/entities";
 import { useReorderTasks } from "@/queries/routine.query";
 
+const END_DROP_ID = "__end__";
+
 const Tasks = ({
   showStartDate = false,
   date,
@@ -20,69 +22,79 @@ const Tasks = ({
   const dragEndTimeoutRef = useRef<number | null>(null);
   const { mutateAsync: reorderTasks } = useReorderTasks();
 
+  const taskIds = useMemo(
+    () => routine?.tasks?.map((task) => task._id) ?? [],
+    [routine?.tasks],
+  );
+
   const draggedTask = useMemo(
     () => routine?.tasks?.find((task) => task._id === activeTaskId) ?? null,
     [activeTaskId, routine?.tasks],
   );
 
+  const clearDragState = () => {
+    setActiveTaskId(null);
+    setOverTaskId(null);
+    activeTaskIdRef.current = null;
+  };
+
+  const cancelDragEndCleanup = () => {
+    if (!dragEndTimeoutRef.current) return;
+    window.clearTimeout(dragEndTimeoutRef.current);
+    dragEndTimeoutRef.current = null;
+  };
+
+  const getDraggedTaskId = (e: React.DragEvent<HTMLElement>) =>
+    e.dataTransfer.getData("taskId") ||
+    e.dataTransfer.getData("text/plain") ||
+    activeTaskIdRef.current ||
+    activeTaskId ||
+    "";
+
+  const buildReorderedIds = (fromId: string, toId: string) => {
+    const fromIndex = taskIds.indexOf(fromId);
+    const toIndex = taskIds.indexOf(toId);
+    if (fromIndex === -1 || toIndex === -1) return null;
+    if (fromIndex === toIndex) return null;
+
+    const nextIds = [...taskIds];
+    const [movedId] = nextIds.splice(fromIndex, 1);
+    const insertIndex = fromIndex < toIndex ? toIndex - 1 : toIndex;
+    nextIds.splice(insertIndex, 0, movedId);
+    return nextIds;
+  };
+
   const handleDropToEnd = async (e: React.DragEvent<HTMLElement>) => {
     e.preventDefault();
     e.stopPropagation();
     dropHandledRef.current = true;
-    if (dragEndTimeoutRef.current) {
-      window.clearTimeout(dragEndTimeoutRef.current);
-      dragEndTimeoutRef.current = null;
-    }
-    const draggedTaskId =
-      e.dataTransfer.getData("taskId") ||
-      e.dataTransfer.getData("text/plain") ||
-      activeTaskIdRef.current ||
-      activeTaskId ||
-      "";
+    cancelDragEndCleanup();
+    const draggedTaskId = getDraggedTaskId(e);
     if (!draggedTaskId) return;
-    const taskIds = routine?.tasks?.map((task) => task._id) ?? [];
     const fromIndex = taskIds.indexOf(draggedTaskId);
     if (fromIndex === -1) return;
     const newIds = [...taskIds];
     const [movedId] = newIds.splice(fromIndex, 1);
     newIds.push(movedId);
     await reorderTasks(newIds);
-    setActiveTaskId(null);
-    setOverTaskId(null);
-    activeTaskIdRef.current = null;
+    clearDragState();
   };
 
   const handleDropByOver = async (e: React.DragEvent<HTMLElement>) => {
     e.preventDefault();
     dropHandledRef.current = true;
-    if (dragEndTimeoutRef.current) {
-      window.clearTimeout(dragEndTimeoutRef.current);
-      dragEndTimeoutRef.current = null;
-    }
+    cancelDragEndCleanup();
     if (!overTaskId) return;
-    if (overTaskId === "__end__") {
+    if (overTaskId === END_DROP_ID) {
       await handleDropToEnd(e);
       return;
     }
-    const draggedTaskId =
-      e.dataTransfer.getData("taskId") ||
-      e.dataTransfer.getData("text/plain") ||
-      activeTaskIdRef.current ||
-      activeTaskId ||
-      "";
+    const draggedTaskId = getDraggedTaskId(e);
     if (!draggedTaskId) return;
-    const taskIds = routine?.tasks?.map((task) => task._id) ?? [];
-    const fromIndex = taskIds.indexOf(draggedTaskId);
-    const toIndex = taskIds.indexOf(overTaskId);
-    if (fromIndex === -1 || toIndex === -1 || fromIndex === toIndex) return;
-    const newIds = [...taskIds];
-    const [movedId] = newIds.splice(fromIndex, 1);
-    const insertIndex = fromIndex < toIndex ? toIndex - 1 : toIndex;
-    newIds.splice(insertIndex, 0, movedId);
+    const newIds = buildReorderedIds(draggedTaskId, overTaskId);
+    if (!newIds) return;
     await reorderTasks(newIds);
-    setActiveTaskId(null);
-    setOverTaskId(null);
-    activeTaskIdRef.current = null;
+    clearDragState();
   };
 
   return (
@@ -131,22 +143,15 @@ const Tasks = ({
                     setOverTaskId(taskId);
                     activeTaskIdRef.current = taskId;
                     dropHandledRef.current = false;
-                    if (dragEndTimeoutRef.current) {
-                      window.clearTimeout(dragEndTimeoutRef.current);
-                      dragEndTimeoutRef.current = null;
-                    }
+                    cancelDragEndCleanup();
                   }}
                   onDragOverId={setOverTaskId}
                   onDragEnd={() => {
                     // Safari can fire dragend before drop. Delay cleanup.
-                    if (dragEndTimeoutRef.current) {
-                      window.clearTimeout(dragEndTimeoutRef.current);
-                    }
+                    cancelDragEndCleanup();
                     dragEndTimeoutRef.current = window.setTimeout(() => {
                       if (dropHandledRef.current) return;
-                      setActiveTaskId(null);
-                      setOverTaskId(null);
-                      activeTaskIdRef.current = null;
+                      clearDragState();
                       dragEndTimeoutRef.current = null;
                     }, 150);
                   }}
@@ -156,14 +161,14 @@ const Tasks = ({
           })}
           {draggedTask ? (
             <div
-              className={overTaskId === "__end__" ? "h-24" : "h-24"}
+              className="h-24"
               onDragOver={(e) => {
                 e.preventDefault();
-                setOverTaskId("__end__");
+                setOverTaskId(END_DROP_ID);
               }}
               onDrop={handleDropToEnd}
             >
-              {overTaskId === "__end__" ? (
+              {overTaskId === END_DROP_ID ? (
                 <TaskCardPreview
                   task={draggedTask}
                   showStartDate={showStartDate}
