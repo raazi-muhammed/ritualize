@@ -43,7 +43,7 @@ function ActionButton({ action }: { action: ActionType }) {
         className={cn(
           action.placement === "right" && "ms-auto",
           action.placement === "left" && "me-auto",
-          action.className
+          action.className,
         )}
       />
     );
@@ -70,7 +70,7 @@ const StickyTitle = ({
       {
         threshold: 0,
         rootMargin: "-60px 0px 0px 0px",
-      }
+      },
     );
 
     observer.observe(triggerRef.current);
@@ -84,7 +84,9 @@ const StickyTitle = ({
     <div
       className={cn(
         "absolute left-1/2 -translate-x-1/2 transition-all duration-300 pointer-events-none will-change-[opacity,transform]",
-        showSmallTitle ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"
+        showSmallTitle
+          ? "opacity-100 translate-y-0"
+          : "opacity-0 translate-y-2",
       )}
     >
       <h3
@@ -138,14 +140,14 @@ const PageTemplate = ({
   }, [allowHeaderFx, isMobile]);
 
   return (
-    <main className="px-5 container-xl py-4">
+    <main className="px-4 container-xl py-4">
       <header
         className={cn(
-          "relative flex justify-between items-center gap-3 sticky pb-4 z-50 transition-colors transition-shadow duration-200",
-          isMobile ? "top-0 pt-4 rounded-2xl -mx-2 px-2" : "top-0 pt-4",
+          "flex justify-between items-center gap-3 sticky pb-4 z-50 transition-colors transition-shadow duration-200",
+          isMobile ? "top-0 pt-0 rounded-2xl -mx-2 px-2" : "top-0 pt-0",
           allowHeaderFx &&
             isHeaderElevated &&
-            "overflow-hidden before:content-[''] before:absolute before:inset-0 before:-z-20 before:backdrop-blur-sm before:[mask-image:linear-gradient(to_bottom,rgba(0,0,0,1),rgba(0,0,0,0))] after:content-[''] after:absolute after:inset-0 after:-z-10 after:bg-gradient-to-b after:from-background/90 after:via-background/50 after:to-transparent"
+            "overflow-hidden before:content-[''] before:absolute before:inset-0 before:-z-20 before:backdrop-blur-sm before:[mask-image:linear-gradient(to_bottom,rgba(0,0,0,1),rgba(0,0,0,0))] after:content-[''] after:absolute after:inset-0 after:-z-10 after:bg-gradient-to-b after:from-background/90 after:via-background/50 after:to-transparent",
         )}
       >
         {!hideBack ? (
@@ -200,7 +202,7 @@ const PageTemplate = ({
           className={cn(
             `fixed bottom-5 right-5 justify-between flex gap-2`,
             isMobile ? "left-5" : "left-[calc(22rem+1.25rem)]",
-            isOnSidebar && "left-5 right-[calc(100vw-calc(22rem-1.25rem))]"
+            isOnSidebar && "left-5 right-[calc(100vw-calc(22rem-1.25rem))]",
           )}
         >
           <div className="flex gap-2">
@@ -210,7 +212,7 @@ const PageTemplate = ({
                   a &&
                   typeof a === "object" &&
                   "placement" in a &&
-                  a.placement === "left"
+                  a.placement === "left",
               )
               ?.map((action, index) => (
                 <ActionButton action={action} key={index} />
@@ -230,7 +232,7 @@ const PageTemplate = ({
                   a &&
                   typeof a === "object" &&
                   "placement" in a &&
-                  a.placement === "right"
+                  a.placement === "right",
               )
               ?.map((action, index) => (
                 <ActionButton action={action} key={index} />
