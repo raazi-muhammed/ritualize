@@ -7,6 +7,7 @@ import { RoutineWithTasks } from "@/types/entities";
 import { useReorderTasks } from "@/queries/routine.query";
 import { Id } from "../../../../../convex/_generated/dataModel";
 import { createSwapy, utils } from "swapy";
+import { TaskType } from "@/types/entities";
 
 const Tasks = ({
   showStartDate = false,
@@ -105,13 +106,19 @@ const Tasks = ({
         // Wrapper stays in normal flow and holds the measured height while
         // the inner [data-swapy-slot] may become position:absolute during drag.
         <div key={slotId} className="relative swapy-slot-wrapper">
-          <div data-swapy-slot={slotId}>
+          <div
+            data-swapy-slot={slotId}
+            className={
+              task?.type !== TaskType.checkpoint ? "py-1" : ""
+            }
+          >
             {task ? (
               <div key={itemId} data-swapy-item={itemId}>
                 <TaskCard
                   task={task}
                   showStartDate={showStartDate}
                   date={date ?? new Date()}
+                  noMargin
                 />
               </div>
             ) : null}

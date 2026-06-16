@@ -24,10 +24,12 @@ const TaskCard = ({
   task,
   showStartDate = false,
   date,
+  noMargin = false,
 }: {
   task: TaskWithStatus;
   showStartDate?: boolean;
   date: Date;
+  noMargin?: boolean;
 }) => {
   const { closeModal } = useModal();
   const router = useRouter();
@@ -75,7 +77,7 @@ const TaskCard = ({
       className={`${
         task.type == TaskType.checkpoint
           ? "bg-transparent my-0"
-          : "my-2 has-[.task-card-action:active]:scale-95 transition-transform"
+          : `${noMargin ? "my-0" : "my-2"} has-[.task-card-action:active]:scale-95 transition-transform`
       } ${task._id == "" ? "opacity-50" : ""}`}
     >
       <CardContent className="flex justify-between p-0">
