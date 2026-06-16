@@ -60,6 +60,7 @@ const Tasks = ({
     swapyRef.current = createSwapy(container, {
       manualSwap: true,
       animation: "dynamic",
+      dragOnHold: true,
     });
 
     swapyRef.current.onSwap((event) => {
