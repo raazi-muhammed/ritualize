@@ -33,8 +33,30 @@ const Tasks = ({
   );
 
   useEffect(() => {
-    if (!containerRef.current) return;
-    swapyRef.current = createSwapy(containerRef.current, {
+    const container = containerRef.current;
+    if (!container) return;
+
+    // Lock each slot wrapper's height before Swapy lifts items out of flow,
+    // so the layout doesn't compress when a slot goes position: absolute.
+    const lockHeights = () => {
+      container
+        .querySelectorAll<HTMLElement>(".swapy-slot-wrapper")
+        .forEach((el) => {
+          el.style.minHeight = `${el.getBoundingClientRect().height}px`;
+        });
+    };
+    const clearHeights = () => {
+      container
+        .querySelectorAll<HTMLElement>(".swapy-slot-wrapper")
+        .forEach((el) => {
+          el.style.minHeight = "";
+        });
+    };
+
+    container.addEventListener("pointerdown", lockHeights);
+    document.addEventListener("pointerup", clearHeights);
+
+    swapyRef.current = createSwapy(container, {
       manualSwap: true,
       animation: "dynamic",
     });
@@ -50,6 +72,8 @@ const Tasks = ({
     });
 
     return () => {
+      container.removeEventListener("pointerdown", lockHeights);
+      document.removeEventListener("pointerup", clearHeights);
       swapyRef.current?.destroy();
     };
   }, []);
@@ -78,16 +102,20 @@ const Tasks = ({
   return (
     <section ref={containerRef} className="mb-36">
       {slottedItems.map(({ slotId, itemId, item: task }) => (
-        <div key={slotId} data-swapy-slot={slotId}>
-          {task ? (
-            <div key={itemId} data-swapy-item={itemId}>
-              <TaskCard
-                task={task}
-                showStartDate={showStartDate}
-                date={date ?? new Date()}
-              />
-            </div>
-          ) : null}
+        // Wrapper stays in normal flow and holds the measured height while
+        // the inner [data-swapy-slot] may become position:absolute during drag.
+        <div key={slotId} className="relative swapy-slot-wrapper">
+          <div data-swapy-slot={slotId}>
+            {task ? (
+              <div key={itemId} data-swapy-item={itemId}>
+                <TaskCard
+                  task={task}
+                  showStartDate={showStartDate}
+                  date={date ?? new Date()}
+                />
+              </div>
+            ) : null}
+          </div>
         </div>
       ))}
     </section>
