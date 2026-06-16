@@ -24,10 +24,24 @@ function getStartFrom(
 
   const found = tasks
     .slice(startFrom || 0)
-    .findIndex((t) => t.status !== CompletionStatus.completed);
+    .findIndex(
+      (t) =>
+        t.status !== CompletionStatus.completed &&
+        t.type !== TaskType.checkpoint,
+    );
   if (found == -1) return null;
 
   return found + (startFrom || 0);
+}
+
+function getCurrentSection(
+  tasks: TaskWithStatus[],
+  currentIndex: number,
+): TaskWithStatus | null {
+  for (let i = currentIndex - 1; i >= 0; i--) {
+    if (tasks[i].type === TaskType.checkpoint) return tasks[i];
+  }
+  return null;
 }
 
 import { useTransitionRouter } from "next-view-transitions";
@@ -115,6 +129,11 @@ function StartComponent({
     startFrom || 0,
   );
 
+  const currentSection = getCurrentSection(
+    routine?.tasks ?? [],
+    currentTaskIndex,
+  );
+
   useEffect(() => {
     const item = document.getElementById("active-task");
     item?.scrollIntoView({
@@ -167,9 +186,17 @@ function StartComponent({
                 label: "Prev",
                 placement: "left",
                 icon: "ChevronLeft",
-                disabled: currentTaskIndex <= 0,
+                disabled: !routine?.tasks
+                  .slice(0, currentTaskIndex)
+                  .some((t) => t.type !== TaskType.checkpoint),
                 onClick: () => {
-                  setCurrentTaskIndex((cti: number) => --cti);
+                  setCurrentTaskIndex((cti) => {
+                    for (let i = cti - 1; i >= 0; i--) {
+                      if (routine.tasks[i].type !== TaskType.checkpoint)
+                        return i;
+                    }
+                    return cti;
+                  });
                   reset();
                 },
               },
@@ -252,29 +279,33 @@ function StartComponent({
                   duration: 0.45,
                 }}
                 onClick={() => {
-                  setCurrentTaskIndex(index);
+                  if (task.type === TaskType.checkpoint) {
+                    const next = getStartFrom(routine?.tasks, index + 1);
+                    if (next !== null) setCurrentTaskIndex(next);
+                  } else {
+                    setCurrentTaskIndex(index);
+                  }
                 }}
               >
                 <Heading
                   className={
-                    task.type == TaskType.checkpoint ? "text-primary" : ""
+                    task.type === TaskType.checkpoint
+                      ? "text-primary text-xl"
+                      : ""
                   }
                 >
                   {task.name}
                 </Heading>
-                <motion.small
-                  initial={{
-                    opacity: 0,
-                  }}
-                  animate={{
-                    opacity: currentTaskIndex == index ? 1 : 0,
-                  }}
-                  transition={{
-                    duration: 0.75,
-                  }}
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: currentTaskIndex == index ? 1 : 0 }}
+                  transition={{ duration: 0.75 }}
+                  className="flex flex-col gap-0.5"
                 >
-                  {routine?.tasks[currentTaskIndex].duration} minutes
-                </motion.small>
+                  <small>
+                    {routine?.tasks[currentTaskIndex].duration} minutes
+                  </small>
+                </motion.div>
               </motion.div>
             ))}
             <div className="flex h-[30vh]" />
