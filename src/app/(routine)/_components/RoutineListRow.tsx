@@ -25,8 +25,9 @@ const RoutineListRow = ({
         });
       }}
       className={cn(
-        "flex items-center gap-3 px-3 py-3 hover:bg-muted transition-colors",
-        !isLast && "border-b border-border"
+        "relative flex items-center gap-3 px-3 py-3 hover:bg-muted transition-colors",
+        !isLast &&
+          "after:absolute after:inset-x-3 after:bottom-0 after:border-b after:border-border"
       )}
     >
       <div className="size-10 shrink-0 grid place-items-center rounded-full bg-secondary shadow-inner shadow-border">

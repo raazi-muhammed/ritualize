@@ -2,7 +2,7 @@ import React from "react";
 
 const FormGroup = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div className="divide-y divide-input bg-card rounded-4xl">
+    <div className="divide-y divide-border bg-card rounded-lg [&>*]:mx-4">
       {children}
     </div>
   );
