@@ -40,6 +40,7 @@ function ActionButton({ action }: { action: ActionType }) {
         icon={action.icon}
         onClick={action.onClick}
         disabled={action.disabled}
+        variant={action.variant}
         className={cn(
           action.placement === "right" && "ms-auto",
           action.placement === "left" && "me-auto",

@@ -159,6 +159,7 @@ export default function Page({ params }: { params: { id: string } }) {
         {
           label: "Start",
           icon: "Play",
+          variant: "default",
           placement: "right",
           onClick: () => {
             router.push(`/${routine?._id}/start`, {
