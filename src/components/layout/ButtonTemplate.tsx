@@ -14,7 +14,7 @@ interface ActionType {
   onClick: () => void;
   disabled?: boolean;
   className?: string;
-  variant?: "default" | "secondary" | "destructive" | "card";
+  variant?: "default" | "secondary" | "destructive" | "card" | "card-outline";
   iconOnly?: boolean;
 }
 

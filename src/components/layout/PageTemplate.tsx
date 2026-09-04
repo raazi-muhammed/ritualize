@@ -25,7 +25,7 @@ export type ActionType =
       placement?: "left" | "right";
       disabled?: boolean;
       className?: string;
-      variant?: "default" | "destructive" | "card";
+      variant?: "default" | "destructive" | "card" | "card-outline";
       iconOnly?: boolean;
     }
   | ReactNode;
@@ -163,6 +163,7 @@ const PageTemplate = ({
             }}
             className="ps-0 pe-12 transition-all"
             icon="ChevronLeft"
+            variant="card-outline"
           />
         ) : (
           <div />

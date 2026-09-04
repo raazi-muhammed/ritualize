@@ -25,7 +25,7 @@ const DropdownTemplate = ({ actions }: { actions: ActionType[] }) => {
         <Tooltip>
           <TooltipTrigger asChild>
             <DropdownMenuTrigger asChild>
-              <Button variant="card" size="icon" className="my-auto">
+              <Button variant="card-outline" size="icon" className="my-auto">
                 <HugeiconsIcon icon={MoreVerticalIcon} className="size-5" />
               </Button>
             </DropdownMenuTrigger>
