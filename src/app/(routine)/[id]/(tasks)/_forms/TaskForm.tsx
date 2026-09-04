@@ -17,7 +17,8 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
-import { CalendarIcon } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Calendar01Icon } from "@hugeicons/core-free-icons";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { Switch } from "@/components/ui/switch";
@@ -120,11 +121,11 @@ function TaskForm({
                       size={"sm"}
                       variant={"outline"}
                       className={cn(
-                        "w-fit h-12 rounded-sm justify-start text-left font-normal bg-input-background border-none hover:bg-input-background",
+                        "w-fit h-12 rounded-sm justify-start text-left font-normal bg-secondary border-none hover:bg-secondary",
                         !field.value && "text-muted-foreground",
                       )}
                     >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      <HugeiconsIcon icon={Calendar01Icon} className="mr-2 h-4 w-4" />
                       {field.value ? (
                         format(field.value, "PPP")
                       ) : (

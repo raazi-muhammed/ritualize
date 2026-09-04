@@ -72,7 +72,7 @@ function SegmentedCircularProgress({
       .join(" ") + ` 0 ${circumference}`;
 
   return (
-    <div className="relative flex items-center justify-center outline rounded-full outline-1 outline-secondary-border">
+    <div className="relative flex items-center justify-center outline rounded-full outline-1 outline-border">
       <svg
         height={radius * 2}
         width={radius * 2}

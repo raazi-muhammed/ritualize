@@ -13,7 +13,8 @@ import {
   useGetUploadUrl,
   useUpdateImage,
 } from "@/queries/user.query";
-import { ImagePlus } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { ImageAdd01Icon } from "@hugeicons/core-free-icons";
 
 const profileSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -95,7 +96,7 @@ export function ProfileForm({ defaultValues, onSuccess }: ProfileFormProps) {
               )}
             </div>
             <div className="absolute inset-0 bg-black/40 flex items-center justify-center rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
-              <ImagePlus className="h-8 w-8 text-white" />
+              <HugeiconsIcon icon={ImageAdd01Icon} className="h-8 w-8 text-white" />
             </div>
             <input
               type="file"

@@ -20,7 +20,7 @@ function FormInput({
 }) {
   return (
     <FormItem className="flex flex-col">
-      <div className="flex flex-row rounded-xl bg-input-background justify-between min-h-12">
+      <div className="flex flex-row rounded-xl bg-secondary justify-between min-h-12">
         <FormLabel className="my-auto ps-4 text-nowrap">{label}</FormLabel>
         <FormControl className={cn(controlClass, "my-auto")}>
           {children}

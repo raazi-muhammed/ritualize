@@ -17,7 +17,6 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer";
 import Heading from "./Heading";
-import { X } from "lucide-react";
 import ButtonTemplate from "./ButtonTemplate";
 
 const ResponsiveModel = ({
@@ -42,7 +41,7 @@ const ResponsiveModel = ({
           onInteractOutside={(e) => {
             e.preventDefault();
           }}
-          className="max-h-[calc(100vh-10rem)] overflow-auto sm:rounded-5xl bg-popover border-none shadow-sm p-3 pt-1"
+          className="max-h-[calc(100vh-10rem)] overflow-auto sm:rounded-4xl bg-popover border-none shadow-sm p-3 pt-1"
         >
           <DialogHeader className="flex flex-row justify-between items-center">
             <Heading className="text-2xl mt-2 ms-3">{title}</Heading>
@@ -50,7 +49,7 @@ const ResponsiveModel = ({
               <ButtonTemplate
                 icon="X"
                 onClick={() => {}}
-                variant="secondaryNoOutline"
+                variant="secondary"
               />
             </DialogClose>
           </DialogHeader>
@@ -68,7 +67,7 @@ const ResponsiveModel = ({
             <ButtonTemplate
               icon="X"
               onClick={() => {}}
-              variant="secondaryNoOutline"
+              variant="secondary"
             />
           </DrawerClose>
         </DrawerHeader>

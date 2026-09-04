@@ -5,7 +5,6 @@ import {
   PRESSABLE_ANIMATION_CLASSES,
 } from "@/lib/animations";
 import { Routine } from "@/types/entities";
-import { Heart } from "lucide-react";
 import { useTransitionRouter } from "next-view-transitions";
 import Link from "next/link";
 
@@ -43,7 +42,7 @@ const RoutineCard = ({
             } gap-2 align-middle`}
           >
             <div
-              className={`bg-secondary shadow-inner shadow-secondary-border ${
+              className={`bg-secondary shadow-inner shadow-border ${
                 isList ? "size-10" : "size-8"
               } grid place-items-center rounded-full`}
             >

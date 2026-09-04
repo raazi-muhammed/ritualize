@@ -8,7 +8,7 @@ interface ActionType {
   onClick: () => void;
   disabled?: boolean;
   className?: string;
-  variant?: "default" | "secondary" | "destructive" | "secondaryNoOutline";
+  variant?: "default" | "secondary" | "destructive";
 }
 
 function ButtonTemplate({

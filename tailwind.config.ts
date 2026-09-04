@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+import defaultTheme from "tailwindcss/defaultTheme";
 
 const config = {
   darkMode: ["class"],
@@ -18,24 +19,23 @@ const config = {
       },
     },
     extend: {
+      fontFamily: {
+        sans: ["var(--font-sans)", ...defaultTheme.fontFamily.sans],
+        mono: ["var(--font-mono)", ...defaultTheme.fontFamily.mono],
+      },
       colors: {
         border: "hsl(var(--border))",
-        input: {
-          DEFAULT: "hsl(var(--input))",
-          background: "hsl(var(--input-background))",
-        },
+        input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
-          border: "hsl(var(--primary-border))",
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
           foreground: "hsl(var(--secondary-foreground))",
-          border: "hsl(var(--secondary-border))",
         },
         destructive: {
           DEFAULT: "hsl(var(--destructive))",
@@ -56,10 +56,16 @@ const config = {
         card: {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
-          border: "hsl(var(--card-border))",
+        },
+        chart: {
+          1: "hsl(var(--chart-1))",
+          2: "hsl(var(--chart-2))",
+          3: "hsl(var(--chart-3))",
+          4: "hsl(var(--chart-4))",
+          5: "hsl(var(--chart-5))",
         },
         sidebar: {
-          DEFAULT: "hsl(var(--sidebar-background))",
+          DEFAULT: "hsl(var(--sidebar))",
           foreground: "hsl(var(--sidebar-foreground))",
           primary: "hsl(var(--sidebar-primary))",
           "primary-foreground": "hsl(var(--sidebar-primary-foreground))",
@@ -70,14 +76,15 @@ const config = {
         },
       },
       borderRadius: {
+        DEFAULT: "var(--radius)",
+        xs: "calc(var(--radius) * 0.4)",
+        sm: "calc(var(--radius) * 0.6)",
+        md: "calc(var(--radius) * 0.8)",
         lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
-        xl: "calc(var(--radius) + 2px)",
-        "2xl": "calc(var(--radius) + 4px)",
-        "3xl": "calc(var(--radius) + 6px)",
-        "4xl": "calc(var(--radius) + 8px)",
-        "5xl": "calc(var(--radius) + 10px)",
+        xl: "calc(var(--radius) * 1.4)",
+        "2xl": "calc(var(--radius) * 1.8)",
+        "3xl": "calc(var(--radius) * 2.2)",
+        "4xl": "calc(var(--radius) * 2.6)",
       },
       keyframes: {
         "accordion-down": {

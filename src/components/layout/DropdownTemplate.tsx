@@ -1,4 +1,5 @@
-import { EllipsisVertical } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { MoreVerticalIcon } from "@hugeicons/core-free-icons";
 import { Button } from "../ui/button";
 import {
   DropdownMenu,
@@ -16,7 +17,7 @@ const DropdownTemplate = ({ actions }: { actions: ActionType[] }) => {
     <DropdownMenu modal={false}>
       <DropdownMenuTrigger asChild>
         <Button variant="secondary" size="icon" className="my-auto">
-          <EllipsisVertical className="size-5" />
+          <HugeiconsIcon icon={MoreVerticalIcon} className="size-5" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">

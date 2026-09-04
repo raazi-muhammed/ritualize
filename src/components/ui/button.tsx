@@ -10,23 +10,26 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg border border-primary-border",
-        destructive:
-          "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+          "bg-primary bg-gradient-to-b from-white/[0.08] to-transparent text-primary-foreground ring-1 ring-white/10 ring-inset hover:brightness-[1.02] active:brightness-[0.97] dark:ring-white/5",
         outline:
-          "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
+          "border border-border bg-transparent hover:bg-muted hover:text-foreground dark:border-input dark:hover:bg-input/50",
         secondary:
-          "bg-secondary text-secondary-foreground hover:bg-secondary/80 border border-secondary-border",
-        ghost: "hover:bg-accent hover:text-accent-foreground",
+          "bg-secondary text-secondary-foreground hover:brightness-[1.02] active:brightness-[0.97]",
+        card: "bg-card text-card-foreground hover:brightness-[1.02] active:brightness-[0.97]",
+        ghost: "hover:bg-muted hover:text-foreground dark:hover:bg-muted/50",
+        destructive:
+          "bg-destructive/10 text-destructive hover:bg-destructive/20 dark:bg-destructive/20 dark:hover:bg-destructive/30",
         link: "text-primary underline-offset-4 hover:underline",
-        secondaryNoOutline:
-          "bg-secondary text-secondary-foreground hover:bg-secondary/80",
       },
       size: {
-        default: "h-10 px-4 py-2 rounded-full",
+        xs: "h-7 rounded-full px-3 text-xs",
         sm: "h-8 rounded-full px-4",
-        lg: "h-11 rounded-md px-8",
+        default: "h-10 px-4 py-2 rounded-full",
+        lg: "h-11 rounded-full px-8",
         icon: "h-10 w-10 rounded-full",
+        "icon-xs": "h-7 w-7 rounded-full",
+        "icon-sm": "h-8 w-8 rounded-full",
+        "icon-lg": "h-11 w-11 rounded-full",
       },
     },
     defaultVariants: {

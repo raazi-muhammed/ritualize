@@ -10,7 +10,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { icons, LucideProps, LucideIcon } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import type { HugeiconsProps, IconSvgElement } from "@hugeicons/react";
+import * as icons from "@hugeicons/core-free-icons";
 import {
   Tooltip,
   TooltipContent,
@@ -21,10 +23,12 @@ import {
 type IconName = keyof typeof icons;
 type IconsList = { icon: IconName; alias?: string[] }[];
 
-const ICON_BUTTONS: IconsList = Object.keys(icons).map((icon) => ({
-  icon: icon as IconName,
-  alias: [] as string[],
-}));
+const ICON_BUTTONS: IconsList = Object.keys(icons)
+  .filter((icon) => icon.endsWith("Icon"))
+  .map((icon) => ({
+    icon: icon as IconName,
+    alias: [] as string[],
+  }));
 
 interface IconPickerProps extends Omit<
   React.ComponentPropsWithoutRef<typeof PopoverTrigger>,
@@ -183,14 +187,14 @@ const IconPicker = React.forwardRef<
 );
 IconPicker.displayName = "IconPicker";
 
-interface IconProps extends Omit<LucideProps, "ref"> {
+interface IconProps extends Omit<HugeiconsProps, "ref" | "icon"> {
   name: IconName;
 }
 
-const Icon = React.forwardRef<React.ComponentRef<LucideIcon>, IconProps>(
+const Icon = React.forwardRef<SVGSVGElement, IconProps>(
   ({ name, ...props }, ref) => {
-    const LucideIcon = icons[name];
-    return <LucideIcon ref={ref} {...props} />;
+    const iconData = icons[name] as IconSvgElement;
+    return <HugeiconsIcon ref={ref} icon={iconData} {...props} />;
   }
 );
 Icon.displayName = "Icon";

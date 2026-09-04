@@ -89,12 +89,7 @@ const StickyTitle = ({
           : "opacity-0 translate-y-2",
       )}
     >
-      <h3
-        style={{ fontFamily: "Funnel Display" }}
-        className="font-bold text-lg"
-      >
-        {title}
-      </h3>
+      <h3 className="font-bold text-lg font-mono">{title}</h3>
     </div>
   );
 };
