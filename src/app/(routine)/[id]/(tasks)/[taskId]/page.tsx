@@ -1,6 +1,8 @@
 "use client";
 
+import { useMemo } from "react";
 import PageTemplate from "@/components/layout/PageTemplate";
+import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Card } from "@/components/ui/card";
 import { formatDate, formatDateForInput } from "@/lib/format";
@@ -8,6 +10,7 @@ import {
   useDeleteCompletion,
   useDeleteTask,
   useGetTask,
+  useGetTaskCompletions,
   useUpdateTask,
 } from "@/queries/routine.query";
 import ContentStateTemplate from "@/components/layout/ContentStateTemplate";
@@ -31,6 +34,17 @@ export default function Page({
   const { openModal, closeModal } = useModal();
 
   const { data: task, isLoading } = useGetTask(params.taskId);
+  const {
+    completions,
+    canLoadMore,
+    isLoadingMore,
+    loadMore,
+  } = useGetTaskCompletions(task ? params.taskId : undefined);
+
+  const calendarDates = useMemo(
+    () => task?.completionDates.map((date) => new Date(date)) ?? [],
+    [task?.completionDates],
+  );
 
   const { mutateAsync: deleteCompletion } = useDeleteCompletion();
 
@@ -98,7 +112,7 @@ export default function Page({
       <ContentStateTemplate isLoading={isLoading}>
         {task && (
           <>
-            <p className="text-xl font-bold">{`${task.completions.length} Completions`}</p>
+            <p className="text-xl font-bold">{`${task.completionCount} Completions`}</p>
             <Calendar
               className="w-full"
               classNames={{
@@ -111,42 +125,54 @@ export default function Page({
               }}
               numberOfMonths={3}
               mode="multiple"
-              selected={task.completions.map((c) => new Date(c.date))}
+              selected={calendarDates}
             />
 
             <p className="text-xl font-bold mt-4 ps-2">Records</p>
-            {task.completions.length === 0 ? (
+            {completions.length === 0 ? (
               <EmptyTemplate
                 title="No records yet"
                 description="Complete this task to start building a record history."
               />
             ) : (
-              <ul className="space-y-2">
-                {task.completions.map((completion) => (
-                  <li key={completion._id}>
-                    <Card className="py-2 px-4 flex justify-between items-center">
-                      <div>
-                        <p className="text-lg">
-                          {formatDate(new Date(completion.date))}
-                        </p>
-                        <p>{completion.status}</p>
-                      </div>
-                      <DropdownTemplate
-                        actions={[
-                          {
-                            label: "Delete",
-                            icon: "Trash",
-                            variant: "destructive",
-                            onClick: async () => {
-                              await deleteCompletion(completion._id);
+              <>
+                <ul className="space-y-2">
+                  {completions.map((completion) => (
+                    <li key={completion._id}>
+                      <Card className="py-2 px-4 flex justify-between items-center">
+                        <div>
+                          <p className="text-lg">
+                            {formatDate(new Date(completion.date))}
+                          </p>
+                          <p>{completion.status}</p>
+                        </div>
+                        <DropdownTemplate
+                          actions={[
+                            {
+                              label: "Delete",
+                              icon: "Trash",
+                              variant: "destructive",
+                              onClick: async () => {
+                                await deleteCompletion(completion._id);
+                              },
                             },
-                          },
-                        ]}
-                      />
-                    </Card>
-                  </li>
-                ))}
-              </ul>
+                          ]}
+                        />
+                      </Card>
+                    </li>
+                  ))}
+                </ul>
+                {canLoadMore && (
+                  <Button
+                    variant="outline"
+                    className="w-full mt-2"
+                    disabled={isLoadingMore}
+                    onClick={() => loadMore()}
+                  >
+                    {isLoadingMore ? "Loading..." : "Load more"}
+                  </Button>
+                )}
+              </>
             )}
           </>
         )}

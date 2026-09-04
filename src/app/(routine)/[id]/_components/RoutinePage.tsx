@@ -5,7 +5,11 @@ import { RoutineWithTasks, CompletionStatus, TaskType } from "@/types/entities";
 import { useStore } from "@/stores";
 import { useTransitionRouter } from "next-view-transitions";
 import { useEffect, useMemo, useRef, useState } from "react";
-import ConfettiBurst from "./ConfettiBurst";
+import nextDynamic from "next/dynamic";
+
+const ConfettiBurst = nextDynamic(() => import("./ConfettiBurst"), {
+  ssr: false,
+});
 
 function RoutinePage({ routine }: { routine: RoutineWithTasks }) {
   const { selectedDate } = useStore();

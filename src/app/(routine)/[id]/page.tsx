@@ -1,7 +1,5 @@
 "use client";
 
-export const dynamic = "force-static";
-
 import RoutinePage from "./_components/RoutinePage";
 import { useStore } from "@/stores";
 import DateSelector from "@/app/_components/DateSelector";

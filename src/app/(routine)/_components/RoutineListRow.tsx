@@ -1,20 +1,21 @@
 import { Icon } from "@/components/ui/icon-picker";
 import { pageSlideAnimation } from "@/lib/animations";
 import { getRoutineColorClass } from "@/lib/routine-colors";
-import { RoutineWithTasks } from "@/types/entities";
+import { RoutineWithTaskCount } from "@/types/entities";
 import { cn } from "@/lib/utils";
 import { useTransitionRouter } from "next-view-transitions";
 import Link from "next/link";
+import { memo } from "react";
 
 const RoutineListRow = ({
   routine,
   isLast,
 }: {
-  routine: RoutineWithTasks;
+  routine: RoutineWithTaskCount;
   isLast?: boolean;
 }) => {
   const router = useTransitionRouter();
-  const taskCount = routine.tasks?.length ?? 0;
+  const taskCount = routine.taskCount ?? 0;
 
   return (
     <Link
@@ -51,4 +52,4 @@ const RoutineListRow = ({
   );
 };
 
-export default RoutineListRow;
+export default memo(RoutineListRow);

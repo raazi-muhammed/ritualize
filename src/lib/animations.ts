@@ -5,7 +5,7 @@ export const pageSlideAnimation = () => {
       { opacity: 1, scale: 0.9, transform: "translateX(-100px)" },
     ],
     {
-      duration: 1000,
+      duration: 300,
       easing: "cubic-bezier(.2,.88,.27,.95)",
       fill: "forwards",
       pseudoElement: "::view-transition-old(root)",
@@ -30,7 +30,7 @@ export const pageSlideBackAnimation = () => {
       { opacity: 1, scale: 0.9, transform: "translateX(100px)" },
     ],
     {
-      duration: 1000,
+      duration: 300,
       easing: "cubic-bezier(.2,.88,.27,.95)",
       fill: "forwards",
       pseudoElement: "::view-transition-old(root)",

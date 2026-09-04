@@ -33,6 +33,10 @@ export type RoutineWithTasks = Routine & {
   tasks: TaskWithStatus[];
 };
 
+export type RoutineWithTaskCount = Routine & {
+  taskCount: number;
+};
+
 export type TaskWithCompletions = Task & {
   completions: Doc<"taskCompletions">[];
 };

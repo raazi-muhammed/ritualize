@@ -14,27 +14,23 @@ export const getMany = query({
       .withIndex("by_user", (q) => q.eq("userId", userId))
       .collect();
 
-    // Fetch tasks for each routine to match RoutineWithTasks type if needed
-    // or just return routines. Usually for lists we might not need all tasks.
-    // But the existing API returns RoutineWithTasks[].
-
-    const routinesWithTasks = await Promise.all(
+    // The routine list only ever needs a task count (see RoutineListRow), so
+    // avoid fetching every task row for every routine.
+    const routinesWithTaskCount = await Promise.all(
       routines.map(async (routine) => {
         const tasks = await ctx.db
           .query("tasks")
           .withIndex("by_routine", (q) => q.eq("routineId", routine._id))
           .collect();
 
-        // For the list view, we might not need status for a specific date,
-        // but let's see what the frontend expects.
         return {
           ...routine,
-          tasks: tasks.map((t) => ({ ...t, status: "skipped" })), // Default status
+          taskCount: tasks.length,
         };
       }),
     );
 
-    return routinesWithTasks;
+    return routinesWithTaskCount;
   },
 });
 

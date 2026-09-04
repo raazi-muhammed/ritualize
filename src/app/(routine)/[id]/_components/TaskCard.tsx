@@ -2,7 +2,7 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useEffect, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import {
   useDeleteTask,
   useUpdateTask,
@@ -136,4 +136,4 @@ const TaskCard = ({
   );
 };
 
-export default TaskCard;
+export default memo(TaskCard);

@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import { Routine } from "@/types/entities";
 import { useTransitionRouter } from "next-view-transitions";
 import Link from "next/link";
+import { memo } from "react";
 
 const RoutineCard = ({
   routine,
@@ -67,4 +68,4 @@ const RoutineCard = ({
   );
 };
 
-export default RoutineCard;
+export default memo(RoutineCard);

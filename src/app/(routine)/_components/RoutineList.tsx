@@ -1,21 +1,19 @@
 "use client";
 
-export const dynamic = "force-static";
-
 import RoutineCard from "../[id]/_components/RoutineCard";
 import RoutineListRow from "./RoutineListRow";
 import RoutineSkeleton from "../_components/RoutineSkeleton";
 import ContentStateTemplate from "@/components/layout/ContentStateTemplate";
 import { useGetRoutines } from "@/queries/routine.query";
 import { EmptyTemplate } from "@/components/layout/EmptyTemplate";
-import { RoutineWithTasks } from "@/types/entities";
+import { RoutineWithTaskCount } from "@/types/entities";
 
 function RoutineGroup({
   title,
   routines,
 }: {
   title: string;
-  routines: RoutineWithTasks[];
+  routines: RoutineWithTaskCount[];
 }) {
   if (routines.length === 0) return null;
 

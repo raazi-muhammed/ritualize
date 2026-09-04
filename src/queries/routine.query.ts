@@ -1,8 +1,9 @@
-import { useMutation, useQuery } from "convex/react";
+import { useMutation, usePaginatedQuery, useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { Id, Doc } from "../../convex/_generated/dataModel";
 import {
   RoutineWithTasks,
+  RoutineWithTaskCount,
   TaskWithStatus,
   Routine,
   Task,
@@ -14,7 +15,7 @@ import { useState } from "react";
 export const useGetRoutines = () => {
   const data = useQuery(api.routines.getMany);
   return {
-    data: data as RoutineWithTasks[] | undefined,
+    data: data as RoutineWithTaskCount[] | undefined,
     isLoading: data === undefined,
   };
 };
@@ -25,10 +26,26 @@ export const useGetTask = (id: string) => {
   });
   return {
     data: data as
-      | (Task & { completions: Doc<"taskCompletions">[] })
+      | (Task & { completionCount: number; completionDates: string[] })
       | null
       | undefined,
     isLoading: data === undefined,
+  };
+};
+
+export const useGetTaskCompletions = (taskId: string | undefined) => {
+  const { results, status, isLoading, loadMore } = usePaginatedQuery(
+    api.tasks.getCompletions,
+    taskId ? { taskId: taskId as Id<"tasks"> } : "skip",
+    { initialNumItems: 20 },
+  );
+
+  return {
+    completions: results as Doc<"taskCompletions">[],
+    isLoading,
+    canLoadMore: status === "CanLoadMore",
+    isLoadingMore: status === "LoadingMore",
+    loadMore: () => loadMore(20),
   };
 };
 
