@@ -137,7 +137,7 @@ const TaskCard = ({
           </section>
         ) : (
           <section
-            className="flex items-end gap-2"
+            className="flex items-end gap-2 ps-3"
             onClick={() =>
               router.push(
                 `/${task.routineId}/${task._id}?name=${encodeURIComponent(
