@@ -32,7 +32,7 @@ const RoutineListRow = ({
       className={cn(
         "relative flex items-center gap-3 px-3 py-3 hover:bg-muted transition-colors",
         isActive &&
-          "bg-muted before:absolute before:inset-y-2 before:left-0 before:w-1 before:rounded-full before:bg-primary",
+          "bg-accent before:absolute before:inset-y-2 before:left-0 before:w-1 before:rounded-full before:bg-primary",
         !isLast &&
           "after:absolute after:inset-x-3 after:bottom-0 after:border-b after:border-border"
       )}
