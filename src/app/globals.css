@@ -41,7 +41,7 @@
     --routine-violet: 299 55% 55%;
     --routine-rose: 359 55% 55%;
     --routine-amber: 59 55% 55%;
-    --routine-emerald: 119 55% 55%;
+    --routine-emerald: 119 40% 40%;
     --routine-cyan: 179 55% 55%;
   }
 
@@ -83,7 +83,7 @@
     --routine-violet: 299 55% 55%;
     --routine-rose: 359 55% 55%;
     --routine-amber: 59 55% 55%;
-    --routine-emerald: 119 55% 55%;
+    --routine-emerald: 119 40% 40%;
     --routine-cyan: 179 55% 55%;
   }
 }
