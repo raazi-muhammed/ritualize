@@ -77,7 +77,7 @@ const DesktopPageTemplate = ({ children }: { children: React.ReactNode }) => {
             ]}
           >
             <div className="h-2" />
-            <RoutineList variant="grouped" />
+            <RoutineList />
           </PageTemplate>
         </SidebarContent>
       </Sidebar>

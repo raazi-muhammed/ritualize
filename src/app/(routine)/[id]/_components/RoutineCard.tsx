@@ -47,17 +47,14 @@ const RoutineCard = ({
             <div
               className={cn(
                 getRoutineColorClass(routine.color),
-                isList ? "size-10" : "size-8",
+                "size-8",
                 "grid place-items-center rounded-full"
               )}
             >
-              <Icon
-                name={routine.icon as any}
-                size={isList ? "1.5rem" : "1rem"}
-              />
+              <Icon name={routine.icon as any} size="1rem" />
             </div>
             <div className="flex flex-col gap-0">
-              <CardTitle className="flex justify-between text-base my-auto font-medium line-clamp-1">
+              <CardTitle className="flex justify-between text-base my-auto font-medium font-sans line-clamp-1">
                 {routine.name}
               </CardTitle>
             </div>
