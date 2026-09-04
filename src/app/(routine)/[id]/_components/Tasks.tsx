@@ -102,7 +102,7 @@ const Tasks = ({
   }
 
   return (
-    <section ref={containerRef} className="mb-36">
+    <section ref={containerRef} className="mb-36 select-none">
       {slottedItems.map(({ slotId, itemId, item: task }, index) => {
         // A "section" is a run of non-checkpoint tasks; grouping/rounding
         // resets at each checkpoint so every section renders as its own
