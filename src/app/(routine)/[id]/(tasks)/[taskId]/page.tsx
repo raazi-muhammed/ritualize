@@ -78,7 +78,7 @@ export default function Page({
           ? [
               {
                 label: "Edit",
-                icon: "Edit02Icon",
+                icon: "PencilEdit01Icon",
                 iconOnly: true,
                 onClick: () => {
                   openModal({

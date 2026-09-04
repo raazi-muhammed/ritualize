@@ -124,7 +124,7 @@ export default function Page({ params }: { params: { id: string } }) {
               },
               {
                 label: "Edit",
-                icon: "Pencil",
+                icon: "PencilEdit01Icon",
                 onClick: () => {
                   openModal({
                     title: "Edit Routine",
