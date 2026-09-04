@@ -74,6 +74,14 @@ const config = {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        routine: {
+          indigo: "hsl(var(--routine-indigo))",
+          violet: "hsl(var(--routine-violet))",
+          rose: "hsl(var(--routine-rose))",
+          amber: "hsl(var(--routine-amber))",
+          emerald: "hsl(var(--routine-emerald))",
+          cyan: "hsl(var(--routine-cyan))",
+        },
       },
       borderRadius: {
         DEFAULT: "var(--radius)",

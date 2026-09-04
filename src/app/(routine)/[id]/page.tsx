@@ -136,6 +136,7 @@ export default function Page({ params }: { params: { id: string } }) {
                           icon: routine.icon || "List",
                           duration: routine.duration || undefined,
                           isFavorite: routine.isFavorite,
+                          color: routine.color || "indigo",
                         }}
                       />
                     ),

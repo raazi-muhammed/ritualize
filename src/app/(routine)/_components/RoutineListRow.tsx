@@ -1,5 +1,6 @@
 import { Icon } from "@/components/ui/icon-picker";
 import { pageSlideAnimation } from "@/lib/animations";
+import { getRoutineColorClass } from "@/lib/routine-colors";
 import { RoutineWithTasks } from "@/types/entities";
 import { cn } from "@/lib/utils";
 import { useTransitionRouter } from "next-view-transitions";
@@ -30,8 +31,13 @@ const RoutineListRow = ({
           "after:absolute after:inset-x-3 after:bottom-0 after:border-b after:border-border"
       )}
     >
-      <div className="size-10 shrink-0 grid place-items-center rounded-full bg-secondary shadow-inner shadow-border">
-        <Icon name={routine.icon as any} size="1.25rem" />
+      <div
+        className={cn(
+          getRoutineColorClass(routine.color),
+          "size-8 shrink-0 grid place-items-center rounded-full"
+        )}
+      >
+        <Icon name={routine.icon as any} size="1rem" />
       </div>
       <div className="flex flex-col min-w-0">
         <span className="text-sm font-medium line-clamp-1">

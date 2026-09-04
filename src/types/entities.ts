@@ -7,6 +7,16 @@ export const CompletionStatus = {
   failed: "failed" as const,
 };
 
+export const ROUTINE_COLORS = [
+  "indigo",
+  "violet",
+  "rose",
+  "amber",
+  "emerald",
+  "cyan",
+] as const;
+export type RoutineColor = (typeof ROUTINE_COLORS)[number];
+
 export type Routine = Doc<"routines">;
 export type Task = Doc<"tasks">;
 export type TaskType = "task" | "checkpoint";

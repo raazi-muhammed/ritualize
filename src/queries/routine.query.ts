@@ -55,6 +55,7 @@ export const useCreateRoutine = (options?: {
       name: routine.name,
       icon: routine.icon,
       isFavorite: routine.isFavorite,
+      color: routine.color,
     });
     options?.onSuccess?.(id);
     return id;

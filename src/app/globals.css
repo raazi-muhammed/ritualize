@@ -37,6 +37,12 @@
     --sidebar-accent-foreground: var(--accent-foreground);
     --sidebar-border: var(--border);
     --sidebar-ring: var(--ring);
+    --routine-indigo: var(--primary);
+    --routine-violet: 299 83% 67%;
+    --routine-rose: 359 83% 67%;
+    --routine-amber: 59 83% 67%;
+    --routine-emerald: 119 83% 67%;
+    --routine-cyan: 179 83% 67%;
   }
 
   .dark {
@@ -73,6 +79,12 @@
     --sidebar-accent-foreground: var(--accent-foreground);
     --sidebar-border: var(--border);
     --sidebar-ring: var(--ring);
+    --routine-indigo: var(--primary);
+    --routine-violet: 299 83% 67%;
+    --routine-rose: 359 83% 67%;
+    --routine-amber: 59 83% 67%;
+    --routine-emerald: 119 83% 67%;
+    --routine-cyan: 179 83% 67%;
   }
 }
 

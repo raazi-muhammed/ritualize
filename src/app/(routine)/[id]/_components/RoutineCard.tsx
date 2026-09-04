@@ -4,6 +4,8 @@ import {
   pageSlideAnimation,
   PRESSABLE_ANIMATION_CLASSES,
 } from "@/lib/animations";
+import { getRoutineColorClass } from "@/lib/routine-colors";
+import { cn } from "@/lib/utils";
 import { Routine } from "@/types/entities";
 import { useTransitionRouter } from "next-view-transitions";
 import Link from "next/link";
@@ -42,9 +44,11 @@ const RoutineCard = ({
             } gap-2 align-middle`}
           >
             <div
-              className={`bg-secondary shadow-inner shadow-border ${
-                isList ? "size-10" : "size-8"
-              } grid place-items-center rounded-full`}
+              className={cn(
+                getRoutineColorClass(routine.color),
+                isList ? "size-10" : "size-8",
+                "grid place-items-center rounded-full"
+              )}
             >
               <Icon
                 name={routine.icon as any}

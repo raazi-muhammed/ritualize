@@ -1,6 +1,7 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
+import { routineColor } from "./schema";
 
 export const getMany = query({
   args: {},
@@ -84,6 +85,7 @@ export const create = mutation({
     name: v.string(),
     icon: v.optional(v.string()),
     isFavorite: v.optional(v.boolean()),
+    color: v.optional(routineColor),
   },
   handler: async (ctx, args) => {
     const userId = await getAuthUserId(ctx);
@@ -93,6 +95,7 @@ export const create = mutation({
       name: args.name,
       icon: args.icon,
       isFavorite: args.isFavorite ?? false,
+      color: args.color,
       userId,
     });
 
@@ -107,6 +110,7 @@ export const update = mutation({
     icon: v.optional(v.string()),
     isFavorite: v.optional(v.boolean()),
     duration: v.optional(v.number()),
+    color: v.optional(routineColor),
   },
   handler: async (ctx, args) => {
     const { id, ...fields } = args;
