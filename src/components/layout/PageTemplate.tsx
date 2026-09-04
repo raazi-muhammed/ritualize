@@ -26,6 +26,7 @@ export type ActionType =
       disabled?: boolean;
       className?: string;
       variant?: "default" | "destructive" | "card";
+      iconOnly?: boolean;
     }
   | ReactNode;
 
@@ -41,6 +42,7 @@ function ActionButton({ action }: { action: ActionType }) {
         onClick={action.onClick}
         disabled={action.disabled}
         variant={action.variant}
+        iconOnly={action.iconOnly}
         className={cn(
           action.placement === "right" && "ms-auto",
           action.placement === "left" && "me-auto",

@@ -85,7 +85,9 @@ export default function Page({ params }: { params: { id: string } }) {
         routine
           ? [
               {
+                label: "Add Task",
                 icon: "Plus",
+                iconOnly: true,
                 variant: "card",
                 onClick: () => {
                   openModal({

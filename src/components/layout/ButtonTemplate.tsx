@@ -1,6 +1,12 @@
 import { Button } from "../ui/button";
 import { Icon, IconName } from "../ui/icon-picker";
 import { cn } from "@/lib/utils";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "../ui/tooltip";
 
 interface ActionType {
   label?: string;
@@ -9,6 +15,7 @@ interface ActionType {
   disabled?: boolean;
   className?: string;
   variant?: "default" | "secondary" | "destructive" | "card";
+  iconOnly?: boolean;
 }
 
 function ButtonTemplate({
@@ -17,20 +24,36 @@ function ButtonTemplate({
   onClick,
   disabled,
   variant,
+  iconOnly,
 }: ActionType) {
-  return (
+  const isIconOnly = Boolean(icon) && (iconOnly || !label);
+
+  const button = (
     <Button
       key={label}
       disabled={disabled}
       onClick={onClick}
-      size={icon && !label ? "icon" : "default"}
+      size={isIconOnly ? "icon" : "default"}
       variant={variant || "secondary"}
-      className={cn("my-auto gap-2", icon && label && "ps-3")}
+      className={cn("my-auto gap-2", icon && label && !isIconOnly && "ps-3")}
     >
       {icon && <Icon name={icon} className="size-5" />}{" "}
-      {label && <p>{label}</p>}
+      {!isIconOnly && label && <p>{label}</p>}
     </Button>
   );
+
+  if (isIconOnly && label) {
+    return (
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>{button}</TooltipTrigger>
+          <TooltipContent>{label}</TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    );
+  }
+
+  return button;
 }
 
 export default ButtonTemplate;
