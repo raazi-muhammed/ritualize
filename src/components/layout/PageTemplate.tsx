@@ -188,7 +188,7 @@ const PageTemplate = ({
       </header>
       {title && (
         <section ref={titleRef} className="bg-background scroll-mt-24">
-          <Heading className="text-3xl">{title}</Heading>
+          <Heading className="text-3xl ps-1">{title}</Heading>
         </section>
       )}
 
