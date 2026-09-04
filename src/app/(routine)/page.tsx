@@ -64,6 +64,7 @@ export default function Home() {
         {
           label: "Add",
           icon: "Plus",
+          variant: "card",
           onClick: () => {
             openModal({
               title: "Add Routine",

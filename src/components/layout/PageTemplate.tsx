@@ -25,7 +25,7 @@ export type ActionType =
       placement?: "left" | "right";
       disabled?: boolean;
       className?: string;
-      variant?: "default" | "destructive";
+      variant?: "default" | "destructive" | "card";
     }
   | ReactNode;
 

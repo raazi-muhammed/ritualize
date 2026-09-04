@@ -88,6 +88,7 @@ export default function Page({ params }: { params: { id: string } }) {
           ? [
               {
                 icon: "Plus",
+                variant: "card",
                 onClick: () => {
                   openModal({
                     title: "Add Task",

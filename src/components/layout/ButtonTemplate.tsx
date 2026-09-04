@@ -8,7 +8,7 @@ interface ActionType {
   onClick: () => void;
   disabled?: boolean;
   className?: string;
-  variant?: "default" | "secondary" | "destructive";
+  variant?: "default" | "secondary" | "destructive" | "card";
 }
 
 function ButtonTemplate({

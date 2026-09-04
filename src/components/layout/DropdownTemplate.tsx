@@ -16,7 +16,7 @@ const DropdownTemplate = ({ actions }: { actions: ActionType[] }) => {
   return (
     <DropdownMenu modal={false}>
       <DropdownMenuTrigger asChild>
-        <Button variant="secondary" size="icon" className="my-auto">
+        <Button variant="card" size="icon" className="my-auto">
           <HugeiconsIcon icon={MoreVerticalIcon} className="size-5" />
         </Button>
       </DropdownMenuTrigger>

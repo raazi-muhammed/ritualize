@@ -65,6 +65,7 @@ const DesktopPageTemplate = ({ children }: { children: React.ReactNode }) => {
               {
                 label: "Add",
                 icon: "Plus",
+                variant: "card",
                 onClick: () => {
                   openModal({
                     title: "Add Routine",
