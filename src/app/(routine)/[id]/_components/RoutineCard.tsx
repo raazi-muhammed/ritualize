@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import { Routine } from "@/types/entities";
 import { useTransitionRouter } from "next-view-transitions";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 import { memo } from "react";
 
 const RoutineCard = ({
@@ -19,6 +20,8 @@ const RoutineCard = ({
   isList?: boolean;
 }) => {
   const router = useTransitionRouter();
+  const params = useParams<{ id?: string }>();
+  const isActive = params?.id === routine._id;
 
   return (
     <Link
@@ -34,9 +37,13 @@ const RoutineCard = ({
       }}
     >
       <Card
-        className={`${PRESSABLE_ANIMATION_CLASSES} relative -z-0 overflow-hidden p-2 transition-transform active:scale-90 duration-200 ease-in-out ${
-          routine?._id ?? "opacity-50 pointer-events-none"
-        }`}
+        className={cn(
+          PRESSABLE_ANIMATION_CLASSES,
+          "relative -z-0 overflow-hidden p-2 transition-transform active:scale-90 duration-200 ease-in-out",
+          !routine?._id && "opacity-50 pointer-events-none",
+          isActive &&
+            "bg-muted before:absolute before:inset-y-2 before:left-0 before:w-1 before:rounded-full before:bg-primary"
+        )}
       >
         <CardHeader className="z-10 p-2 flex justify-between flex-row">
           <div
