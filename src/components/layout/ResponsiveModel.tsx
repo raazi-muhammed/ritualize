@@ -41,7 +41,7 @@ const ResponsiveModel = ({
           onInteractOutside={(e) => {
             e.preventDefault();
           }}
-          className="max-h-[calc(100vh-10rem)] overflow-auto sm:rounded-4xl bg-popover border-none shadow-sm p-3 pt-1"
+          className="max-h-[calc(100vh-10rem)] overflow-auto sm:rounded-lg bg-popover border-none shadow-sm p-3 pt-1"
         >
           <DialogHeader className="flex flex-row justify-between items-center">
             <Heading className="text-2xl mt-2 ms-3">{title}</Heading>
@@ -60,7 +60,7 @@ const ResponsiveModel = ({
     );
   return (
     <Drawer open={open} onOpenChange={setOpen} preventScrollRestoration fixed>
-      <DrawerContent className="h-[95vh] px-4 sm:px-12 rounded-4xl bg-popover border-none">
+      <DrawerContent className="h-[95vh] px-4 sm:px-12 rounded-lg bg-popover border-none">
         <DrawerHeader className="px-0 py-2 flex flex-row justify-between items-center">
           <Heading className="text-2xl text-start ms-3">{title}</Heading>
           <DrawerClose>

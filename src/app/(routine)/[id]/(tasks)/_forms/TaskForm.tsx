@@ -121,7 +121,7 @@ function TaskForm({
                       size={"sm"}
                       variant={"outline"}
                       className={cn(
-                        "w-fit h-12 rounded-sm justify-start text-left font-normal bg-secondary border-none hover:bg-secondary",
+                        "w-fit h-12 rounded-sm justify-start text-left font-normal bg-card border-none hover:bg-card",
                         !field.value && "text-muted-foreground",
                       )}
                     >

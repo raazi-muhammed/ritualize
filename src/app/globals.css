@@ -8,7 +8,7 @@
     --foreground: 0 0% 4%;
     --card: 0 0% 100%;
     --card-foreground: var(--foreground);
-    --popover: var(--card);
+    --popover: var(--secondary);
     --popover-foreground: var(--card-foreground);
     --primary: 239 83% 67%;
     --primary-foreground: 0 0% 98%;
@@ -44,7 +44,7 @@
     --foreground: 0 0% 98%;
     --card: 240 9% 9%;
     --card-foreground: var(--foreground);
-    --popover: var(--card);
+    --popover: var(--secondary);
     --popover-foreground: var(--card-foreground);
     --primary: 239 83% 67%;
     --primary-foreground: var(--foreground);
