@@ -186,6 +186,7 @@ function StartComponent({
                 label: "Prev",
                 placement: "left",
                 icon: "ChevronLeft",
+                variant: "card-outline" as const,
                 disabled: !routine?.tasks
                   .slice(0, currentTaskIndex)
                   .some((t) => t.type !== TaskType.checkpoint),
@@ -214,7 +215,10 @@ function StartComponent({
                   ]
                 : [
                     {
+                      label: "Skip",
                       icon: "Forward" as IconName,
+                      iconOnly: true,
+                      variant: "card-outline" as const,
                       placement: "right" as any,
                       onClick: async () => {
                         moveToNextPossibleTask();
@@ -226,6 +230,7 @@ function StartComponent({
                       label: "Next",
                       placement: "right" as any,
                       icon: "ChevronRight" as IconName,
+                      variant: "card-outline" as const,
                       onClick: async () => {
                         moveToNextPossibleTask();
                         reset();

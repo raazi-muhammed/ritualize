@@ -16,6 +16,7 @@ import {
 import ContentStateTemplate from "@/components/layout/ContentStateTemplate";
 import TaskForm, { taskSchema } from "../_forms/TaskForm";
 import { useModal } from "@/providers/ModelProvider";
+import { useAlert } from "@/providers/AlertProvider";
 import { z } from "zod";
 import { useTransitionRouter } from "next-view-transitions";
 import { pageSlideBackAnimation } from "@/lib/animations";
@@ -32,6 +33,7 @@ export default function Page({
   const searchParams = useSearchParams();
   const nameQueryParam = searchParams.get("name");
   const { openModal, closeModal } = useModal();
+  const { openAlert } = useAlert();
 
   const { data: task, isLoading } = useGetTask(params.taskId);
   const {
@@ -76,7 +78,8 @@ export default function Page({
           ? [
               {
                 label: "Edit",
-                icon: "Pencil",
+                icon: "PencilEdit01Icon",
+                iconOnly: true,
                 onClick: () => {
                   openModal({
                     title: "Edit Task",
@@ -100,9 +103,13 @@ export default function Page({
               {
                 label: "Delete",
                 icon: "Trash",
-                variant: "destructive",
+                iconOnly: true,
                 onClick: () => {
-                  deleteTask(params.taskId);
+                  openAlert({
+                    title: "Delete task",
+                    description: `Are you sure you want to delete "${task.name}"? This cannot be undone.`,
+                    onConfirm: () => deleteTask(params.taskId),
+                  });
                 },
               },
             ]

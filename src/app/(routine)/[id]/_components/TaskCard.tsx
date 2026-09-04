@@ -10,7 +10,7 @@ import {
 } from "@/queries/routine.query";
 import { taskSchema } from "../(tasks)/_forms/TaskForm";
 import { z } from "zod";
-import { generateCardDescription } from "@/lib/utils";
+import { cn, generateCardDescription } from "@/lib/utils";
 import { useModal } from "@/providers/ModelProvider";
 import { TaskWithStatus, CompletionStatus, TaskType } from "@/types/entities";
 import { useRouter } from "next/navigation";
@@ -25,11 +25,17 @@ const TaskCard = ({
   showStartDate = false,
   date,
   noMargin = false,
+  grouped = false,
+  isFirst = false,
+  isLast = false,
 }: {
   task: TaskWithStatus;
   showStartDate?: boolean;
   date: Date;
   noMargin?: boolean;
+  grouped?: boolean;
+  isFirst?: boolean;
+  isLast?: boolean;
 }) => {
   const { closeModal } = useModal();
   const router = useRouter();
@@ -74,11 +80,23 @@ const TaskCard = ({
   return (
     <Card
       key={task._id}
-      className={`${
+      className={cn(
         task.type == TaskType.checkpoint
           ? "bg-transparent my-0"
-          : `${noMargin ? "my-0" : "my-2"} has-[.task-card-action:active]:scale-95 transition-transform`
-      } ${task._id == "" ? "opacity-50" : ""}`}
+          : cn(
+              noMargin ? "my-0" : "my-2",
+              "has-[.task-card-action:active]:scale-95 transition-transform"
+            ),
+        task._id == "" && "opacity-50",
+        grouped &&
+          task.type !== TaskType.checkpoint &&
+          cn(
+            "rounded-none shadow-none border-0",
+            isFirst && "rounded-t-lg",
+            isLast && "rounded-b-lg",
+            !isLast && "border-b border-border"
+          )
+      )}
     >
       <CardContent className="flex justify-between p-0">
         {task.type == TaskType.task ? (
@@ -119,7 +137,7 @@ const TaskCard = ({
           </section>
         ) : (
           <section
-            className="flex items-end gap-2"
+            className="flex items-end gap-2 ps-3"
             onClick={() =>
               router.push(
                 `/${task.routineId}/${task._id}?name=${encodeURIComponent(

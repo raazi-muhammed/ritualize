@@ -25,7 +25,8 @@ export type ActionType =
       placement?: "left" | "right";
       disabled?: boolean;
       className?: string;
-      variant?: "default" | "destructive" | "card";
+      variant?: "default" | "destructive" | "card" | "card-outline";
+      iconOnly?: boolean;
     }
   | ReactNode;
 
@@ -41,6 +42,7 @@ function ActionButton({ action }: { action: ActionType }) {
         onClick={action.onClick}
         disabled={action.disabled}
         variant={action.variant}
+        iconOnly={action.iconOnly}
         className={cn(
           action.placement === "right" && "ms-auto",
           action.placement === "left" && "me-auto",
@@ -161,6 +163,7 @@ const PageTemplate = ({
             }}
             className="ps-0 pe-12 transition-all"
             icon="ChevronLeft"
+            variant="card-outline"
           />
         ) : (
           <div />
@@ -188,7 +191,7 @@ const PageTemplate = ({
       </header>
       {title && (
         <section ref={titleRef} className="bg-background scroll-mt-24">
-          <Heading>{title}</Heading>
+          <Heading className="text-3xl ps-1">{title}</Heading>
         </section>
       )}
 

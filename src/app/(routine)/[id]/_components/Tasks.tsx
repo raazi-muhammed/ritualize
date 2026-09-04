@@ -102,30 +102,43 @@ const Tasks = ({
   }
 
   return (
-    <section ref={containerRef} className="mb-36">
-      {slottedItems.map(({ slotId, itemId, item: task }) => (
-        // Wrapper stays in normal flow and holds the measured height while
-        // the inner [data-swapy-slot] may become position:absolute during drag.
-        <div key={slotId} className="relative swapy-slot-wrapper">
-          <div
-            data-swapy-slot={slotId}
-            className={
-              task?.type !== TaskType.checkpoint ? "py-1" : ""
-            }
-          >
-            {task ? (
-              <div key={itemId} data-swapy-item={itemId}>
-                <TaskCard
-                  task={task}
-                  showStartDate={showStartDate}
-                  date={date ?? new Date()}
-                  noMargin
-                />
-              </div>
-            ) : null}
+    <section ref={containerRef} className="mb-36 select-none">
+      {slottedItems.map(({ slotId, itemId, item: task }, index) => {
+        // A "section" is a run of non-checkpoint tasks; grouping/rounding
+        // resets at each checkpoint so every section renders as its own
+        // joined block instead of one block spanning the whole routine.
+        const prevTask = slottedItems[index - 1]?.item;
+        const nextTask = slottedItems[index + 1]?.item;
+        const isSectionFirst = !prevTask || prevTask.type === TaskType.checkpoint;
+        const isSectionLast = !nextTask || nextTask.type === TaskType.checkpoint;
+
+        return (
+          // Wrapper stays in normal flow and holds the measured height while
+          // the inner [data-swapy-slot] may become position:absolute during drag.
+          <div key={slotId} className="relative swapy-slot-wrapper">
+            <div
+              data-swapy-slot={slotId}
+              className={
+                task?.type === TaskType.checkpoint ? "py-1" : ""
+              }
+            >
+              {task ? (
+                <div key={itemId} data-swapy-item={itemId}>
+                  <TaskCard
+                    task={task}
+                    showStartDate={showStartDate}
+                    date={date ?? new Date()}
+                    noMargin
+                    grouped
+                    isFirst={isSectionFirst}
+                    isLast={isSectionLast}
+                  />
+                </div>
+              ) : null}
+            </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
     </section>
   );
 };

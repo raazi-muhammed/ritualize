@@ -11,15 +11,28 @@ import { isValidElement } from "react";
 import { Icon } from "../ui/icon-picker";
 import { ActionType } from "./PageTemplate";
 import { cn } from "@/lib/utils";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "../ui/tooltip";
 
 const DropdownTemplate = ({ actions }: { actions: ActionType[] }) => {
   return (
     <DropdownMenu modal={false}>
-      <DropdownMenuTrigger asChild>
-        <Button variant="card" size="icon" className="my-auto">
-          <HugeiconsIcon icon={MoreVerticalIcon} className="size-5" />
-        </Button>
-      </DropdownMenuTrigger>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <DropdownMenuTrigger asChild>
+              <Button variant="card-outline" size="icon" className="my-auto">
+                <HugeiconsIcon icon={MoreVerticalIcon} className="size-5" />
+              </Button>
+            </DropdownMenuTrigger>
+          </TooltipTrigger>
+          <TooltipContent>More options</TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
       <DropdownMenuContent align="end">
         {actions.map((action, index) => {
           if (isValidElement(action)) {

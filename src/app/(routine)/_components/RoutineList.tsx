@@ -8,6 +8,26 @@ import { useGetRoutines } from "@/queries/routine.query";
 import { EmptyTemplate } from "@/components/layout/EmptyTemplate";
 import { RoutineWithTaskCount } from "@/types/entities";
 
+function RoutineListSection({
+  routines,
+}: {
+  routines: RoutineWithTaskCount[];
+}) {
+  if (routines.length === 0) return null;
+
+  return (
+    <div className="rounded-lg bg-card overflow-hidden">
+      {routines.map((routine, index) => (
+        <RoutineListRow
+          key={routine._id}
+          routine={routine}
+          isLast={index === routines.length - 1}
+        />
+      ))}
+    </div>
+  );
+}
+
 function RoutineGroup({
   title,
   routines,
@@ -22,15 +42,7 @@ function RoutineGroup({
       <p className="text-xs font-medium text-muted-foreground px-1">
         {title}
       </p>
-      <div className="rounded-lg bg-card overflow-hidden">
-        {routines.map((routine, index) => (
-          <RoutineListRow
-            key={routine._id}
-            routine={routine}
-            isLast={index === routines.length - 1}
-          />
-        ))}
-      </div>
+      <RoutineListSection routines={routines} />
     </div>
   );
 }
@@ -62,28 +74,18 @@ export default function RoutineList({
     );
   }
 
+  const favorites = routines?.filter((r) => r.isFavorite) ?? [];
+  const others = routines?.filter((r) => !r.isFavorite) ?? [];
+
   return (
     <ContentStateTemplate isLoading={isLoading} skeleton={<RoutineSkeleton />}>
       <section className="flex flex-col gap-4 mb-12">
         <section className="grid grid-cols-2 gap-4">
-          {routines
-            ?.filter((r) => r.isFavorite)
-            .map((routine) => (
-              <RoutineCard
-                key={routine._id}
-                isList={true}
-                routine={routine}
-              />
-            ))}
-        </section>
-        {routines
-          ?.filter((r) => !r.isFavorite)
-          .map((routine) => (
-            <RoutineCard
-              key={routine._id}
-              routine={routine}
-            />
+          {favorites.map((routine) => (
+            <RoutineCard key={routine._id} isList={true} routine={routine} />
           ))}
+        </section>
+        <RoutineListSection routines={others} />
         {routines?.length === 0 && (
           <EmptyTemplate
             title="No routines yet"

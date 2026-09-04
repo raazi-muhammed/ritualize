@@ -5,6 +5,7 @@ import { RoutineWithTaskCount } from "@/types/entities";
 import { cn } from "@/lib/utils";
 import { useTransitionRouter } from "next-view-transitions";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 import { memo } from "react";
 
 const RoutineListRow = ({
@@ -15,6 +16,8 @@ const RoutineListRow = ({
   isLast?: boolean;
 }) => {
   const router = useTransitionRouter();
+  const params = useParams<{ id?: string }>();
+  const isActive = params?.id === routine._id;
   const taskCount = routine.taskCount ?? 0;
 
   return (
@@ -27,7 +30,9 @@ const RoutineListRow = ({
         });
       }}
       className={cn(
-        "relative flex items-center gap-3 px-3 py-3 hover:bg-muted transition-colors",
+        "relative flex items-center gap-3 px-3 py-3 hover:bg-muted/50 transition-colors",
+        isActive &&
+          "bg-accent/30 before:absolute before:left-0 before:top-1/2 before:h-1/2 before:-translate-y-1/2 before:w-1 before:rounded-full before:bg-primary",
         !isLast &&
           "after:absolute after:inset-x-3 after:bottom-0 after:border-b after:border-border"
       )}

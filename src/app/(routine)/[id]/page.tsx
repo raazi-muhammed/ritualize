@@ -85,8 +85,10 @@ export default function Page({ params }: { params: { id: string } }) {
         routine
           ? [
               {
+                label: "Add Task",
                 icon: "Plus",
-                variant: "card",
+                iconOnly: true,
+                variant: "card-outline",
                 onClick: () => {
                   openModal({
                     title: "Add Task",
@@ -122,7 +124,7 @@ export default function Page({ params }: { params: { id: string } }) {
               },
               {
                 label: "Edit",
-                icon: "Pencil",
+                icon: "PencilEdit01Icon",
                 onClick: () => {
                   openModal({
                     title: "Edit Routine",
