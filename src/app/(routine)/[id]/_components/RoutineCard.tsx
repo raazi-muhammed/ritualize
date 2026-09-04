@@ -42,7 +42,7 @@ const RoutineCard = ({
           "relative -z-0 overflow-hidden p-2 transition-transform active:scale-90 duration-200 ease-in-out",
           !routine?._id && "opacity-50 pointer-events-none",
           isActive &&
-            "bg-accent/30 before:absolute before:inset-y-2 before:left-0 before:w-1 before:rounded-full before:bg-primary"
+            "bg-accent/30 before:absolute before:left-0 before:top-1/2 before:h-1/2 before:-translate-y-1/2 before:w-1 before:rounded-full before:bg-primary"
         )}
       >
         <CardHeader className="z-10 p-2 flex justify-between flex-row">
