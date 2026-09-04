@@ -15,6 +15,9 @@ import { IconPicker } from "@/components/ui/icon-picker";
 import { routineSchema } from "./schema";
 import { Switch } from "@/components/ui/switch";
 import FormGroup from "@/components/form/FormGroup";
+import { ROUTINE_COLORS } from "@/types/entities";
+import { ROUTINE_COLOR_BG_CLASS } from "@/lib/routine-colors";
+import { cn } from "@/lib/utils";
 
 function RoutineForm({
   onSubmit,
@@ -24,6 +27,7 @@ function RoutineForm({
 
     isFavorite: false,
     icon: "List",
+    color: "indigo",
   },
 }: {
   onSubmit: any;
@@ -47,6 +51,30 @@ function RoutineForm({
                 value={field.value as any}
                 onValueChange={field.onChange}
               />
+            </FormInput>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="color"
+          render={({ field }) => (
+            <FormInput label="Color">
+              <div className="flex gap-2">
+                {ROUTINE_COLORS.map((color) => (
+                  <button
+                    key={color}
+                    type="button"
+                    aria-label={color}
+                    onClick={() => field.onChange(color)}
+                    className={cn(
+                      "size-7 rounded-full transition-transform",
+                      ROUTINE_COLOR_BG_CLASS[color],
+                      field.value === color &&
+                        "ring-2 ring-offset-2 ring-offset-background ring-foreground"
+                    )}
+                  />
+                ))}
+              </div>
             </FormInput>
           )}
         />

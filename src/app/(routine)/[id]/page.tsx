@@ -1,7 +1,5 @@
 "use client";
 
-export const dynamic = "force-static";
-
 import RoutinePage from "./_components/RoutinePage";
 import { useStore } from "@/stores";
 import DateSelector from "@/app/_components/DateSelector";
@@ -88,6 +86,7 @@ export default function Page({ params }: { params: { id: string } }) {
           ? [
               {
                 icon: "Plus",
+                variant: "card",
                 onClick: () => {
                   openModal({
                     title: "Add Task",
@@ -135,6 +134,7 @@ export default function Page({ params }: { params: { id: string } }) {
                           icon: routine.icon || "List",
                           duration: routine.duration || undefined,
                           isFavorite: routine.isFavorite,
+                          color: routine.color || "indigo",
                         }}
                       />
                     ),
@@ -159,6 +159,7 @@ export default function Page({ params }: { params: { id: string } }) {
         {
           label: "Start",
           icon: "Play",
+          variant: "default",
           placement: "right",
           onClick: () => {
             router.push(`/${routine?._id}/start`, {

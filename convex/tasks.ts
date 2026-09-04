@@ -1,7 +1,15 @@
 import { v } from "convex/values";
+import { paginationOptsValidator } from "convex/server";
 import { mutation, query } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
 
+// Returns the task plus a lightweight summary of its completions (a count
+// and the bare dates, for the calendar view). The full completion records
+// (used by the "Records" list) are loaded separately via `getCompletions`,
+// which is paginated — a daily habit tracked for months/years can build up
+// hundreds of completions, and this page is re-fetched on every realtime
+// update, so we don't want to ship every full record just to render a count
+// and a calendar.
 export const getWithCompletions = query({
   args: { id: v.id("tasks") },
   handler: async (ctx, args) => {
@@ -21,8 +29,34 @@ export const getWithCompletions = query({
 
     return {
       ...task,
-      completions,
+      completionCount: completions.length,
+      completionDates: completions.map((c) => c.date),
     };
+  },
+});
+
+export const getCompletions = query({
+  args: {
+    taskId: v.id("tasks"),
+    paginationOpts: paginationOptsValidator,
+  },
+  handler: async (ctx, args) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) return { page: [], isDone: true, continueCursor: "" };
+
+    const task = await ctx.db.get(args.taskId);
+    if (!task) return { page: [], isDone: true, continueCursor: "" };
+
+    const routine = await ctx.db.get(task.routineId);
+    if (!routine || routine.userId !== userId) {
+      return { page: [], isDone: true, continueCursor: "" };
+    }
+
+    return await ctx.db
+      .query("taskCompletions")
+      .withIndex("by_task_date", (q) => q.eq("taskId", args.taskId))
+      .order("desc")
+      .paginate(args.paginationOpts);
   },
 });
 

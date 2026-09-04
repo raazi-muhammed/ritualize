@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Fira_Code } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
@@ -16,7 +16,8 @@ import { ModalProvider } from "@/providers/ModelProvider";
 import { AlertProvider } from "@/providers/AlertProvider";
 import { ViewTransitions } from "next-view-transitions";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
+const firaCode = Fira_Code({ subsets: ["latin"], variable: "--font-mono" });
 
 export const metadata: Metadata = {
   title: "Ritualize",
@@ -50,15 +51,7 @@ export default function RootLayout({
     <ViewTransitions>
       <ConvexAuthNextjsServerProvider>
         <html lang="en" suppressHydrationWarning>
-          <head>
-            <link rel="preconnect" href="https://fonts.googleapis.com" />
-            <link rel="preconnect" href="https://fonts.gstatic.com" />
-            <link
-              href="https://fonts.googleapis.com/css2?family=Funnel+Display:wght@300..800&display=swap"
-              rel="stylesheet"
-            />
-          </head>
-          <body className={inter.className}>
+          <body className={`${inter.variable} ${firaCode.variable} font-sans`}>
             <ConvexClientProvider>
               <ThemeProvider
                 attribute="class"

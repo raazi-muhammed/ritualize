@@ -1,7 +1,5 @@
 "use client";
 
-export const dynamic = "force-static";
-
 import { Button } from "@/components/ui/button";
 import { useStore } from "@/stores";
 import {
@@ -11,7 +9,8 @@ import {
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
-import { CalendarIcon } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Calendar01Icon } from "@hugeicons/core-free-icons";
 import { cn } from "@/lib/utils";
 
 export default function DateSelector() {
@@ -31,7 +30,7 @@ export default function DateSelector() {
               !selectedDate && "text-muted-foreground"
             )}
           >
-            <CalendarIcon className="mr-2 h-4 w-4" />
+            <HugeiconsIcon icon={Calendar01Icon} className="mr-2 h-4 w-4" />
             {selectedDate ? (
               format(selectedDate, "PPP")
             ) : (

@@ -1,4 +1,5 @@
-import { CircleOff } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { CircleOffIcon } from "@hugeicons/core-free-icons";
 import {
   Empty,
   EmptyContent,
@@ -27,7 +28,7 @@ export function EmptyTemplate({
     <Empty className="min-h-[calc(80vh)]">
       <EmptyHeader>
         <EmptyMedia variant="icon" className="size-12">
-          <CircleOff />
+          <HugeiconsIcon icon={CircleOffIcon} />
         </EmptyMedia>
         <EmptyTitle>{title}</EmptyTitle>
         <EmptyDescription>{description}</EmptyDescription>

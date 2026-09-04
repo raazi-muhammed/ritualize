@@ -17,7 +17,7 @@ function FormSelect({
 } & SelectProps) {
   return (
     <Select {...props}>
-      <SelectTrigger className="bg-input-background w-fit border-none focus:ring-0 ring-ring-0">
+      <SelectTrigger className="bg-card w-fit border-none focus:ring-0 ring-ring-0">
         <SelectValue placeholder="Frequency" />
       </SelectTrigger>
       <SelectContent>

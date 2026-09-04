@@ -34,7 +34,7 @@ const DesktopPageTemplate = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <SidebarProvider>
-      <Sidebar variant="floating">
+      <Sidebar>
         <SidebarContent>
           <PageTemplate
             hideBack
@@ -65,6 +65,7 @@ const DesktopPageTemplate = ({ children }: { children: React.ReactNode }) => {
               {
                 label: "Add",
                 icon: "Plus",
+                variant: "card",
                 onClick: () => {
                   openModal({
                     title: "Add Routine",
@@ -76,7 +77,7 @@ const DesktopPageTemplate = ({ children }: { children: React.ReactNode }) => {
             ]}
           >
             <div className="h-2" />
-            <RoutineList />
+            <RoutineList variant="grouped" />
           </PageTemplate>
         </SidebarContent>
       </Sidebar>

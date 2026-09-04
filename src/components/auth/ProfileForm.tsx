@@ -6,14 +6,15 @@ import { Form, FormField } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React, { useRef, useState } from "react";
-import { useForm } from "react-hook-form";
+import { Control, useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 import {
   useUpdateProfile,
   useGetUploadUrl,
   useUpdateImage,
 } from "@/queries/user.query";
-import { ImagePlus } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { ImageAdd01Icon } from "@hugeicons/core-free-icons";
 
 const profileSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -25,6 +26,21 @@ interface ProfileFormProps {
   defaultValues?: ProfileFormValues & { image?: string };
   onSuccess?: () => void;
 }
+
+// Isolated so typing in the name field only re-renders this initial, not the
+// whole form (image upload state, submit button, etc).
+const AvatarInitial = React.memo(function AvatarInitial({
+  control,
+}: {
+  control: Control<ProfileFormValues>;
+}) {
+  const name = useWatch({ control, name: "name" });
+  return (
+    <div className="text-2xl font-bold uppercase tracking-widest text-primary/40">
+      {name?.[0] || "?"}
+    </div>
+  );
+});
 
 export function ProfileForm({ defaultValues, onSuccess }: ProfileFormProps) {
   const { mutateAsync: updateProfile } = useUpdateProfile();
@@ -89,13 +105,11 @@ export function ProfileForm({ defaultValues, onSuccess }: ProfileFormProps) {
                   className="h-full w-full object-cover"
                 />
               ) : (
-                <div className="text-2xl font-bold uppercase tracking-widest text-primary/40">
-                  {form.watch("name")?.[0] || "?"}
-                </div>
+                <AvatarInitial control={form.control} />
               )}
             </div>
             <div className="absolute inset-0 bg-black/40 flex items-center justify-center rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
-              <ImagePlus className="h-8 w-8 text-white" />
+              <HugeiconsIcon icon={ImageAdd01Icon} className="h-8 w-8 text-white" />
             </div>
             <input
               type="file"

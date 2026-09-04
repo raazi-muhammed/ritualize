@@ -1,7 +1,5 @@
 "use client";
 
-export const dynamic = "force-static";
-
 import { UserMenu } from "@/components/auth/UserMenu";
 import RoutineForm from "./_forms/RoutineForm";
 import ImportRoutineForm from "./_forms/ImportRoutineForm";
@@ -64,6 +62,7 @@ export default function Home() {
         {
           label: "Add",
           icon: "Plus",
+          variant: "card",
           onClick: () => {
             openModal({
               title: "Add Routine",

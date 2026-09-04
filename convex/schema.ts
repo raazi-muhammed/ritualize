@@ -2,6 +2,15 @@ import { defineSchema, defineTable } from "convex/server";
 import { authTables } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 
+export const routineColor = v.union(
+  v.literal("indigo"),
+  v.literal("violet"),
+  v.literal("rose"),
+  v.literal("amber"),
+  v.literal("emerald"),
+  v.literal("cyan")
+);
+
 export default defineSchema({
   ...authTables,
   users: defineTable({
@@ -19,6 +28,7 @@ export default defineSchema({
     duration: v.optional(v.number()),
     userId: v.id("users"), // Changed from clerk user id string to convex user id
     isFavorite: v.boolean(),
+    color: v.optional(routineColor),
   }).index("by_user", ["userId"]),
   tasks: defineTable({
     name: v.string(),

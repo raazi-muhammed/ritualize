@@ -19,8 +19,12 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { ChevronLeft, CircleEllipsis } from "lucide-react";
-import { IoAddCircle as AddIcon } from "react-icons/io5";
+import { HugeiconsIcon } from "@hugeicons/react";
+import {
+  ArrowLeft01Icon,
+  MoreHorizontalCircle01Icon,
+  AddCircleIcon,
+} from "@hugeicons/core-free-icons";
 import {
   useCreateTask,
   useDeleteRoutine,
@@ -91,7 +95,7 @@ const RoutineHeader = ({
           });
         }}
       >
-        <ChevronLeft />
+        <HugeiconsIcon icon={ArrowLeft01Icon} />
       </Link>
       <div className="flex gap-3">
         <Button
@@ -112,14 +116,18 @@ const RoutineHeader = ({
             });
           }}
         >
-          <AddIcon />
+          <HugeiconsIcon icon={AddCircleIcon} />
           Add
         </Button>
         <AlertDialog>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button size="sm" variant="secondary">
-                <CircleEllipsis size="1.3em" className="-mx-1" />
+                <HugeiconsIcon
+                  icon={MoreHorizontalCircle01Icon}
+                  size="1.3em"
+                  className="-mx-1"
+                />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">

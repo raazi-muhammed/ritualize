@@ -10,7 +10,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { icons, LucideProps, LucideIcon } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import type { HugeiconsProps, IconSvgElement } from "@hugeicons/react";
+import { ICON_NAMES, IconName } from "@/lib/icon-registry";
 import {
   Tooltip,
   TooltipContent,
@@ -18,13 +20,42 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-type IconName = keyof typeof icons;
 type IconsList = { icon: IconName; alias?: string[] }[];
 
-const ICON_BUTTONS: IconsList = Object.keys(icons).map((icon) => ({
-  icon: icon as IconName,
+const ICON_BUTTONS: IconsList = ICON_NAMES.map((icon) => ({
+  icon,
   alias: [] as string[],
 }));
+
+// The icon set (~6,000 icons) is only ever needed once something on screen
+// actually renders an icon, so load it lazily on first use instead of
+// bundling it into every route eagerly. It's still one chunk (per-icon
+// dynamic imports aren't viable here: webpack can't resolve a dynamic
+// subpath against this package's "exports" map), but deferring it keeps it
+// out of the critical initial bundle and it's fetched once and cached.
+let barrelPromise: Promise<Record<string, IconSvgElement>> | null = null;
+
+function loadIconBarrel() {
+  if (!barrelPromise) {
+    barrelPromise = import("@hugeicons/core-free-icons") as Promise<
+      Record<string, IconSvgElement>
+    >;
+  }
+  return barrelPromise;
+}
+
+const iconCache = new Map<IconName, IconSvgElement>();
+
+function loadIcon(name: IconName): Promise<IconSvgElement> {
+  const cached = iconCache.get(name);
+  if (cached) return Promise.resolve(cached);
+
+  return loadIconBarrel().then((mod) => {
+    const icon = mod[name];
+    iconCache.set(name, icon);
+    return icon;
+  });
+}
 
 interface IconPickerProps extends Omit<
   React.ComponentPropsWithoutRef<typeof PopoverTrigger>,
@@ -143,39 +174,30 @@ const IconPicker = React.forwardRef<
               className="mb-2"
             />
           )}
-          <div
-            className="grid grid-cols-4 gap-2 max-h-60 overflow-auto"
-            onScroll={handleScroll}
-          >
-            {displayedIcons.map(({ icon }) => (
-              <TooltipProvider key={icon}>
-                <Tooltip>
-                  <TooltipTrigger
-                    className={cn(
-                      "p-2 rounded-md border hover:bg-foreground/10 transition",
-                      "flex items-center justify-center"
-                    )}
-                    onClick={(e) => {
-                      handleValueChange(icon);
-                      setIsOpen(false);
-                      setDisplayCount(36);
-                      setSearch("");
-                    }}
-                  >
-                    <Icon name={icon} />
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>{icon}</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            ))}
-            {filteredIcons.length === 0 && (
-              <div className="text-center text-gray-500 col-span-4">
-                No icon found
-              </div>
-            )}
-          </div>
+          <TooltipProvider>
+            <div
+              className="grid grid-cols-4 gap-2 max-h-60 overflow-auto"
+              onScroll={handleScroll}
+            >
+              {displayedIcons.map(({ icon }) => (
+                <IconPickerCell
+                  key={icon}
+                  icon={icon}
+                  onSelect={() => {
+                    handleValueChange(icon);
+                    setIsOpen(false);
+                    setDisplayCount(36);
+                    setSearch("");
+                  }}
+                />
+              ))}
+              {filteredIcons.length === 0 && (
+                <div className="text-center text-gray-500 col-span-4">
+                  No icon found
+                </div>
+              )}
+            </div>
+          </TooltipProvider>
         </PopoverContent>
       </Popover>
     );
@@ -183,14 +205,68 @@ const IconPicker = React.forwardRef<
 );
 IconPicker.displayName = "IconPicker";
 
-interface IconProps extends Omit<LucideProps, "ref"> {
+const IconPickerCell = React.memo(function IconPickerCell({
+  icon,
+  onSelect,
+}: {
+  icon: IconName;
+  onSelect: () => void;
+}) {
+  return (
+    <Tooltip>
+      <TooltipTrigger
+        className={cn(
+          "p-2 rounded-md border hover:bg-foreground/10 transition",
+          "flex items-center justify-center"
+        )}
+        onClick={onSelect}
+      >
+        <Icon name={icon} />
+      </TooltipTrigger>
+      <TooltipContent>
+        <p>{icon}</p>
+      </TooltipContent>
+    </Tooltip>
+  );
+});
+
+interface IconProps extends Omit<HugeiconsProps, "ref" | "icon"> {
   name: IconName;
 }
 
-const Icon = React.forwardRef<React.ComponentRef<LucideIcon>, IconProps>(
+const Icon = React.forwardRef<SVGSVGElement, IconProps>(
   ({ name, ...props }, ref) => {
-    const LucideIcon = icons[name];
-    return <LucideIcon ref={ref} {...props} />;
+    const [iconData, setIconData] = useState<IconSvgElement | null>(
+      iconCache.get(name) ?? null
+    );
+
+    useEffect(() => {
+      const cached = iconCache.get(name);
+      if (cached) {
+        setIconData(cached);
+        return;
+      }
+      let isMounted = true;
+      setIconData(null);
+      loadIcon(name).then((icon) => {
+        if (isMounted) setIconData(icon);
+      });
+      return () => {
+        isMounted = false;
+      };
+    }, [name]);
+
+    if (!iconData) {
+      return (
+        <span
+          aria-hidden
+          className="inline-block size-[1em]"
+          style={{ width: props.size, height: props.size }}
+        />
+      );
+    }
+
+    return <HugeiconsIcon ref={ref} icon={iconData} {...props} />;
   }
 );
 Icon.displayName = "Icon";

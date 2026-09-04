@@ -14,6 +14,7 @@ export const useStore = create<StoreState>()(
     }),
     {
       name: "RoutineStore",
+      enabled: process.env.NODE_ENV !== "production",
     }
   )
 );

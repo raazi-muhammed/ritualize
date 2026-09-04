@@ -25,7 +25,7 @@ export type ActionType =
       placement?: "left" | "right";
       disabled?: boolean;
       className?: string;
-      variant?: "default" | "destructive";
+      variant?: "default" | "destructive" | "card";
     }
   | ReactNode;
 
@@ -40,6 +40,7 @@ function ActionButton({ action }: { action: ActionType }) {
         icon={action.icon}
         onClick={action.onClick}
         disabled={action.disabled}
+        variant={action.variant}
         className={cn(
           action.placement === "right" && "ms-auto",
           action.placement === "left" && "me-auto",
@@ -89,12 +90,7 @@ const StickyTitle = ({
           : "opacity-0 translate-y-2",
       )}
     >
-      <h3
-        style={{ fontFamily: "Funnel Display" }}
-        className="font-bold text-lg"
-      >
-        {title}
-      </h3>
+      <h3 className="font-bold text-lg font-mono">{title}</h3>
     </div>
   );
 };

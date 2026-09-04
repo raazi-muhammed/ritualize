@@ -43,7 +43,7 @@ export function SignIn() {
 
   return (
     <div className="max-w-sm w-full mx-auto p-4 border rounded-md bg-card">
-      <h2 className="text-xl font-bold mb-4">
+      <h2 className="text-xl font-bold mb-4 font-mono">
         {step === "signIn" ? "Sign In" : "Sign Up"}
       </h2>
       <form onSubmit={handleSubmit} className="space-y-4">
