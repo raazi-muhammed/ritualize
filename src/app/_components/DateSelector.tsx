@@ -13,7 +13,8 @@ import { Icon } from "@/components/ui/icon-picker";
 import { cn } from "@/lib/utils";
 
 export default function DateSelector() {
-  const { selectedDate, setSelectedDate } = useStore();
+  const selectedDate = useStore((state) => state.selectedDate);
+  const setSelectedDate = useStore((state) => state.setSelectedDate);
 
   if (!selectedDate) return null;
 

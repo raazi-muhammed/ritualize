@@ -31,11 +31,12 @@ export const useStopwatch = () => {
   useEffect(() => {
     let intervalId: NodeJS.Timeout;
     if (isRunning) {
-      // setting time from 0 to 1 every 10 milisecond using javascript setInterval method
-      intervalId = setInterval(() => setTime(time + 10), 100);
+      // Functional update so the interval doesn't need `time` as a dependency
+      // -- otherwise it'd tear down and recreate the timer on every tick.
+      intervalId = setInterval(() => setTime((t) => t + 10), 100);
     }
     return () => clearInterval(intervalId);
-  }, [isRunning, time]);
+  }, [isRunning]);
 
   // Hours calculation
   const hours = Math.floor(time / 360000);

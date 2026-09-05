@@ -14,10 +14,17 @@ export const getMany = query({
       .withIndex("by_user", (q) => q.eq("userId", userId))
       .collect();
 
-    // The routine list only ever needs a task count (see RoutineListRow), so
-    // avoid fetching every task row for every routine.
+    // The routine list only ever needs a task count (see RoutineListRow).
+    // taskCount is denormalized onto the routine (kept in sync by
+    // tasks.create/remove/bulkImport) so this doesn't need to collect every
+    // task row for every routine. Only routines written before that field
+    // existed fall back to counting.
     const routinesWithTaskCount = await Promise.all(
       routines.map(async (routine) => {
+        if (routine.taskCount !== undefined) {
+          return { ...routine, taskCount: routine.taskCount };
+        }
+
         const tasks = await ctx.db
           .query("tasks")
           .withIndex("by_routine", (q) => q.eq("routineId", routine._id))
@@ -93,6 +100,7 @@ export const create = mutation({
       isFavorite: args.isFavorite ?? false,
       color: args.color,
       userId,
+      taskCount: 0,
     });
 
     return routineId;
@@ -139,17 +147,19 @@ export const remove = mutation({
       .withIndex("by_routine", (q) => q.eq("routineId", args.id))
       .collect();
 
-    for (const task of tasks) {
-      const completions = await ctx.db
-        .query("taskCompletions")
-        .withIndex("by_task_date", (q) => q.eq("taskId", task._id))
-        .collect();
+    await Promise.all(
+      tasks.map(async (task) => {
+        const completions = await ctx.db
+          .query("taskCompletions")
+          .withIndex("by_task_date", (q) => q.eq("taskId", task._id))
+          .collect();
 
-      for (const completion of completions) {
-        await ctx.db.delete(completion._id);
-      }
-      await ctx.db.delete(task._id);
-    }
+        await Promise.all(
+          completions.map((completion) => ctx.db.delete(completion._id)),
+        );
+        await ctx.db.delete(task._id);
+      }),
+    );
 
     await ctx.db.delete(args.id);
   },
@@ -196,6 +206,7 @@ export const bulkImport = mutation({
         duration: item.routineDuration,
         isFavorite: item.isFavorite,
         userId,
+        taskCount: item.tasks.length,
       });
 
       for (const t of item.tasks) {

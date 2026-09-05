@@ -1,6 +1,13 @@
 "use client";
 
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useMemo,
+  useState,
+  ReactNode,
+} from "react";
 import ResponsiveModel from "@/components/layout/ResponsiveModel";
 
 interface ModalContextType {
@@ -15,26 +22,25 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState<ReactNode>(null);
 
-  const openModal = ({
-    title,
-    content,
-  }: {
-    title: string;
-    content: ReactNode;
-  }) => {
-    setTitle(title);
-    setContent(content);
-    setOpen(true);
-  };
+  const openModal = useCallback(
+    ({ title, content }: { title: string; content: ReactNode }) => {
+      setTitle(title);
+      setContent(content);
+      setOpen(true);
+    },
+    [],
+  );
 
-  const closeModal = () => {
+  const closeModal = useCallback(() => {
     setOpen(false);
     setTitle("");
     setContent(null);
-  };
+  }, []);
+
+  const value = useMemo(() => ({ openModal, closeModal }), [openModal, closeModal]);
 
   return (
-    <ModalContext.Provider value={{ openModal, closeModal }}>
+    <ModalContext.Provider value={value}>
       {children}
       <ResponsiveModel
         open={open}
