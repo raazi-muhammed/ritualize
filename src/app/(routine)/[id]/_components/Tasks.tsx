@@ -119,7 +119,7 @@ const Tasks = ({
             <div
               data-swapy-slot={slotId}
               className={
-                task?.type === TaskType.checkpoint ? "py-1" : ""
+                task?.type === TaskType.checkpoint ? "pt-3 pb-0" : ""
               }
             >
               {task ? (
