@@ -160,6 +160,10 @@ export default function Page({ params }: { params: { id: string } }) {
       }
       bottomActions={[
         {
+          content: <DateSelector />,
+          placement: "left",
+        },
+        {
           label: "Start",
           icon: "Play",
           variant: "default",
@@ -173,7 +177,6 @@ export default function Page({ params }: { params: { id: string } }) {
         },
       ]}
     >
-      <DateSelector />
       <ContentStateTemplate
         isLoading={isLoading}
         skeleton={<RoutineSkeleton />}

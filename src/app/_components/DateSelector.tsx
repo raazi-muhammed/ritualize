@@ -8,9 +8,8 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
-import { format } from "date-fns";
-import { HugeiconsIcon } from "@hugeicons/react";
-import { Calendar01Icon } from "@hugeicons/core-free-icons";
+import { format, isToday } from "date-fns";
+import { Icon } from "@/components/ui/icon-picker";
 import { cn } from "@/lib/utils";
 
 export default function DateSelector() {
@@ -18,24 +17,19 @@ export default function DateSelector() {
 
   if (!selectedDate) return null;
 
+  const dateIsToday = isToday(selectedDate);
+
   return (
-    <section className="flex mb-4 gap-2">
+    <section className="flex gap-2">
       <Popover>
         <PopoverTrigger asChild>
           <Button
-            size={"sm"}
-            variant={"outline"}
-            className={cn(
-              "w-fit justify-start text-left font-normal",
-              !selectedDate && "text-muted-foreground"
-            )}
+            variant={dateIsToday ? "ghost" : "card"}
+            size={dateIsToday ? "icon" : "default"}
+            className={cn("gap-2", !dateIsToday && "ps-3")}
           >
-            <HugeiconsIcon icon={Calendar01Icon} className="mr-2 h-4 w-4" />
-            {selectedDate ? (
-              format(selectedDate, "PPP")
-            ) : (
-              <span>Pick a date</span>
-            )}
+            <Icon name="Calendar01Icon" className="size-5" />
+            {!dateIsToday && <p>{format(selectedDate, "MMM d")}</p>}
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0">
