@@ -1,3 +1,4 @@
+import { CSSProperties } from "react";
 import { Button } from "../ui/button";
 import { Icon, IconName } from "../ui/icon-picker";
 import { cn } from "@/lib/utils";
@@ -14,6 +15,7 @@ interface ActionType {
   onClick: () => void;
   disabled?: boolean;
   className?: string;
+  style?: CSSProperties;
   variant?: "default" | "secondary" | "destructive" | "card" | "card-outline";
   iconOnly?: boolean;
 }
@@ -25,6 +27,7 @@ function ButtonTemplate({
   disabled,
   variant,
   iconOnly,
+  style,
 }: ActionType) {
   const isIconOnly = Boolean(icon) && (iconOnly || !label);
 
@@ -35,6 +38,7 @@ function ButtonTemplate({
       onClick={onClick}
       size={isIconOnly ? "icon" : "default"}
       variant={variant || "secondary"}
+      style={style}
       className={cn("my-auto gap-2", icon && label && !isIconOnly && "ps-3")}
     >
       {icon && <Icon name={icon} className="size-5" />}{" "}

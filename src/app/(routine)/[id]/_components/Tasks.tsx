@@ -132,6 +132,7 @@ const Tasks = ({
                     grouped
                     isFirst={isSectionFirst}
                     isLast={isSectionLast}
+                    color={routine.color}
                   />
                 </div>
               ) : null}

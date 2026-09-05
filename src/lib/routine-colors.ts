@@ -15,3 +15,18 @@ export function getRoutineColorClass(color: string | undefined) {
   }
   return ROUTINE_COLOR_BG_CLASS.indigo;
 }
+
+const ROUTINE_COLOR_VAR_NAME: Record<RoutineColor, string> = {
+  indigo: "--routine-indigo",
+  violet: "--routine-violet",
+  rose: "--routine-rose",
+  amber: "--routine-amber",
+  emerald: "--routine-emerald",
+  cyan: "--routine-cyan",
+};
+
+export function getRoutineColorVar(color: string | undefined) {
+  const key =
+    color && color in ROUTINE_COLOR_VAR_NAME ? (color as RoutineColor) : "indigo";
+  return `hsl(var(${ROUTINE_COLOR_VAR_NAME[key]}))`;
+}

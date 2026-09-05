@@ -12,13 +12,20 @@ import { taskSchema } from "../(tasks)/_forms/TaskForm";
 import { z } from "zod";
 import { cn, generateCardDescription } from "@/lib/utils";
 import { useModal } from "@/providers/ModelProvider";
-import { TaskWithStatus, CompletionStatus, TaskType } from "@/types/entities";
+import {
+  TaskWithStatus,
+  CompletionStatus,
+  TaskType,
+  RoutineColor,
+} from "@/types/entities";
 import { useRouter } from "next/navigation";
 import {
   CHECKBOX_ANIMATION_CLASSES,
   pageSlideAnimation,
 } from "@/lib/animations";
+import { getRoutineColorVar } from "@/lib/routine-colors";
 import { useTransitionRouter } from "next-view-transitions";
+import type { CSSProperties } from "react";
 
 const TaskCard = ({
   task,
@@ -28,6 +35,7 @@ const TaskCard = ({
   grouped = false,
   isFirst = false,
   isLast = false,
+  color,
 }: {
   task: TaskWithStatus;
   showStartDate?: boolean;
@@ -36,7 +44,11 @@ const TaskCard = ({
   grouped?: boolean;
   isFirst?: boolean;
   isLast?: boolean;
+  color?: RoutineColor;
 }) => {
+  const checkboxStyle = color
+    ? ({ "--checkbox-color": getRoutineColorVar(color) } as CSSProperties)
+    : undefined;
   const { closeModal } = useModal();
   const router = useRouter();
   const tRouter = useTransitionRouter();
@@ -112,6 +124,7 @@ const TaskCard = ({
                   );
                 }}
                 className={`m-3 ${CHECKBOX_ANIMATION_CLASSES}`}
+                style={checkboxStyle}
               />
             ) : null}
             <div

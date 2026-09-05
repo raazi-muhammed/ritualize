@@ -28,6 +28,7 @@ import {
 } from "@/queries/routine.query";
 import { formatDateForInput } from "@/lib/format";
 import DesktopPageTemplate from "@/components/layout/DesktopPageTemplate";
+import { getRoutineColorVar } from "@/lib/routine-colors";
 
 const RoutineForm = nextDynamic(() => import("../_forms/RoutineForm"), {
   ssr: false,
@@ -163,6 +164,7 @@ export default function Page({ params }: { params: { id: string } }) {
           icon: "Play",
           variant: "default",
           placement: "right",
+          style: { backgroundColor: getRoutineColorVar(routine?.color) },
           onClick: () => {
             router.push(`/${routine?._id}/start`, {
               onTransitionReady: pageSlideAnimation,

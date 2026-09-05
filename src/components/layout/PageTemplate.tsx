@@ -2,6 +2,7 @@
 
 import {
   ReactNode,
+  CSSProperties,
   isValidElement,
   Fragment,
   useRef,
@@ -25,6 +26,7 @@ export type ActionType =
       placement?: "left" | "right";
       disabled?: boolean;
       className?: string;
+      style?: CSSProperties;
       variant?: "default" | "destructive" | "card" | "card-outline";
       iconOnly?: boolean;
     }
@@ -43,6 +45,7 @@ function ActionButton({ action }: { action: ActionType }) {
         disabled={action.disabled}
         variant={action.variant}
         iconOnly={action.iconOnly}
+        style={action.style}
         className={cn(
           action.placement === "right" && "ms-auto",
           action.placement === "left" && "me-auto",
