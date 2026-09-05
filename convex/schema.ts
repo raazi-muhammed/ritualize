@@ -29,6 +29,12 @@ export default defineSchema({
     userId: v.id("users"), // Changed from clerk user id string to convex user id
     isFavorite: v.boolean(),
     color: v.optional(routineColor),
+    // Denormalized count of this routine's tasks, kept up to date by
+    // tasks.create/remove/bulkImport. Lets the routine list (getMany) avoid
+    // collecting every task row for every routine just to show a count.
+    // Optional because routines written before this field existed won't
+    // have it yet -- getMany falls back to counting for those.
+    taskCount: v.optional(v.number()),
   }).index("by_user", ["userId"]),
   tasks: defineTable({
     name: v.string(),

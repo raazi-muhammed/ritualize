@@ -6,7 +6,7 @@ import {
 } from "@/lib/animations";
 import { getRoutineColorClass } from "@/lib/routine-colors";
 import { cn } from "@/lib/utils";
-import { Routine } from "@/types/entities";
+import { RoutineWithTaskCount } from "@/types/entities";
 import { useTransitionRouter } from "next-view-transitions";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -16,7 +16,7 @@ const RoutineCard = ({
   routine,
   isList = false,
 }: {
-  routine: Routine;
+  routine: RoutineWithTaskCount;
   isList?: boolean;
 }) => {
   const router = useTransitionRouter();
@@ -42,7 +42,7 @@ const RoutineCard = ({
           "relative -z-0 overflow-hidden p-2 transition-transform active:scale-90 duration-200 ease-in-out",
           !routine?._id && "opacity-50 pointer-events-none",
           isActive &&
-            "bg-accent/30 before:absolute before:left-0 before:top-1/2 before:h-1/2 before:-translate-y-1/2 before:w-1 before:rounded-full before:bg-primary"
+            "bg-accent/30 before:absolute before:left-0 before:top-1/2 before:h-1/2 before:-translate-y-1/2 before:w-1 before:rounded-full before:bg-primary",
         )}
       >
         <CardHeader className="z-10 p-2 flex justify-between flex-row">
@@ -55,7 +55,7 @@ const RoutineCard = ({
               className={cn(
                 getRoutineColorClass(routine.color),
                 "size-8",
-                "grid place-items-center rounded-full"
+                "grid place-items-center rounded-full",
               )}
             >
               <Icon name={routine.icon as any} size="1rem" />
@@ -66,6 +66,11 @@ const RoutineCard = ({
               </CardTitle>
             </div>
           </div>
+          {typeof routine.taskCount === "number" && (
+            <span className="text-sm text-muted-foreground">
+              {routine.taskCount}
+            </span>
+          )}
         </CardHeader>
       </Card>
     </Link>

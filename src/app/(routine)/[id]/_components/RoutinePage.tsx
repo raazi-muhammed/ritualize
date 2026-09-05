@@ -12,7 +12,7 @@ const ConfettiBurst = nextDynamic(() => import("./ConfettiBurst"), {
 });
 
 function RoutinePage({ routine }: { routine: RoutineWithTasks }) {
-  const { selectedDate } = useStore();
+  const selectedDate = useStore((state) => state.selectedDate);
   const router = useTransitionRouter();
   const [showConfetti, setShowConfetti] = useState(false);
   const [confettiKey, setConfettiKey] = useState(0);

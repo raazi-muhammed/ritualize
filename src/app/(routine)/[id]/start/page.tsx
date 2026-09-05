@@ -10,7 +10,7 @@ import { pageSlideBackAnimation } from "@/lib/animations";
 import { EmptyTemplate } from "@/components/layout/EmptyTemplate";
 
 export default function Page({ params }: { params: { id: string } }) {
-  const { selectedDate } = useStore();
+  const selectedDate = useStore((state) => state.selectedDate);
   const { data: routine, isLoading } = useGetRoutine(
     params.id,
     selectedDate || undefined

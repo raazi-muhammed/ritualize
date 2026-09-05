@@ -12,13 +12,22 @@ import { taskSchema } from "../(tasks)/_forms/TaskForm";
 import { z } from "zod";
 import { cn, generateCardDescription } from "@/lib/utils";
 import { useModal } from "@/providers/ModelProvider";
-import { TaskWithStatus, CompletionStatus, TaskType } from "@/types/entities";
+import {
+  TaskWithStatus,
+  CompletionStatus,
+  TaskType,
+  RoutineColor,
+} from "@/types/entities";
 import { useRouter } from "next/navigation";
 import {
   CHECKBOX_ANIMATION_CLASSES,
   pageSlideAnimation,
 } from "@/lib/animations";
+import { getRoutineColorVar } from "@/lib/routine-colors";
 import { useTransitionRouter } from "next-view-transitions";
+import type { CSSProperties } from "react";
+import { useStore } from "@/stores";
+import { Icon } from "@/components/ui/icon-picker";
 
 const TaskCard = ({
   task,
@@ -28,6 +37,7 @@ const TaskCard = ({
   grouped = false,
   isFirst = false,
   isLast = false,
+  color,
 }: {
   task: TaskWithStatus;
   showStartDate?: boolean;
@@ -36,7 +46,12 @@ const TaskCard = ({
   grouped?: boolean;
   isFirst?: boolean;
   isLast?: boolean;
+  color?: RoutineColor;
 }) => {
+  const checkboxStyle = color
+    ? ({ "--checkbox-color": getRoutineColorVar(color) } as CSSProperties)
+    : undefined;
+  const rearrangeMode = useStore((state) => state.rearrangeMode);
   const { closeModal } = useModal();
   const router = useRouter();
   const tRouter = useTransitionRouter();
@@ -100,7 +115,7 @@ const TaskCard = ({
     >
       <CardContent className="flex justify-between p-0">
         {task.type == TaskType.task ? (
-          <section className="flex items-start gap-0 w-full">
+          <section className="flex items-start gap-0 flex-1 min-w-0">
             {showCheckbox() ? (
               <Checkbox
                 checked={localStatus === CompletionStatus.completed}
@@ -112,6 +127,7 @@ const TaskCard = ({
                   );
                 }}
                 className={`m-3 ${CHECKBOX_ANIMATION_CLASSES}`}
+                style={checkboxStyle}
               />
             ) : null}
             <div
@@ -148,6 +164,14 @@ const TaskCard = ({
           >
             <p className="text-lg font-bold">{task.name}</p>
           </section>
+        )}
+        {rearrangeMode && (
+          <div
+            data-swapy-handle
+            className="flex shrink-0 items-center justify-center self-stretch px-3 text-muted-foreground cursor-grab active:cursor-grabbing touch-none"
+          >
+            <Icon name="DragDropVerticalIcon" className="size-5" />
+          </div>
         )}
       </CardContent>
     </Card>

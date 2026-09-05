@@ -1,6 +1,13 @@
 "use client";
 
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useMemo,
+  useState,
+  ReactNode,
+} from "react";
 import {
   AlertDialog,
   AlertDialogContent,
@@ -29,30 +36,35 @@ export const AlertProvider = ({ children }: { children: ReactNode }) => {
   const [description, setDescription] = useState("");
   const [onConfirm, setOnConfirm] = useState<() => void>(() => () => {});
 
-  const openAlert = ({
-    title,
-    description,
-    onConfirm,
-  }: {
-    title: string;
-    description: string;
-    onConfirm: () => void;
-  }) => {
-    setTitle(title);
-    setDescription(description);
-    setOnConfirm(() => onConfirm);
-    setOpen(true);
-  };
+  const openAlert = useCallback(
+    ({
+      title,
+      description,
+      onConfirm,
+    }: {
+      title: string;
+      description: string;
+      onConfirm: () => void;
+    }) => {
+      setTitle(title);
+      setDescription(description);
+      setOnConfirm(() => onConfirm);
+      setOpen(true);
+    },
+    [],
+  );
 
-  const closeAlert = () => {
+  const closeAlert = useCallback(() => {
     setOpen(false);
     setTitle("");
     setDescription("");
     setOnConfirm(() => () => {});
-  };
+  }, []);
+
+  const value = useMemo(() => ({ openAlert, closeAlert }), [openAlert, closeAlert]);
 
   return (
-    <AlertContext.Provider value={{ openAlert, closeAlert }}>
+    <AlertContext.Provider value={value}>
       {children}
       <AlertDialog open={open} onOpenChange={setOpen}>
         <AlertDialogContent>

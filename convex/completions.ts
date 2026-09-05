@@ -66,16 +66,18 @@ export const removeAllForRoutine = mutation({
       .withIndex("by_routine", (q) => q.eq("routineId", args.routineId))
       .collect();
 
-    for (const task of tasks) {
-      const completions = await ctx.db
-        .query("taskCompletions")
-        .withIndex("by_task_date", (q) => q.eq("taskId", task._id))
-        .collect();
+    await Promise.all(
+      tasks.map(async (task) => {
+        const completions = await ctx.db
+          .query("taskCompletions")
+          .withIndex("by_task_date", (q) => q.eq("taskId", task._id))
+          .collect();
 
-      for (const completion of completions) {
-        await ctx.db.delete(completion._id);
-      }
-    }
+        await Promise.all(
+          completions.map((completion) => ctx.db.delete(completion._id)),
+        );
+      }),
+    );
   },
 });
 

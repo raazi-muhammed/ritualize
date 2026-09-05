@@ -2,6 +2,7 @@
 
 import { Authenticated, Unauthenticated, AuthLoading } from "convex/react";
 import { SignIn } from "./SignIn";
+import LoadingIndicator from "@/components/layout/LoadingIndicator";
 import { ReactNode } from "react";
 
 export function AuthWrapper({
@@ -23,8 +24,7 @@ export function AuthWrapper({
         {model}
       </Authenticated>
       <AuthLoading>
-        {/* Optional: Add a loading state */}
-        <div className="grid place-items-center h-[100svh]">Loading...</div>
+        <LoadingIndicator />
       </AuthLoading>
     </>
   );

@@ -1,12 +1,12 @@
 import { Icon } from "@/components/ui/icon-picker";
 import { pageSlideAnimation } from "@/lib/animations";
-import { getRoutineColorClass } from "@/lib/routine-colors";
+import { getRoutineColorClass, getRoutineColorVar } from "@/lib/routine-colors";
 import { RoutineWithTaskCount } from "@/types/entities";
 import { cn } from "@/lib/utils";
 import { useTransitionRouter } from "next-view-transitions";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { memo } from "react";
+import { memo, type CSSProperties } from "react";
 
 const RoutineListRow = ({
   routine,
@@ -25,33 +25,42 @@ const RoutineListRow = ({
       href={`/${routine._id}?name=${encodeURIComponent(routine.name)}`}
       onClick={(e) => {
         e.preventDefault();
-        router.push(`/${routine._id}?name=${encodeURIComponent(routine.name)}`, {
-          onTransitionReady: pageSlideAnimation,
-        });
+        router.push(
+          `/${routine._id}?name=${encodeURIComponent(routine.name)}`,
+          {
+            onTransitionReady: pageSlideAnimation,
+          },
+        );
       }}
       className={cn(
         "relative flex items-center gap-3 px-3 py-3 hover:bg-muted/50 transition-colors",
         isActive &&
-          "bg-accent/30 before:absolute before:left-0 before:top-1/2 before:h-1/2 before:-translate-y-1/2 before:w-1 before:rounded-full before:bg-primary",
+          "bg-accent/30 before:absolute before:left-0 before:top-1/2 before:h-1/2 before:-translate-y-1/2 before:w-1 before:rounded-full before:bg-[var(--routine-accent)]",
         !isLast &&
-          "after:absolute after:inset-x-3 after:bottom-0 after:border-b after:border-border"
+          "after:absolute after:inset-x-3 after:bottom-0 after:border-b after:border-border",
       )}
+      style={
+        isActive
+          ? ({
+              "--routine-accent": getRoutineColorVar(routine.color),
+            } as CSSProperties)
+          : undefined
+      }
     >
       <div
         className={cn(
           getRoutineColorClass(routine.color),
-          "size-8 shrink-0 grid place-items-center rounded-full"
+          "size-8 shrink-0 grid place-items-center rounded-full",
         )}
       >
         <Icon name={routine.icon as any} size="1rem" />
       </div>
-      <div className="flex flex-col min-w-0">
-        <span className="text-sm font-medium line-clamp-1">
-          {routine.name}
-        </span>
-        <span className="text-xs text-muted-foreground">
-          {taskCount} {taskCount === 1 ? "task" : "tasks"}
-        </span>
+      <div className="flex flex-col min-w-0 flex-1">
+        <span className="text-sm font-medium line-clamp-1">{routine.name}</span>
+      </div>
+      <div className="flex items-center gap-1 shrink-0 text-muted-foreground">
+        <span className="text-sm">{taskCount}</span>
+        <Icon name="ChevronRight" className="size-4" />
       </div>
     </Link>
   );

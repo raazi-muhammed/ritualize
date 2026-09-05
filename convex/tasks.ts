@@ -96,6 +96,13 @@ export const create = mutation({
       startDate: Date.now(),
     });
 
+    // existingTasks.length is the true count regardless of whether
+    // taskCount was already in sync, so this also backfills routines that
+    // predate the field.
+    await ctx.db.patch(args.routineId, {
+      taskCount: existingTasks.length + 1,
+    });
+
     return taskId;
   },
 });
@@ -145,11 +152,18 @@ export const remove = mutation({
       .withIndex("by_task_date", (q) => q.eq("taskId", args.id))
       .collect();
 
-    for (const completion of completions) {
-      await ctx.db.delete(completion._id);
-    }
+    await Promise.all(completions.map((completion) => ctx.db.delete(completion._id)));
 
     await ctx.db.delete(args.id);
+
+    // Recount (rather than decrementing routine.taskCount) so this also
+    // self-heals routines whose taskCount had drifted or predates the field.
+    const remainingTasks = await ctx.db
+      .query("tasks")
+      .withIndex("by_routine", (q) => q.eq("routineId", task.routineId))
+      .collect();
+
+    await ctx.db.patch(task.routineId, { taskCount: remainingTasks.length });
   },
 });
 
@@ -161,15 +175,16 @@ export const reorder = mutation({
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new Error("Not authenticated");
 
-    for (let i = 0; i < args.taskIds.length; i++) {
-      const taskId = args.taskIds[i];
-      const task = await ctx.db.get(taskId);
-      if (!task) continue;
+    await Promise.all(
+      args.taskIds.map(async (taskId, i) => {
+        const task = await ctx.db.get(taskId);
+        if (!task) return;
 
-      const routine = await ctx.db.get(task.routineId);
-      if (!routine || routine.userId !== userId) continue;
+        const routine = await ctx.db.get(task.routineId);
+        if (!routine || routine.userId !== userId) return;
 
-      await ctx.db.patch(taskId, { order: i });
-    }
+        await ctx.db.patch(taskId, { order: i });
+      }),
+    );
   },
 });

@@ -2,6 +2,7 @@
 
 import {
   ReactNode,
+  CSSProperties,
   isValidElement,
   Fragment,
   useRef,
@@ -25,14 +26,19 @@ export type ActionType =
       placement?: "left" | "right";
       disabled?: boolean;
       className?: string;
-      variant?: "default" | "destructive" | "card" | "card-outline";
+      style?: CSSProperties;
+      variant?: "default" | "destructive" | "card" | "card-outline" | "ghost";
       iconOnly?: boolean;
     }
+  | { content: ReactNode; placement?: "left" | "right" }
   | ReactNode;
 
 function ActionButton({ action }: { action: ActionType }) {
   if (isValidElement(action)) {
     return <Fragment key={action.key}>{action}</Fragment>;
+  }
+  if (action && typeof action === "object" && "content" in action) {
+    return <div className="my-auto">{action.content}</div>;
   }
   if (action && typeof action === "object" && "onClick" in action) {
     return (
@@ -43,6 +49,7 @@ function ActionButton({ action }: { action: ActionType }) {
         disabled={action.disabled}
         variant={action.variant}
         iconOnly={action.iconOnly}
+        style={action.style}
         className={cn(
           action.placement === "right" && "ms-auto",
           action.placement === "left" && "me-auto",
@@ -163,7 +170,7 @@ const PageTemplate = ({
             }}
             className="ps-0 pe-12 transition-all"
             icon="ChevronLeft"
-            variant="card-outline"
+            variant="ghost"
           />
         ) : (
           <div />

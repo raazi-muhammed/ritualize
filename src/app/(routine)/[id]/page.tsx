@@ -28,6 +28,7 @@ import {
 } from "@/queries/routine.query";
 import { formatDateForInput } from "@/lib/format";
 import DesktopPageTemplate from "@/components/layout/DesktopPageTemplate";
+import { getRoutineColorVar } from "@/lib/routine-colors";
 
 const RoutineForm = nextDynamic(() => import("../_forms/RoutineForm"), {
   ssr: false,
@@ -37,7 +38,9 @@ export default function Page({ params }: { params: { id: string } }) {
   const routineId = params.id;
   const searchParams = useSearchParams();
   const nameQueryParam = searchParams.get("name");
-  const { selectedDate } = useStore((state) => state);
+  const { selectedDate, rearrangeMode, setRearrangeMode } = useStore(
+    (state) => state,
+  );
   const { openModal, closeModal } = useModal();
   const router = useTransitionRouter();
 
@@ -88,7 +91,7 @@ export default function Page({ params }: { params: { id: string } }) {
                 label: "Add Task",
                 icon: "Plus",
                 iconOnly: true,
-                variant: "card-outline",
+                variant: "ghost",
                 onClick: () => {
                   openModal({
                     title: "Add Task",
@@ -121,6 +124,11 @@ export default function Page({ params }: { params: { id: string } }) {
                     ),
                   });
                 },
+              },
+              {
+                label: rearrangeMode ? "Done rearranging" : "Rearrange tasks",
+                icon: rearrangeMode ? "Check" : "Drag",
+                onClick: () => setRearrangeMode(!rearrangeMode),
               },
               {
                 label: "Edit",
@@ -159,10 +167,15 @@ export default function Page({ params }: { params: { id: string } }) {
       }
       bottomActions={[
         {
+          content: <DateSelector />,
+          placement: "left",
+        },
+        {
           label: "Start",
           icon: "Play",
           variant: "default",
           placement: "right",
+          style: { backgroundColor: getRoutineColorVar(routine?.color) },
           onClick: () => {
             router.push(`/${routine?._id}/start`, {
               onTransitionReady: pageSlideAnimation,
@@ -171,7 +184,6 @@ export default function Page({ params }: { params: { id: string } }) {
         },
       ]}
     >
-      <DateSelector />
       <ContentStateTemplate
         isLoading={isLoading}
         skeleton={<RoutineSkeleton />}

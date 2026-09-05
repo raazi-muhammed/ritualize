@@ -8,6 +8,7 @@ import { useReorderTasks } from "@/queries/routine.query";
 import { Id } from "../../../../../convex/_generated/dataModel";
 import { createSwapy, utils } from "swapy";
 import { TaskType } from "@/types/entities";
+import { useStore } from "@/stores";
 
 const Tasks = ({
   showStartDate = false,
@@ -21,6 +22,7 @@ const Tasks = ({
   const containerRef = useRef<HTMLElement>(null);
   const swapyRef = useRef<ReturnType<typeof createSwapy> | null>(null);
   const { mutateAsync: reorderTasks } = useReorderTasks();
+  const rearrangeMode = useStore((state) => state.rearrangeMode);
 
   const tasks = useMemo(() => routine?.tasks ?? [], [routine?.tasks]);
 
@@ -60,7 +62,7 @@ const Tasks = ({
     swapyRef.current = createSwapy(container, {
       manualSwap: true,
       animation: "dynamic",
-      dragOnHold: true,
+      dragOnHold: !rearrangeMode,
     });
 
     swapyRef.current.onSwap((event) => {
@@ -78,7 +80,7 @@ const Tasks = ({
       document.removeEventListener("pointerup", clearHeights);
       swapyRef.current?.destroy();
     };
-  }, []);
+  }, [rearrangeMode]);
 
   useEffect(
     () =>
@@ -119,7 +121,7 @@ const Tasks = ({
             <div
               data-swapy-slot={slotId}
               className={
-                task?.type === TaskType.checkpoint ? "py-1" : ""
+                task?.type === TaskType.checkpoint ? "pt-3 pb-0" : ""
               }
             >
               {task ? (
@@ -132,6 +134,7 @@ const Tasks = ({
                     grouped
                     isFirst={isSectionFirst}
                     isLast={isSectionLast}
+                    color={routine.color}
                   />
                 </div>
               ) : null}
