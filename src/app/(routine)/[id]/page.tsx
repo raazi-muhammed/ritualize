@@ -89,7 +89,7 @@ export default function Page({ params }: { params: { id: string } }) {
                 label: "Add Task",
                 icon: "Plus",
                 iconOnly: true,
-                variant: "card-outline",
+                variant: "ghost",
                 onClick: () => {
                   openModal({
                     title: "Add Task",

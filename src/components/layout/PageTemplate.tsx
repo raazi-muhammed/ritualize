@@ -27,7 +27,7 @@ export type ActionType =
       disabled?: boolean;
       className?: string;
       style?: CSSProperties;
-      variant?: "default" | "destructive" | "card" | "card-outline";
+      variant?: "default" | "destructive" | "card" | "card-outline" | "ghost";
       iconOnly?: boolean;
     }
   | ReactNode;
@@ -166,7 +166,7 @@ const PageTemplate = ({
             }}
             className="ps-0 pe-12 transition-all"
             icon="ChevronLeft"
-            variant="card-outline"
+            variant="ghost"
           />
         ) : (
           <div />

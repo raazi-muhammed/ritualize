@@ -25,7 +25,7 @@ const DropdownTemplate = ({ actions }: { actions: ActionType[] }) => {
         <Tooltip>
           <TooltipTrigger asChild>
             <DropdownMenuTrigger asChild>
-              <Button variant="card-outline" size="icon" className="my-auto">
+              <Button variant="ghost" size="icon" className="my-auto">
                 <HugeiconsIcon icon={MoreVerticalIcon} className="size-5" />
               </Button>
             </DropdownMenuTrigger>
@@ -48,7 +48,7 @@ const DropdownTemplate = ({ actions }: { actions: ActionType[] }) => {
                 key={action.label}
                 onClick={action.onClick}
                 className={cn(
-                  action.variant === "destructive" && "text-destructive"
+                  action.variant === "destructive" && "text-destructive",
                 )}
               >
                 {action.icon && (

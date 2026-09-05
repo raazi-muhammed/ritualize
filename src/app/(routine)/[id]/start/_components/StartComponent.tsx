@@ -11,6 +11,9 @@ import {
   TaskType,
 } from "@/types/entities";
 import PageTemplate from "@/components/layout/PageTemplate";
+import { Button } from "@/components/ui/button";
+import { Icon } from "@/components/ui/icon-picker";
+import { getRoutineColorVar } from "@/lib/routine-colors";
 import {
   useUncheckAllTasks,
   useUpdateTaskStatus,
@@ -44,65 +47,16 @@ function getCurrentSection(
   return null;
 }
 
+function formatMinSec(ms: number): string {
+  const totalSeconds = Math.floor(ms / 1000);
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+}
+
 import { useTransitionRouter } from "next-view-transitions";
 import { pageSlideBackAnimation } from "@/lib/animations";
-import { IconName } from "@/components/ui/icon-picker";
 import { EmptyTemplate } from "@/components/layout/EmptyTemplate";
-
-function SegmentedCircularProgress({
-  total,
-  current,
-}: {
-  total: number;
-  current: number;
-}) {
-  const radius = 18;
-  const stroke = 18;
-  const normalizedRadius = radius - stroke / 2;
-  const circumference = normalizedRadius * 2 * Math.PI;
-  const gap = 0;
-  const segmentLength = (circumference - total * gap) / total;
-
-  const safeSegmentLength = Math.max(segmentLength, 0);
-  const safeGap = segmentLength > 0 ? gap : 0;
-
-  const activeDashArray =
-    Array.from({ length: current })
-      .map(() => `${safeSegmentLength} ${safeGap}`)
-      .join(" ") + ` 0 ${circumference}`;
-
-  return (
-    <div className="relative flex items-center justify-center outline rounded-full outline-1 outline-border">
-      <svg
-        height={radius * 2}
-        width={radius * 2}
-        className="-rotate-90 transform"
-      >
-        <circle
-          stroke="currentColor"
-          strokeWidth={stroke}
-          fill="transparent"
-          r={normalizedRadius}
-          cx={radius}
-          cy={radius}
-          strokeDasharray={`${safeSegmentLength} ${safeGap}`}
-          className="text-secondary"
-        />
-        <circle
-          stroke="currentColor"
-          strokeWidth={stroke}
-          fill="transparent"
-          r={normalizedRadius}
-          cx={radius}
-          cy={radius}
-          strokeDasharray={activeDashArray}
-          strokeLinecap="butt"
-          className="text-primary transition-all duration-300"
-        />
-      </svg>
-    </div>
-  );
-}
 
 function StartComponent({
   routine,
@@ -111,7 +65,7 @@ function StartComponent({
   routine: RoutineWithTasks;
   date: Date;
 }) {
-  const { time, reset } = useStopwatch();
+  const { elapsedMs, reset } = useStopwatch();
   const router = useTransitionRouter();
 
   const handleBack = () => {
@@ -133,6 +87,14 @@ function StartComponent({
     routine?.tasks ?? [],
     currentTaskIndex,
   );
+
+  const currentTask = routine?.tasks[currentTaskIndex];
+  const currentTaskDurationMs = (currentTask?.duration ?? 0) * 60 * 1000;
+  const taskProgress =
+    currentTaskDurationMs > 0
+      ? Math.min(elapsedMs / currentTaskDurationMs, 1)
+      : 0;
+  const isLastTask = currentTaskIndex >= (routine?.tasks.length || 0) - 1;
 
   useEffect(() => {
     const item = document.getElementById("active-task");
@@ -170,76 +132,96 @@ function StartComponent({
   return (
     <PageTemplate
       title={routine?.name || "Routine"}
-      actions={[
-        <div className="w-fit flex items-center gap-2" key="progress">
-          <small className="text-base">{time}</small>
-          <SegmentedCircularProgress
-            total={routine?.tasks.length || 0}
-            current={currentTaskIndex}
-          />
-        </div>,
-      ]}
       bottomActions={
         !showUncheckAll
           ? [
-              {
-                label: "Prev",
-                placement: "left",
-                icon: "ChevronLeft",
-                variant: "card-outline" as const,
-                disabled: !routine?.tasks
-                  .slice(0, currentTaskIndex)
-                  .some((t) => t.type !== TaskType.checkpoint),
-                onClick: () => {
-                  setCurrentTaskIndex((cti) => {
-                    for (let i = cti - 1; i >= 0; i--) {
-                      if (routine.tasks[i].type !== TaskType.checkpoint)
-                        return i;
-                    }
-                    return cti;
-                  });
-                  reset();
-                },
-              },
-              ...(currentTaskIndex >= (routine?.tasks.length || 0) - 1
-                ? [
-                    {
-                      label: "Done",
-                      placement: "right" as any,
-                      icon: "Check" as IconName,
-                      onClick: async () => {
-                        handleBack();
-                        await completedTask();
-                      },
-                    },
-                  ]
-                : [
-                    {
-                      label: "Skip",
-                      icon: "Forward" as IconName,
-                      iconOnly: true,
-                      variant: "card-outline" as const,
-                      placement: "right" as any,
-                      onClick: async () => {
+              <div key="transport" className="flex flex-col items-center gap-3">
+                <div className="flex items-center justify-center gap-6">
+                  <div className="flex flex-col items-center gap-1.5">
+                    <Button
+                      aria-label="Undo"
+                      variant="card"
+                      size="icon"
+                      className="size-14 rounded-full"
+                      disabled={
+                        !routine?.tasks
+                          .slice(0, currentTaskIndex)
+                          .some((t) => t.type !== TaskType.checkpoint)
+                      }
+                      onClick={() => {
+                        setCurrentTaskIndex((cti) => {
+                          for (let i = cti - 1; i >= 0; i--) {
+                            if (routine.tasks[i].type !== TaskType.checkpoint)
+                              return i;
+                          }
+                          return cti;
+                        });
+                        reset();
+                      }}
+                    >
+                      <Icon name="Undo" className="size-6" />
+                    </Button>
+                    <span className="text-xs text-muted-foreground">Undo</span>
+                  </div>
+
+                  <div className="flex flex-col items-center gap-1.5">
+                    <Button
+                      aria-label={isLastTask ? "Done" : "Complete"}
+                      size="icon"
+                      className="size-16 rounded-full"
+                      style={{
+                        backgroundColor: getRoutineColorVar(routine?.color),
+                      }}
+                      onClick={async () => {
+                        if (isLastTask) {
+                          handleBack();
+                          await completedTask();
+                        } else {
+                          moveToNextPossibleTask();
+                          reset();
+                          await completedTask();
+                        }
+                      }}
+                    >
+                      <Icon name="CheckIcon" className="size-7" />
+                    </Button>
+                    <span className="text-xs text-muted-foreground">
+                      {isLastTask ? "Done" : "Complete"}
+                    </span>
+                  </div>
+
+                  <div className="flex flex-col items-center gap-1.5">
+                    <Button
+                      aria-label="Skip"
+                      variant="card"
+                      size="icon"
+                      className="size-14 rounded-full"
+                      disabled={isLastTask}
+                      onClick={async () => {
                         moveToNextPossibleTask();
                         reset();
                         await skipTask();
-                      },
-                    },
-                    {
-                      label: "Next",
-                      placement: "right" as any,
-                      icon: "ChevronRight" as IconName,
-                      variant: "card-outline" as const,
-                      onClick: async () => {
-                        moveToNextPossibleTask();
-                        reset();
-                        await completedTask();
-                      },
-                      disabled:
-                        currentTaskIndex >= (routine?.tasks.length || 0) - 1,
-                    },
-                  ]),
+                      }}
+                    >
+                      <Icon name="Forward" className="size-6" />
+                    </Button>
+                    <span className="text-xs text-muted-foreground">Skip</span>
+                  </div>
+                </div>
+                <div className="flex w-full items-center gap-2 text-xs text-muted-foreground">
+                  <span>{formatMinSec(elapsedMs)}</span>
+                  <div className="h-1.5 flex-1 rounded-full bg-card overflow-hidden">
+                    <div
+                      className="h-full rounded-full transition-[width] duration-150 ease-linear"
+                      style={{
+                        width: `${taskProgress * 100}%`,
+                        backgroundColor: getRoutineColorVar(routine?.color),
+                      }}
+                    />
+                  </div>
+                  <span>{formatMinSec(currentTaskDurationMs)}</span>
+                </div>
+              </div>,
             ]
           : []
       }
@@ -274,11 +256,13 @@ function StartComponent({
                   scale: 0.75,
                   originX: 0,
                   opacity: 0.1,
+                  filter: "blur(4px)",
                 }}
                 animate={{
                   scale: currentTaskIndex == index ? 1 : 0.75,
                   originX: 0,
                   opacity: currentTaskIndex == index ? 1 : 0.25,
+                  filter: currentTaskIndex == index ? "blur(0px)" : "blur(4px)",
                 }}
                 transition={{
                   duration: 0.45,

@@ -16,7 +16,13 @@ interface ActionType {
   disabled?: boolean;
   className?: string;
   style?: CSSProperties;
-  variant?: "default" | "secondary" | "destructive" | "card" | "card-outline";
+  variant?:
+    | "default"
+    | "secondary"
+    | "destructive"
+    | "card"
+    | "card-outline"
+    | "ghost";
   iconOnly?: boolean;
 }
 
@@ -37,7 +43,7 @@ function ButtonTemplate({
       disabled={disabled}
       onClick={onClick}
       size={isIconOnly ? "icon" : "default"}
-      variant={variant || "secondary"}
+      variant={variant || (isIconOnly ? "ghost" : "secondary")}
       style={style}
       className={cn("my-auto gap-2", icon && label && !isIconOnly && "ps-3")}
     >

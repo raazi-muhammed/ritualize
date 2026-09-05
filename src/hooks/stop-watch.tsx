@@ -60,6 +60,7 @@ export const useStopwatch = () => {
 
   return {
     time: formatSmartTime(hours, minutes, seconds, milliseconds),
+    elapsedMs: time * 10,
     reset,
   };
 };
