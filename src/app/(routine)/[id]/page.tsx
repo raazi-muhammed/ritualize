@@ -38,7 +38,9 @@ export default function Page({ params }: { params: { id: string } }) {
   const routineId = params.id;
   const searchParams = useSearchParams();
   const nameQueryParam = searchParams.get("name");
-  const { selectedDate } = useStore((state) => state);
+  const { selectedDate, rearrangeMode, setRearrangeMode } = useStore(
+    (state) => state,
+  );
   const { openModal, closeModal } = useModal();
   const router = useTransitionRouter();
 
@@ -122,6 +124,11 @@ export default function Page({ params }: { params: { id: string } }) {
                     ),
                   });
                 },
+              },
+              {
+                label: rearrangeMode ? "Done rearranging" : "Rearrange tasks",
+                icon: rearrangeMode ? "Check" : "Drag",
+                onClick: () => setRearrangeMode(!rearrangeMode),
               },
               {
                 label: "Edit",
